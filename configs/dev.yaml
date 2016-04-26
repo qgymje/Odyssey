@@ -10,6 +10,6 @@ database:
     sslmode: disable
     
 log:
-    filename: log
+    filename: /logs/oddyssey.log
     enable_func_call_depth: true
 

@@ -15,7 +15,9 @@ func InitLogger() {
 	defer logger.Flush()
 
 	path, _ := os.Getwd()
+	fmt.Println("path = ", path)
 	fileName := path + GetConf().GetString("log.filename")
+	fmt.Println("filename = ", fileName)
 	_, err := os.Stat(fileName)
 	if err != nil {
 		err := os.MkdirAll(filepath.Dir(fileName), os.ModePerm)
