@@ -1,2 +1,8 @@
+pack: clean
+	godep save
+
+clean:
+	go clean
+
 serve:
-	cd ./src && go run Odyssey
+	fswatch

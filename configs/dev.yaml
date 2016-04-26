@@ -1,0 +1,15 @@
+app:
+    mode: dev
+    http_port: 8081
+
+database:
+    host: localhost
+    username: odyssey
+    password: odyssey
+    dbname: odyssey
+    sslmode: disable
+    
+log:
+    filename: log
+    enable_func_call_depth: true
+
