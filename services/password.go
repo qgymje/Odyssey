@@ -1,11 +1,10 @@
 package services
 
 import (
+	"Odyssey/utils"
 	"crypto/md5"
 	"errors"
 	"fmt"
-
-	"github.com/chinarun/utils"
 )
 
 var (
@@ -25,7 +24,7 @@ const letterBytes = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW
 func generateRandomString(n int) string {
 	b := make([]byte, n)
 	for i := range b {
-		b[i] = letterBytes[utils.Rander.Intn(len(letterBytes))]
+		b[i] = letterBytes[utils.GetRand().Intn(len(letterBytes))]
 	}
 	return string(b)
 }

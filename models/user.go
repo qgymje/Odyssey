@@ -19,6 +19,8 @@ type User struct {
 	UpdatedAt time.Time
 	CreatedAt time.Time
 	DeletedAt time.Time
+
+	Base
 }
 
 func (u *User) TableName() string {
@@ -30,7 +32,7 @@ func (u *User) Create() error {
 		Columns("phone", "nickname", "password", "salt", "height", "weight", "updated_at", "created_at", "deleted_at").
 		Values(u.Phone, u.Nickname, u.Password, u.Salt, u.Height, u.Weight, u.UpdatedAt, u.CreatedAt, u.DeletedAt).
 		Suffix("RETURNING \"id\"").
-		RunWith(db).
+		RunWith(GetDB()).
 		PlaceholderFormat(sq.Dollar)
 	query.QueryRow().Scan(u.Id)
 	return nil

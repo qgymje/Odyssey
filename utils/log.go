@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -15,9 +16,8 @@ func InitLogger() {
 	defer logger.Flush()
 
 	path, _ := os.Getwd()
-	fmt.Println("path = ", path)
 	fileName := path + GetConf().GetString("log.filename")
-	fmt.Println("filename = ", fileName)
+	log.Println("logger filename = ", fileName)
 	_, err := os.Stat(fileName)
 	if err != nil {
 		err := os.MkdirAll(filepath.Dir(fileName), os.ModePerm)

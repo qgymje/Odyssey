@@ -2,46 +2,96 @@ package services
 
 import (
 	"errors"
-	"net/http"
-	"strings"
+	"fmt"
+	"time"
+
+	"Odyssey/utils"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
-const HEADER_TOKEN_KEY = "Authorization"
+var ErrGenerate = errors.New("生成token错误")
+var ErrVerify = errors.New("验证token失败")
 
-type TokenParser interface {
-	Parse() error
+type Token struct {
+	token     *jwt.Token
+	secretKey []byte
+	claims    map[string]interface{}
 }
 
-var (
-	ErrHeaderToken   = errors.New("header token 解析错误")
-	ErrTokenNotFound = errors.New("header token没有设置")
-)
+var defaultSecretKey string
+var defaultExpires int64
 
-type HeaderTokenParser struct {
-	req   *http.Request
-	token string
-}
+func NewToken() *Token {
+	defaultSecretKey = utils.GetConf().GetString("auth.secret_key")
+	expires := utils.GetConf().GetInt("auth.expires") //second
+	defaultExpires = time.Now().Add(time.Second * time.Duration(expires)).Unix()
 
-func NewHeaderTokenParser(req *http.Request) *HeaderTokenParser {
-	return &HeaderTokenParser{
-		req: req,
+	return &Token{
+		secretKey: []byte(defaultSecretKey),
+		claims:    make(map[string]interface{}),
 	}
 }
 
-func (r *HeaderTokenParser) Parse() error {
-	token := r.req.Header.Get(HEADER_TOKEN_KEY)
-	if token == " " {
-		return ErrTokenNotFound
+func (a *Token) Generate(claims map[string]interface{}) (tokenString string, err error) {
+	var actualErr error
+
+	defer func() {
+		place := "services.Token.Generate"
+		if err != nil {
+			utils.GetLog().Error("%s : %s", place, actualErr.Error())
+		} else {
+			// can not leave the tokne string in logger file
+			utils.GetLog().Debug("%s : generate token success", place)
+		}
+	}()
+
+	a.token = jwt.New(jwt.SigningMethodHS256)
+	for k, v := range claims {
+		a.token.Claims[k] = v
+	}
+	if _, ok := a.token.Claims["exp"]; !ok {
+		a.token.Claims["exp"] = defaultExpires
 	}
 
-	authHeaderParts := strings.Split(token, " ")
-	if len(authHeaderParts) != 2 || strings.ToLower(authHeaderParts[0]) != "bearer" {
-		return ErrHeaderToken
+	tokenString, err = a.token.SignedString(a.secretKey)
+	if err != nil {
+		actualErr = err
+		err = ErrGenerate
 	}
-	r.token = authHeaderParts[1]
-	return nil
+
+	return
 }
 
-func (r *HeaderTokenParser) Token() string {
-	return r.token
+func (a *Token) Verify(tokenString string) (valid bool, err error) {
+	var actualErr error
+
+	defer func() {
+		place := "services.Token.Verify"
+		if err != nil {
+			utils.GetLog().Error("%s : %s", place, actualErr.Error())
+		} else {
+			utils.GetLog().Debug("%s : token verify success", place)
+		}
+	}()
+
+	utils.GetLog().Debug("services.Token.Verify : tokenString : %s", tokenString)
+	//自带过期处理
+	a.token, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return a.secretKey, nil
+	})
+	if err != nil {
+		actualErr = err
+		err = ErrVerify
+	}
+	valid = a.token.Valid
+
+	return
+}
+
+func (a *Token) Claims() map[string]interface{} {
+	return a.token.Claims
 }

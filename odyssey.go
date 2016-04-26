@@ -17,7 +17,7 @@ var (
 )
 
 func initEnv() {
-	log.SetFlags(log.Ltime | log.Lshortfile)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	flag.Parse()
 	log.Println("当前运行环境为: ", *env)
 	utils.SetEnv(*env)
@@ -37,9 +37,10 @@ func main() {
 	v1 := r.Group("/api/v1")
 	{
 		user := new(controllers.User)
-		v1.GET("/sign_up", middlewares.Token(), user.SignUp)
-		v1.GET("/sign_in", middlewares.Token(), user.SignIn)
-		v1.GET("/sign_out", middlewares.Token(), user.SignOut)
+		v1.POST("/smscode", middlewares.Token(), user.SMSCode)
+		v1.POST("/sign_up", middlewares.Token(), user.SignUp)
+		v1.POST("/sign_in", middlewares.Token(), user.SignIn)
+		v1.DELETE("/sign_out", middlewares.Token(), user.SignOut)
 	}
 
 	r.Run(":8081")

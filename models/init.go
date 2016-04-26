@@ -16,8 +16,8 @@ const driverName = "postgres"
 // 接收一个参数用于启动db
 func InitModels() error {
 	c := utils.GetConf().GetStringMapString("database")
-	utils.GetLog().Debug("database config = %v", c)
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s", c["username"], c["password"], c["host"], c["port"], c["dbname"], c["sslmode"])
+
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", c["username"], c["password"], c["host"], c["port"], c["dbname"], c["sslmode"])
 
 	var err error
 	db, err = sql.Open(driverName, dsn)
@@ -25,6 +25,15 @@ func InitModels() error {
 		log.Fatal(err)
 		return err
 	}
-	log.Println("connect to ", driverName, " success!")
+	if err = db.Ping(); err != nil {
+		log.Fatal("connect ping error: ", err)
+	} else {
+		log.Println("connect db success")
+	}
+
 	return nil
+}
+
+func GetDB() *sql.DB {
+	return db
 }

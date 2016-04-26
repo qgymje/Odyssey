@@ -13,3 +13,7 @@ log:
     filename: /logs/oddyssey.log
     enable_func_call_depth: true
 
+auth:
+    secret_key: GO5U9fS8D7WkDay8
+    expires: 86400
+
