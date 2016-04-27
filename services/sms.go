@@ -9,20 +9,20 @@ import (
 )
 
 type SMS struct {
-	phone         *Phone
+	phone         string
 	code          string
 	model_smscode *models.SMSCode
 }
 
 func NewSMS(data *forms.SMSCodeForm) *SMS {
 	s := new(SMS)
-	s.phone = NewPhone(data.Phone)
+	s.phone = data.Phone
 	return s
 }
 
 func newSMSByRawData(phone string, code string) *SMS {
 	s := new(SMS)
-	s.phone = NewPhone(phone)
+	s.phone = phone
 	s.code = code
 	return s
 }
@@ -45,7 +45,7 @@ func (s *SMS) Generate() string {
 // 保存验证码
 func (s *SMS) save() error {
 	s.model_smscode = &models.SMSCode{
-		Phone:     s.phone.PhoneNumber(),
+		Phone:     s.phone,
 		Code:      s.code,
 		CreatedAt: time.Now(),
 	}

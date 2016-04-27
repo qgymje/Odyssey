@@ -39,19 +39,40 @@ func (u *User) SignUp(c *gin.Context) {
 		return
 	}
 
-	signUp := services.NewSignUp(form)
-	if err := signUp.Do(); err != nil {
+	su := services.NewSignUp(form)
+	if err := su.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	c.JSON(http.StatusOK, su.UserInfo())
 }
 
 func (u *User) SignIn(c *gin.Context) {
+	form, err := forms.NewSignInForm(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	si := services.NewSignIn(form)
+	if err := si.Do(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, si.UserInfo())
 }
 
 func (u *User) SignOut(c *gin.Context) {
+}
+
+func (u *User) DeleteAccount(c *gin.Context) {
+
 }

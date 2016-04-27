@@ -41,6 +41,7 @@ func main() {
 		v1.POST("/sign_up", middlewares.Token(), user.SignUp)
 		v1.POST("/sign_in", middlewares.Token(), user.SignIn)
 		v1.DELETE("/sign_out", middlewares.Token(), user.SignOut)
+		v1.DELETE("/delete_account", middlewares.Token(), user.DeleteAccount)
 	}
 
 	r.Run(":8081")

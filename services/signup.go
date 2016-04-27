@@ -3,91 +3,78 @@ package services
 import (
 	"Odyssey/forms"
 	"Odyssey/models"
+	"Odyssey/utils"
+	"errors"
+	"fmt"
 )
 
-type SignIn struct {
-	phone    *Phone
-	password *Password
-}
-
-func NewSignIn(data *forms.SignInForm) *SignIn {
-	return new(SignIn)
-}
+var (
+	ErrPhoneExists = errors.New("手机号码已经存在")
+	ErrSMSCode     = errors.New("验证码错误")
+)
 
 // 注册
 type SignUp struct {
 	*SignIn
 	smsValidator *SMSValidator
-
-	model_user *models.User
 }
 
 func NewSignUp(data *forms.SignUpForm) *SignUp {
 	s := new(SignUp)
 
-	s.SignIn = &SignIn{
-		phone:    NewPhone(data.Phone),
-		password: NewPassword(data.Password),
-	}
+	s.SignIn = NewSignInByRawData(data.Phone, data.Password)
 
 	//s.smsValidator = NewSMSValidator()
-	s.model_user = &models.User{}
+
 	return s
 }
 
 // 将数据保存到db
 func (s *SignUp) save() error {
-	s.model_user.Phone = s.phone.PhoneNumber()
-	s.model_user.Salt = s.password.GenSalt()
-	s.model_user.Password = s.password.GenPwd()
+	utils.GetLog().Debug("s = %s", utils.Sdump(s))
+	fmt.Println("s.phone = ", s.phone)
 
-	if err := s.model_user.Create(); err != nil {
+	s.userModel.Phone = s.phone
+	s.userModel.Salt = s.password.GenSalt()
+	s.userModel.Password = s.password.GenPwd()
+
+	if err := s.userModel.Create(); err != nil {
 		return err
 	}
 
-	// generate token
-	claims := map[string]interface{}{
-		"id": s.model_user.Id,
-	}
-	token, err := NewToken().Generate(claims)
-	if err != nil {
+	if err := s.updateToken(); err != nil {
 		return err
 	}
-	s.model_user.Token = token
-
-	where := map[string]interface{}{
-		"id": s.model_user.Id,
-	}
-	update := map[string]interface{}{
-		"token": token,
-	}
-
-	if err := s.model_user.Update(where, update); err != nil {
-		return err
-	}
-
 	return nil
-}
-
-type User struct {
-	Id    uint64
-	Token string
-}
-
-func (s *SignUp) UserInfo() *User {
-	u := &User{
-		Id:    s.model_user.Id,
-		Token: s.model_user.Token,
-	}
-	return u
 }
 
 func (s *SignUp) validSMSCode() error {
 	return nil
 }
 
+func (s *SignUp) findPhone() error {
+	where := map[string]interface{}{
+		"phone": s.phone,
+	}
+	us, err := models.FindUsers(where)
+	if err != nil {
+		us = nil
+		return err
+	}
+
+	if len(us) > 0 {
+		return ErrPhoneExists
+	}
+	return nil
+}
+
 func (s *SignUp) Do() error {
 	// validate phone number is exists
+	if err := s.findPhone(); err != nil {
+		return err
+	}
+
+	// validate sms code
 
 	// save to db
 	if err := s.save(); err != nil {
