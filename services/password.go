@@ -93,7 +93,6 @@ func (p *Password) Valid() error {
 	}
 
 	return nil
-
 }
 
 func (p *Password) Salt() string {

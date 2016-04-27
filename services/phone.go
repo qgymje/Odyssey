@@ -64,7 +64,7 @@ func (p *Phone) GenCode(length int) string {
 
 // 防止单一手机号码无限次数被请求
 func (p *Phone) IsRequestedCode() bool {
-	p.sms.phone = p.phone
+	//p.sms.phone = p.phone
 	//return p.sms.IsRequestedCode()
 	return false
 }

@@ -13,7 +13,7 @@ type SignInForm struct {
 
 	valid *validation.Validation
 
-	errmsg
+	*errmsg
 }
 
 func NewSignInForm(c *gin.Context) (*SignInForm, error) {
@@ -22,11 +22,12 @@ func NewSignInForm(c *gin.Context) (*SignInForm, error) {
 	form.errmsg = newErrmsg()
 
 	if err := c.Bind(form); err != nil {
-		return nil, err
+		form.formatBindError(err)
+		return form, err
 	}
 
 	if err := form.Valid(); err != nil {
-		return nil, err
+		return form, err
 	}
 	return form, nil
 }
@@ -43,6 +44,5 @@ func (s *SignInForm) validPhone() error {
 	if v := s.valid.Mobile(s.Phone, "phone"); v.Ok {
 		return nil
 	}
-
 	return fmt.Errorf("手机号码错误: %s", s.Phone)
 }

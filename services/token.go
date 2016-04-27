@@ -33,7 +33,7 @@ func NewToken() *Token {
 	}
 }
 
-func (a *Token) Generate(claims map[string]interface{}) (tokenString string, err error) {
+func (t *Token) Generate(claims map[string]interface{}) (tokenString string, err error) {
 	var actualErr error
 
 	defer func() {
@@ -46,15 +46,15 @@ func (a *Token) Generate(claims map[string]interface{}) (tokenString string, err
 		}
 	}()
 
-	a.token = jwt.New(jwt.SigningMethodHS256)
+	t.token = jwt.New(jwt.SigningMethodHS256)
 	for k, v := range claims {
-		a.token.Claims[k] = v
+		t.token.Claims[k] = v
 	}
-	if _, ok := a.token.Claims["exp"]; !ok {
-		a.token.Claims["exp"] = defaultExpires
+	if _, ok := t.token.Claims["exp"]; !ok {
+		t.token.Claims["exp"] = defaultExpires
 	}
 
-	tokenString, err = a.token.SignedString(a.secretKey)
+	tokenString, err = t.token.SignedString(t.secretKey)
 	if err != nil {
 		actualErr = err
 		err = ErrGenerate
@@ -63,7 +63,7 @@ func (a *Token) Generate(claims map[string]interface{}) (tokenString string, err
 	return
 }
 
-func (a *Token) Verify(tokenString string) (valid bool, err error) {
+func (t *Token) Verify(tokenString string) (valid bool, err error) {
 	var actualErr error
 
 	defer func() {
@@ -77,21 +77,21 @@ func (a *Token) Verify(tokenString string) (valid bool, err error) {
 
 	utils.GetLog().Debug("services.Token.Verify : tokenString : %s", tokenString)
 	//自带过期处理
-	a.token, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	t.token, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return a.secretKey, nil
+		return t.secretKey, nil
 	})
 	if err != nil {
 		actualErr = err
 		err = ErrVerify
 	}
-	valid = a.token.Valid
+	valid = t.token.Valid
 
 	return
 }
 
-func (a *Token) Claims() map[string]interface{} {
-	return a.token.Claims
+func (t *Token) Claims() map[string]interface{} {
+	return t.token.Claims
 }

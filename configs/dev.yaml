@@ -8,9 +8,11 @@ database:
     password: odyssey
     dbname: odyssey
     sslmode: disable
+    maxIdleConns: 5 
+    maxOpenConns: 10
     
 log:
-    filename: /logs/oddyssey.log
+    filename: /logs/odyssey.log
     enable_func_call_depth: true
 
 auth:

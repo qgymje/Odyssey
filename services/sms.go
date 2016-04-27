@@ -22,13 +22,13 @@ func NewSMS(data *forms.SMSCodeForm) *SMS {
 
 func newSMSByRawData(phone string, code string) *SMS {
 	s := new(SMS)
-	s.phone = data.Phone
-	s.code = data.code
+	s.phone = NewPhone(phone)
+	s.code = code
 	return s
 }
 
 func (s *SMS) Valid() error {
-
+	return nil
 }
 
 func randInt(min, max int) int {
@@ -36,7 +36,7 @@ func randInt(min, max int) int {
 }
 
 func (s *SMS) Generate() string {
-	code := randInt(1000, 10000)
+	code := randInt(100000, 1000000)
 	s.code = fmt.Sprintf("%d", code)
 	utils.GetLog().Debug("phone = %s ,sms code = %s", s.phone, s.code)
 	return s.code
@@ -45,7 +45,7 @@ func (s *SMS) Generate() string {
 // 保存验证码
 func (s *SMS) save() error {
 	s.model_smscode = &models.SMSCode{
-		Phone:     s.phone,
+		Phone:     s.phone.PhoneNumber(),
 		Code:      s.code,
 		CreatedAt: time.Now(),
 	}
@@ -59,7 +59,7 @@ type SMSValidator struct {
 
 func NewSMSValidator(phone string, code string) *SMSValidator {
 	smsValidator := new(SMSValidator)
-	smsValidator.sms = newSMSByRawData(phone, code)
+	//smsValidator.sms = newSMSByRawData(phone, code)
 	return smsValidator
 }
 

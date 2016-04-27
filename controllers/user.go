@@ -16,9 +16,7 @@ type User struct {
 func (u *User) SMSCode(c *gin.Context) {
 	form, err := forms.NewSMSCodeForm(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, form.ErrorMsg())
 		return
 	}
 
@@ -41,7 +39,15 @@ func (u *User) SignUp(c *gin.Context) {
 		return
 	}
 
-	services.NewSignUp(form)
+	signUp := services.NewSignUp(form)
+	if err := signUp.Do(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
 func (u *User) SignIn(c *gin.Context) {

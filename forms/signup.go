@@ -13,20 +13,20 @@ type SignUpForm struct {
 
 func NewSignUpForm(c *gin.Context) (*SignUpForm, error) {
 	form := &SignUpForm{}
-
 	var err error
 
 	form.SignInForm, err = NewSignInForm(c)
 	if err != nil {
-		return nil, err
+		form.formatBindError(err)
+		return form, err
 	}
 
 	if err = c.Bind(form); err != nil {
-		return nil, err
+		return form, err
 	}
 
 	if err = form.Valid(); err != nil {
-		return nil, err
+		return form, err
 	}
 
 	return form, nil

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strconv"
 
 	_ "github.com/lib/pq"
 )
@@ -30,6 +31,11 @@ func InitModels() error {
 	} else {
 		log.Println("connect db success")
 	}
+
+	maxIdleConns, _ := strconv.Atoi(c[",axIdleConns"])
+	maxOpenConns, _ := strconv.Atoi(c["maxOpenConns"])
+	db.SetMaxIdleConns(maxIdleConns)
+	db.SetMaxOpenConns(maxOpenConns)
 
 	return nil
 }
