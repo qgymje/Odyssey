@@ -4,9 +4,7 @@ import (
 	"Odyssey/utils"
 	"time"
 
-	"github.com/lann/builder"
 	sq "github.com/lann/squirrel"
-	_ "github.com/lib/pq"
 )
 
 type User struct {
@@ -28,13 +26,10 @@ type User struct {
 	DeletedAt time.Time `json:"-"`
 
 	Base
-
-	query builder.Builder
 }
 
 func NewUser() *User {
 	u := new(User)
-	u.query = builder.Builder{}
 	return u
 }
 

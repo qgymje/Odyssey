@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"Odyssey/forms"
-	"Odyssey/services"
+	"Odyssey/services/users"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,7 @@ func (u *User) SMSCode(c *gin.Context) {
 	}
 
 	// passing form to service
-	sms := services.NewSMS(form)
+	sms := users.NewSMS(form)
 	code := sms.Generate()
 
 	c.JSON(http.StatusOK, gin.H{
@@ -39,7 +39,7 @@ func (u *User) SignUp(c *gin.Context) {
 		return
 	}
 
-	su := services.NewSignUp(form)
+	su := users.NewSignUp(form)
 	if err := su.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -59,7 +59,7 @@ func (u *User) SignIn(c *gin.Context) {
 		return
 	}
 
-	si := services.NewSignIn(form)
+	si := users.NewSignIn(form)
 	if err := si.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -71,7 +71,7 @@ func (u *User) SignIn(c *gin.Context) {
 }
 
 func (u *User) SignOut(c *gin.Context) {
-	p := services.NewHeaderTokenParser(c.Request)
+	p := users.NewHeaderTokenParser(c.Request)
 	if err := p.Parse(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -80,7 +80,7 @@ func (u *User) SignOut(c *gin.Context) {
 	}
 
 	token := p.Token()
-	so := services.NewSignOut(token)
+	so := users.NewSignOut(token)
 	if err := so.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

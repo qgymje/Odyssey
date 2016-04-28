@@ -14,6 +14,16 @@
 			"Rev": "88c5dfa6ead42e624c2e7d9e04eab6cb2d07412a"
 		},
 		{
+			"ImportPath": "github.com/astaxie/beego/validation",
+			"Comment": "v1.6.1-5-g88c5dfa",
+			"Rev": "88c5dfa6ead42e624c2e7d9e04eab6cb2d07412a"
+		},
+		{
+			"ImportPath": "github.com/dgrijalva/jwt-go",
+			"Comment": "v2.6.0",
+			"Rev": "a2c85815a77d0f951e33ba4db5ae93629a1530af"
+		},
+		{
 			"ImportPath": "github.com/fsnotify/fsnotify",
 			"Comment": "v1.3.0",
 			"Rev": "30411dbcefb7a1da7e84f75530ad3abe4011b4f8"

@@ -19,3 +19,6 @@ auth:
     secret_key: GO5U9fS8D7WkDay8
     expires: 86400
 
+
+feedback:
+    auth_key: mSedxOqPLTzqQoD704XIDpAHJ6jbJmrBVC8CtthVX5pXgKNAM8jO6vbzlzMnk6tJ

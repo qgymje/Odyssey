@@ -42,6 +42,15 @@ func main() {
 		v1.POST("/sign_in", middlewares.Token(), user.SignIn)
 		v1.DELETE("/sign_out", middlewares.Token(), user.SignOut)
 		v1.DELETE("/delete_account", middlewares.Token(), user.DeleteAccount)
+
+		run := new(controllers.Run)
+		v1.POST("/run/create", run.Create)
+		v1.GET("/run/:user_id", run.Read)
+		v1.GET("/run/:user_id/:run_id", run.ReadOne)
+
+		feedback := new(controllers.Feedback)
+		v1.POST("/feedback/create", feedback.Create)
+		v1.GET("/feedbacks", feedback.Read)
 	}
 
 	r.Run(":8081")

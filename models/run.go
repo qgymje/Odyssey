@@ -1,6 +1,11 @@
 package models
 
-import "time"
+import (
+	"Odyssey/utils"
+	"time"
+
+	sq "github.com/lann/squirrel"
+)
 
 // 一个跑步的纪录
 type Run struct {
@@ -25,4 +30,42 @@ type Location struct {
 	TimeStamp time.Time `json: "ts"`
 	Course    float64   `json:"course"`
 	Speed     float64   `json:"speed"`
+}
+
+func (Run) TableName() string {
+	return "runs"
+}
+
+func FindRuns(where map[string]interface{}) ([]*Run, error) {
+	var err error
+	defer func() {
+		if err != nil {
+			utils.GetLog().Error("models.run.FindRun error: %v", err)
+		}
+	}()
+
+	query := sq.Select("*").From(Run{}.TableName()).OrderBy("created_at desc")
+	for k, v := range where {
+		query = query.Where(sq.Eq{k: v})
+	}
+
+	rows, err := query.RunWith(GetDB()).
+		PlaceholderFormat(sq.Dollar).
+		Query()
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	rs := []*Run{}
+	for rows.Next() {
+		var r Run
+		err = rows.Scan(&r.Id, &r.UserId, &r.Distance, &r.Duration, &r.IsPublic, &r.Locations, &r.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		rs = append(rs, &r)
+	}
+	return rs, nil
 }
