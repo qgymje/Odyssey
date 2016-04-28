@@ -15,25 +15,38 @@ type Run struct {
 	Duration  float64
 	IsPublic  bool   //是否发布?
 	Comment   string // 自己的评价
-	Locations []Location
+	Locations Locations
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt time.Time
 }
 
-// 仿照iOS CLLocation的结构
-type Location struct {
-	Latitude  float64   `json:"lat"`
-	Longitude float64   `json:"lng"`
-	Altitude  float64   `json:"alt"`
-	TimeStamp time.Time `json: "ts"`
-	Course    float64   `json:"course"`
-	Speed     float64   `json:"speed"`
-}
-
 func (Run) TableName() string {
 	return "runs"
+}
+
+func (r *Run) Create() error {
+	var err error
+	defer func() {
+		if err != nil {
+			utils.GetLog().Error("models.run.Create error: %v", err)
+		}
+	}()
+
+	r.CreatedAt = time.Now()
+	query := sq.Insert(r.TableName()).
+		Columns("user_id", "distance", "duration", "is_public", "comment", "created_at", "updated_at", "deleted_at").
+		Values(r.UserId, r.Distance, r.Duration, r.IsPublic, r.Comment, r.CreatedAt, r.UpdatedAt, r.DeletedAt).
+		Suffix("RETURNING \"id\"").
+		RunWith(GetDB()).
+		PlaceholderFormat(sq.Dollar)
+
+	// 注意这里必须要传指针
+	if err = query.QueryRow().Scan(&r.Id); err != nil {
+		return err
+	}
+	return nil
 }
 
 func FindRuns(where map[string]interface{}) ([]*Run, error) {
@@ -61,7 +74,7 @@ func FindRuns(where map[string]interface{}) ([]*Run, error) {
 	rs := []*Run{}
 	for rows.Next() {
 		var r Run
-		err = rows.Scan(&r.Id, &r.UserId, &r.Distance, &r.Duration, &r.IsPublic, &r.Locations, &r.CreatedAt)
+		err = rows.Scan(&r.Id, &r.UserId, &r.Distance, &r.Duration, &r.IsPublic, &r.Comment, &r.CreatedAt, &r.UpdatedAt, &r.DeletedAt)
 		if err != nil {
 			return nil, err
 		}
