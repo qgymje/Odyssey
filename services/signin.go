@@ -4,11 +4,11 @@ import (
 	"Odyssey/forms"
 	"Odyssey/models"
 	"errors"
-	"fmt"
 )
 
 var (
-	ErrSignIn = errors.New("登录失败, 手机号码或者密码错误")
+	ErrSignIn  = errors.New("登录失败, 手机号码或者密码错误")
+	ErrSignIn2 = errors.New("登录失败, 手机号码或密码错误")
 )
 
 type SignIn struct {
@@ -40,12 +40,15 @@ func (s *SignIn) findUser() error {
 		"phone": s.phone,
 	}
 	us, err := models.FindUsers(where)
-	fmt.Println("users = ", us)
 	if err != nil {
 		return err
 	}
-	s.userModel = us[0]
-	s.ensureDidFindUser = true
+	if len(us) > 0 {
+		s.userModel = us[0]
+		s.ensureDidFindUser = true
+	} else {
+		return ErrSignIn2
+	}
 	return nil
 }
 

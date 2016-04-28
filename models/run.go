@@ -8,19 +8,21 @@ type Run struct {
 	UserId    uint64
 	Distance  float64
 	Duration  float64
+	IsPublic  bool   //是否发布?
+	Comment   string // 自己的评价
 	Locations []Location
 
-	UpdatedAt time.Time
 	CreatedAt time.Time
+	UpdatedAt time.Time
 	DeletedAt time.Time
 }
 
 // 仿照iOS CLLocation的结构
 type Location struct {
-	Latitude  float64
-	Longitude float64
-	Altitude  float64
-	TimeStamp time.Time
-	Course    float64 //Direction
-	Speed     float64
+	Latitude  float64   `json:"lat"`
+	Longitude float64   `json:"lng"`
+	Altitude  float64   `json:"alt"`
+	TimeStamp time.Time `json: "ts"`
+	Course    float64   `json:"course"`
+	Speed     float64   `json:"speed"`
 }

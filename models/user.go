@@ -4,6 +4,7 @@ import (
 	"Odyssey/utils"
 	"time"
 
+	"github.com/lann/builder"
 	sq "github.com/lann/squirrel"
 	_ "github.com/lib/pq"
 )
@@ -27,6 +28,14 @@ type User struct {
 	DeletedAt time.Time `json:"-"`
 
 	Base
+
+	query builder.Builder
+}
+
+func NewUser() *User {
+	u := new(User)
+	u.query = builder.Builder{}
+	return u
 }
 
 func (User) TableName() string {
@@ -43,8 +52,8 @@ func (u *User) Create() error {
 
 	u.CreatedAt = time.Now()
 	query := sq.Insert(u.TableName()).
-		Columns("phone", "nickname", "password", "salt", "height", "weight", "token", "updated_at", "created_at", "deleted_at").
-		Values(u.Phone, u.Nickname, u.Password, u.Salt, u.Height, u.Weight, u.Token, u.UpdatedAt, u.CreatedAt, u.DeletedAt).
+		Columns("phone", "nickname", "password", "salt", "height", "weight", "latitude", "longitude", "token", "updated_at", "created_at", "deleted_at").
+		Values(u.Phone, u.Nickname, u.Password, u.Salt, u.Height, u.Weight, u.Latitude, u.Longitude, u.Token, u.UpdatedAt, u.CreatedAt, u.DeletedAt).
 		Suffix("RETURNING \"id\"").
 		RunWith(GetDB()).
 		PlaceholderFormat(sq.Dollar)

@@ -71,6 +71,24 @@ func (u *User) SignIn(c *gin.Context) {
 }
 
 func (u *User) SignOut(c *gin.Context) {
+	p := services.NewHeaderTokenParser(c.Request)
+	if err := p.Parse(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	token := p.Token()
+	so := services.NewSignOut(token)
+	if err := so.Do(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
 func (u *User) DeleteAccount(c *gin.Context) {
