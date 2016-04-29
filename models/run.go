@@ -71,9 +71,9 @@ func FindRuns(where map[string]interface{}) ([]*Run, error) {
 	}
 	defer rows.Close()
 
+	var r Run
 	rs := []*Run{}
 	for rows.Next() {
-		var r Run
 		err = rows.Scan(&r.Id, &r.UserId, &r.Distance, &r.Duration, &r.IsPublic, &r.Comment, &r.CreatedAt, &r.UpdatedAt, &r.DeletedAt)
 		if err != nil {
 			return nil, err

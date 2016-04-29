@@ -2,7 +2,6 @@ package main
 
 import (
 	"Odyssey/controllers"
-	"Odyssey/middlewares"
 	"Odyssey/models"
 	"Odyssey/utils"
 	"flag"
@@ -37,11 +36,11 @@ func main() {
 	v1 := r.Group("/api/v1")
 	{
 		user := new(controllers.User)
-		v1.POST("/smscode", middlewares.Token(), user.SMSCode)
-		v1.POST("/sign_up", middlewares.Token(), user.SignUp)
-		v1.POST("/sign_in", middlewares.Token(), user.SignIn)
-		v1.DELETE("/sign_out", middlewares.Token(), user.SignOut)
-		v1.DELETE("/delete_account", middlewares.Token(), user.DeleteAccount)
+		v1.POST("/smscode", user.SMSCode)
+		v1.POST("/sign_up", user.SignUp)
+		v1.POST("/sign_in", user.SignIn)
+		v1.DELETE("/sign_out", user.SignOut)
+		v1.DELETE("/delete_account", user.DeleteAccount)
 
 		run := new(controllers.Run)
 		v1.POST("/run/create", run.Create)

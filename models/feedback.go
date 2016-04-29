@@ -68,9 +68,9 @@ func FindFeedbacks(where map[string]interface{}) ([]*Feedback, error) {
 	}
 	defer rows.Close()
 
+	var f Feedback
 	fbs := []*Feedback{}
 	for rows.Next() {
-		var f Feedback
 		err = rows.Scan(&f.Id, &f.UserId, &f.Content, &f.IsRead, &f.CreatedAt)
 		if err != nil {
 			return nil, err

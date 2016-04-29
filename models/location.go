@@ -77,9 +77,9 @@ func FindLocations(where map[string]interface{}) (Locations, error) {
 	}
 	defer rows.Close()
 
+	var l Location
 	ls := Locations{}
 	for rows.Next() {
-		var l Location
 		err = rows.Scan(&l.Id, &l.RunId, &l.Latitude, &l.Longitude, &l.Altitude, &l.Timestamp, &l.Course, &l.Speed, &l.CreatedAt)
 		if err != nil {
 			return nil, err

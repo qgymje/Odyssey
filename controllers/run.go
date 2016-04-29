@@ -74,11 +74,13 @@ func (r *Run) Read(c *gin.Context) {
 	}
 
 	var result []*models.Run
-	result, err := runs.Find(userId, runId)
+	result, err = runs.Find(userId, runId)
 	if err != nil {
-
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
+	c.JSON(http.StatusOK, result)
 }
 
 func (r *Run) ReadOne(c *gin.Context) {

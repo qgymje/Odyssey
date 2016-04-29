@@ -143,9 +143,9 @@ func FindUsers(where map[string]interface{}) ([]*User, error) {
 	}
 	defer rows.Close()
 
+	var u User
 	users := []*User{}
 	for rows.Next() {
-		var u User
 		err = rows.Scan(&u.Id, &u.Phone, &u.Nickname, &u.Password, &u.Salt, &u.Weight, &u.Height, &u.Latitude, &u.Longitude, &u.Token, &u.CreatedAt, &u.UpdatedAt, &u.DeletedAt)
 		if err != nil {
 			return nil, err
