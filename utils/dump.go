@@ -1,15 +1,11 @@
 package utils
 
-import (
-	"fmt"
-
-	"github.com/kr/pretty"
-)
+import "github.com/davecgh/go-spew/spew"
 
 func Dump(x ...interface{}) {
-	fmt.Printf("%# v", pretty.Formatter(x))
+	spew.Dump(x)
 }
 
 func Sdump(x ...interface{}) string {
-	return fmt.Sprintf("%# v", pretty.Formatter(x))
+	return spew.Sdump(x)
 }

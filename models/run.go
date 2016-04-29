@@ -9,17 +9,17 @@ import (
 
 // 一个跑步的纪录
 type Run struct {
-	Id        uint64
-	UserId    uint64
-	Distance  float64
-	Duration  float64
-	IsPublic  bool   //是否发布?
-	Comment   string // 自己的评价
-	Locations Locations
+	Id        uint64    `json:"run_id"`
+	UserId    uint64    `json:"user_id"`
+	Distance  float64   `json:"distance"`
+	Duration  int       `json:"duration"`
+	IsPublic  bool      `json:"is_public"`
+	Comment   string    `json:"comment"`
+	Locations Locations `json:"locaitons"`
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	DeletedAt time.Time `json:"deleted_at"`
 }
 
 func (Run) TableName() string {

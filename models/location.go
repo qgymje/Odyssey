@@ -9,8 +9,8 @@ import (
 
 // 仿照iOS CLLocation的结构
 type Location struct {
-	Id        uint64
-	RunId     uint64
+	Id        uint64    `json:"id"`
+	RunId     uint64    `json:"run_id"`
 	Latitude  float64   `json:"lat"`
 	Longitude float64   `json:"lng"`
 	Altitude  float64   `json:"alt"`
@@ -24,6 +24,12 @@ type Location struct {
 func (Location) TableName() string {
 	return "locations"
 }
+
+/*
+func (l Location) UnmarshalJSON([]byte) error {
+	return nil
+}
+*/
 
 type Locations []Location
 

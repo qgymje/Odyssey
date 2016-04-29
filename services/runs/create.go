@@ -3,6 +3,7 @@ package runs
 import (
 	"Odyssey/forms"
 	"Odyssey/models"
+	"Odyssey/utils"
 	"encoding/json"
 	"time"
 )
@@ -19,6 +20,8 @@ func NewRun(form *forms.RunForm) *Run {
 		UserId:    form.UserId,
 		Distance:  form.Distance,
 		Duration:  form.Duration,
+		IsPublic:  form.IsPublic,
+		Comment:   form.Comment,
 		Locations: models.Locations{},
 	}
 	r.rawLocations = form.Locations
@@ -41,8 +44,9 @@ func (r *Run) save() error {
 		return err
 	}
 
+	utils.Dump(r)
 	if err := r.runModel.Locations.Create(r.runModel.Id); err != nil {
-		return nil
+		return err
 	}
 	return nil
 }

@@ -8,7 +8,7 @@ import (
 type RunForm struct {
 	UserId    uint64  `form:"user_id" binding:"required"`
 	Distance  float64 `form:"distance" binding:"required"`
-	Duration  float64 `form:"duration" binding:"required"`
+	Duration  int     `form:"duration" binding:"required"`
 	IsPublic  bool    `form:"is_public" binding:"required"`
 	Comment   string  `form:"comment" binding:"required"`
 	Locations string  `form:"locations" binding:"required"`

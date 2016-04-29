@@ -42,7 +42,11 @@ func (r *Run) Create(c *gin.Context) {
 }
 
 func (r *Run) parseUserId(c *gin.Context) (uint64, error) {
-	idStr := c.Param("user_id") //string
+	var idStr string
+	idStr = c.PostForm("user_id")
+	if idStr == "" {
+		idStr = c.Param("user_id") //string
+	}
 	idUint, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
 		return 0, errors.New("用户id解析错误")
@@ -60,6 +64,8 @@ func (r *Run) parseRunId(c *gin.Context) (uint64, error) {
 }
 
 func (r *Run) Read(c *gin.Context) {
+}
+func (r *Run) ReadOne(c *gin.Context) {
 	var userId uint64
 	var runId uint64
 	var err error
@@ -73,15 +79,12 @@ func (r *Run) Read(c *gin.Context) {
 		return
 	}
 
-	var result []*models.Run
-	result, err = runs.Find(userId, runId)
+	var result *models.Run
+	result, err = runs.FindOne(userId, runId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, result)
-}
-
-func (r *Run) ReadOne(c *gin.Context) {
 }
