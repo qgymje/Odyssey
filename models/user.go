@@ -8,13 +8,17 @@ import (
 )
 
 type User struct {
-	Id       uint64  `json:"id"`
-	Phone    string  `json:"phone"`
-	Nickname string  `json:"nickname"`
-	Password string  `json:"-"`
-	Salt     string  `json:"-"`
-	Height   float64 `json:"height"`
-	Weight   float64 `json:"weight"`
+	Id       uint64 `json:"id"`
+	Phone    string `json:"phone"`
+	Nickname string `json:"nickname"`
+	Password string `json:"-"`
+	Salt     string `json:"-"`
+	Avatar   string `json:"avatar"`
+
+	Sex      uint8     `json:"sex"`
+	Height   float64   `json:"height"`
+	Weight   float64   `json:"weight"`
+	Birthday time.Time `json:"birthday"`
 
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
@@ -47,8 +51,8 @@ func (u *User) Create() error {
 
 	u.CreatedAt = time.Now()
 	query := sq.Insert(u.TableName()).
-		Columns("phone", "nickname", "password", "salt", "height", "weight", "latitude", "longitude", "token", "updated_at", "created_at", "deleted_at").
-		Values(u.Phone, u.Nickname, u.Password, u.Salt, u.Height, u.Weight, u.Latitude, u.Longitude, u.Token, u.UpdatedAt, u.CreatedAt, u.DeletedAt).
+		Columns("phone", "nickname", "password", "salt", "avatar", "height", "weight", "birthday", "latitude", "longitude", "token", "updated_at", "created_at", "deleted_at").
+		Values(u.Phone, u.Nickname, u.Password, u.Salt, u.Avatar, u.Height, u.Weight, u.Birthday, u.Latitude, u.Longitude, u.Token, u.UpdatedAt, u.CreatedAt, u.DeletedAt).
 		Suffix("RETURNING \"id\"").
 		RunWith(GetDB()).
 		PlaceholderFormat(sq.Dollar)
@@ -129,7 +133,7 @@ func FindUsers(where map[string]interface{}) ([]*User, error) {
 		}
 	}()
 
-	query := sq.Select("*").From(User{}.TableName())
+	query := sq.Select("id, phone, nickname, password, salt, avatar, height, weight, birthday, latitude, longitude, token, created_at, updated_at, deleted_at").From(User{}.TableName())
 	for k, v := range where {
 		query = query.Where(sq.Eq{k: v})
 	}
@@ -146,7 +150,7 @@ func FindUsers(where map[string]interface{}) ([]*User, error) {
 	var u User
 	users := []*User{}
 	for rows.Next() {
-		err = rows.Scan(&u.Id, &u.Phone, &u.Nickname, &u.Password, &u.Salt, &u.Weight, &u.Height, &u.Latitude, &u.Longitude, &u.Token, &u.CreatedAt, &u.UpdatedAt, &u.DeletedAt)
+		err = rows.Scan(&u.Id, &u.Phone, &u.Nickname, &u.Password, &u.Salt, &u.Avatar, &u.Height, &u.Weight, &u.Birthday, &u.Latitude, &u.Longitude, &u.Token, &u.CreatedAt, &u.UpdatedAt, &u.DeletedAt)
 		if err != nil {
 			return nil, err
 		}

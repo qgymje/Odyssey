@@ -9,10 +9,11 @@ import (
 
 // 一个跑步的纪录
 type Run struct {
-	Id        uint64    `json:"run_id"`
-	UserId    uint64    `json:"user_id"`
-	Distance  float64   `json:"distance"`
-	Duration  int       `json:"duration"`
+	Id       uint64  `json:"run_id"`
+	UserId   uint64  `json:"user_id"`
+	Distance float64 `json:"distance"`
+	Duration int     `json:"duration"`
+	//Setps     int       `json:"steps"` // 步数
 	IsPublic  bool      `json:"is_public"`
 	Comment   string    `json:"comment"`
 	Locations Locations `json:"locaitons"`
@@ -57,7 +58,7 @@ func FindRuns(where map[string]interface{}) ([]*Run, error) {
 		}
 	}()
 
-	query := sq.Select("*").From(Run{}.TableName()).OrderBy("created_at desc")
+	query := sq.Select("id, user_id, distance, duration, is_public, comment, created_at, updated_at, deleted_at").From(Run{}.TableName()).OrderBy("created_at desc")
 	for k, v := range where {
 		query = query.Where(sq.Eq{k: v})
 	}

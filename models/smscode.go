@@ -104,7 +104,7 @@ func FindSMSCode(where map[string]interface{}) (*SMSCode, error) {
 		}
 	}()
 
-	query := sq.Select("*").From(SMSCode{}.TableName()).OrderBy("created_at desc").Limit(1)
+	query := sq.Select("id, phone, code, used_at, created_at").From(SMSCode{}.TableName()).OrderBy("created_at desc").Limit(1)
 	for k, v := range where {
 		query = query.Where(sq.Eq{k: v})
 	}

@@ -17,6 +17,8 @@ type Location struct {
 	Timestamp time.Time `json: "ts"`
 	Course    float64   `json:"course"`
 	Speed     float64   `json:"speed"`
+	//Steps     int       `json:"stpes"` //距离上个location走出的步数
+	//HeartRate
 
 	CreatedAt time.Time
 }
@@ -69,7 +71,7 @@ func FindLocations(where map[string]interface{}) (Locations, error) {
 		}
 	}()
 
-	query := sq.Select("*").From(Location{}.TableName()).OrderBy("created_at desc")
+	query := sq.Select("id, run_id, latitude, longitude, altitude, timestamp, course, speed, created_at").From(Location{}.TableName()).OrderBy("created_at desc")
 	for k, v := range where {
 		query = query.Where(sq.Eq{k: v})
 	}

@@ -54,7 +54,7 @@ func FindFeedbacks(where map[string]interface{}) ([]*Feedback, error) {
 		}
 	}()
 
-	query := sq.Select("*").From(Feedback{}.TableName()).OrderBy("created_at desc")
+	query := sq.Select("id, user_id, content, is_read, created_at").From(Feedback{}.TableName()).OrderBy("created_at desc")
 	for k, v := range where {
 		query = query.Where(sq.Eq{k: v})
 	}
