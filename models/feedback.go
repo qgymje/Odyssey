@@ -7,6 +7,7 @@ import (
 	sq "github.com/lann/squirrel"
 )
 
+// Feedback model 表示用户发来的反馈
 type Feedback struct {
 	Id      uint64
 	UserId  uint64

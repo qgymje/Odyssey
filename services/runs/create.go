@@ -17,14 +17,14 @@ type Run struct {
 func NewRun(form *forms.RunForm) *Run {
 	r := new(Run)
 	r.runModel = &models.Run{
-		UserId:    form.UserId,
-		Distance:  form.Distance,
-		Duration:  form.Duration,
-		IsPublic:  form.IsPublic,
-		Comment:   form.Comment,
-		Locations: models.Locations{},
+		UserId:       form.UserId,
+		Distance:     form.Distance,
+		Duration:     form.Duration,
+		IsPublic:     form.IsPublic,
+		Comment:      form.Comment,
+		RunLocations: models.RunLocations{},
 	}
-	r.rawLocations = form.Locations
+	r.rawLocations = form.RunLocations
 	return r
 }
 
@@ -45,14 +45,14 @@ func (r *Run) save() error {
 	}
 
 	utils.Dump(r)
-	if err := r.runModel.Locations.Create(r.runModel.Id); err != nil {
+	if err := r.runModel.RunLocations.Create(r.runModel.Id); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (r *Run) validLocations() error {
-	if err := json.Unmarshal([]byte(r.rawLocations), &r.runModel.Locations); err != nil {
+	if err := json.Unmarshal([]byte(r.rawLocations), &r.runModel.RunLocations); err != nil {
 		return err
 	}
 	return nil

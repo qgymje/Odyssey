@@ -19,11 +19,11 @@ func FindOne(userId, runId uint64) (*models.Run, error) {
 		return nil, err
 	}
 	utils.Dump(rs)
-	ls := models.Locations{}
-	if ls, err = models.FindLocations(where2); err != nil {
+	ls := models.RunLocations{}
+	if ls, err = models.FindRunLocations(where2); err != nil {
 		return nil, err
 	}
-	rs[0].Locations = ls
+	rs[0].RunLocations = ls
 	return rs[0], nil
 }
 

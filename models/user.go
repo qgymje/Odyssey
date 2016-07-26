@@ -7,9 +7,11 @@ import (
 	sq "github.com/lann/squirrel"
 )
 
+// User model 表示用户
 type User struct {
 	Id       uint64 `json:"id"`
 	Phone    string `json:"phone"`
+	Email    string `json:"email"` // 通过email向register发送用户统计数据
 	Nickname string `json:"nickname"`
 	Password string `json:"-"`
 	Salt     string `json:"-"`

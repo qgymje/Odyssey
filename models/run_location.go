@@ -7,8 +7,9 @@ import (
 	sq "github.com/lann/squirrel"
 )
 
-// 仿照iOS CLLocation的结构
-type Location struct {
+// RunLocation model纪录用户的跑步过程中GPS数据
+// 仿照iOS CLRunLocation的结构
+type RunLocation struct {
 	Id        uint64    `json:"id"`
 	RunId     uint64    `json:"run_id"`
 	Latitude  float64   `json:"lat"`
@@ -23,20 +24,20 @@ type Location struct {
 	CreatedAt time.Time
 }
 
-func (Location) TableName() string {
+func (RunLocation) TableName() string {
 	return "locations"
 }
 
 /*
-func (l Location) UnmarshalJSON([]byte) error {
+func (l RunLocation) UnmarshalJSON([]byte) error {
 	return nil
 }
 */
 
-type Locations []Location
+type RunLocations []RunLocation
 
 // 插入location data
-func (ls Locations) Create(runId uint64) error {
+func (ls RunLocations) Create(runId uint64) error {
 	var err error
 	defer func() {
 		if err != nil {
@@ -45,7 +46,7 @@ func (ls Locations) Create(runId uint64) error {
 	}()
 
 	createdAt := time.Now()
-	query := sq.Insert(Location{}.TableName()).
+	query := sq.Insert(RunLocation{}.TableName()).
 		Columns("run_id", "latitude", "longitude", "altitude", "timestamp", "course", "speed", "created_at")
 
 	for _, l := range ls {
@@ -63,15 +64,15 @@ func (ls Locations) Create(runId uint64) error {
 	return nil
 }
 
-func FindLocations(where map[string]interface{}) (Locations, error) {
+func FindRunLocations(where map[string]interface{}) (RunLocations, error) {
 	var err error
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.FindLocations error: %v", err)
+			utils.GetLog().Error("models.FindRunLocations error: %v", err)
 		}
 	}()
 
-	query := sq.Select("id, run_id, latitude, longitude, altitude, timestamp, course, speed, created_at").From(Location{}.TableName()).OrderBy("created_at desc")
+	query := sq.Select("id, run_id, latitude, longitude, altitude, timestamp, course, speed, created_at").From(RunLocation{}.TableName()).OrderBy("created_at desc")
 	for k, v := range where {
 		query = query.Where(sq.Eq{k: v})
 	}
@@ -85,8 +86,8 @@ func FindLocations(where map[string]interface{}) (Locations, error) {
 	}
 	defer rows.Close()
 
-	var l Location
-	ls := Locations{}
+	var l RunLocation
+	ls := RunLocations{}
 	for rows.Next() {
 		err = rows.Scan(&l.Id, &l.RunId, &l.Latitude, &l.Longitude, &l.Altitude, &l.Timestamp, &l.Course, &l.Speed, &l.CreatedAt)
 		if err != nil {

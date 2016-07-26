@@ -31,7 +31,9 @@ func init() {
 }
 
 func main() {
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 
 	v1 := r.Group("/api/v1")
 	{
@@ -50,7 +52,9 @@ func main() {
 		feedback := new(controllers.Feedback)
 		v1.POST("/feedback/create", feedback.Create)
 		v1.GET("/feedbacks", feedback.Read)
+
 	}
 
-	r.Run(":8081")
+	port := utils.GetConf().GetString("app.http_port")
+	r.Run(":" + port)
 }

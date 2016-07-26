@@ -14,9 +14,9 @@ type Run struct {
 	Distance float64 `json:"distance"`
 	Duration int     `json:"duration"`
 	//Setps     int       `json:"steps"` // 步数
-	IsPublic  bool      `json:"is_public"`
-	Comment   string    `json:"comment"`
-	Locations Locations `json:"locaitons"`
+	IsPublic     bool         `json:"is_public"`
+	Comment      string       `json:"comment"`
+	RunLocations RunLocations `json:"run_locaitons"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
