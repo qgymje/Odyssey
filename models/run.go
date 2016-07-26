@@ -7,7 +7,7 @@ import (
 	sq "github.com/lann/squirrel"
 )
 
-// 一个跑步的纪录
+// Run model 表示一个用户的一次跑步的纪录
 type Run struct {
 	Id       uint64  `json:"run_id"`
 	UserId   uint64  `json:"user_id"`

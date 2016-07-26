@@ -7,7 +7,7 @@ import (
 	sq "github.com/lann/squirrel"
 )
 
-// User model 表示用户
+// User model 表示一个用户
 type User struct {
 	Id       uint64 `json:"id"`
 	Phone    string `json:"phone"`

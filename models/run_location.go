@@ -15,7 +15,7 @@ type RunLocation struct {
 	Latitude  float64   `json:"lat"`
 	Longitude float64   `json:"lng"`
 	Altitude  float64   `json:"alt"`
-	Timestamp time.Time `json: "ts"`
+	Timestamp time.Time `json:"ts"`
 	Course    float64   `json:"course"`
 	Speed     float64   `json:"speed"`
 	//Steps     int       `json:"stpes"` //距离上个location走出的步数

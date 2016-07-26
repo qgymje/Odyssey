@@ -12,6 +12,7 @@ const (
 	DB_SMSCODE_CODE  = "code"
 )
 
+// SMSCode model 表示一次生成短信验证码纪录
 type SMSCode struct {
 	Id    uint64
 	Phone string
