@@ -35,6 +35,17 @@ func NewSignInByRawData(phone, password string) *SignIn {
 	return form
 }
 
+func (s *SignIn) Do() error {
+	if err := s.validPassword(); err != nil {
+		return err
+	}
+
+	if err := s.updateToken(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *SignIn) findUser() (err error) {
 	where := map[string]interface{}{
 		"phone": s.phone,
@@ -62,17 +73,6 @@ func (s *SignIn) validPassword() error {
 	return nil
 }
 
-func (s *SignIn) Do() error {
-	if err := s.validPassword(); err != nil {
-		return err
-	}
-
-	if err := s.updateToken(); err != nil {
-		return err
-	}
-	return nil
-}
-
 func (s *SignIn) updateToken() error {
 	// generate token
 	claims := map[string]interface{}{
@@ -85,10 +85,10 @@ func (s *SignIn) updateToken() error {
 	s.userModel.Token = token
 
 	where := map[string]interface{}{
-		"id": s.userModel.ID,
+		"id=?": s.userModel.ID,
 	}
 	update := map[string]interface{}{
-		"token": token,
+		"token=?": token,
 	}
 
 	if err := s.userModel.Update(where, update); err != nil {
@@ -97,6 +97,7 @@ func (s *SignIn) updateToken() error {
 	return nil
 }
 
+// User 输出结果
 type User struct {
 	ID    int    `json:"id"`
 	Phone string `json:"phone"`

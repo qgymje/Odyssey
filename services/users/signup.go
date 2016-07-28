@@ -3,53 +3,45 @@ package users
 import (
 	"Odyssey/forms"
 	"Odyssey/models"
-	"Odyssey/utils"
 	"errors"
-	"fmt"
 )
 
 var (
+	// ErrPhoneExists 手机号已存在错误
 	ErrPhoneExists = errors.New("手机号码已经存在")
-	ErrSMSCode     = errors.New("验证码错误")
+	// ErrSMSCode 验证码错误
+	ErrSMSCode = errors.New("验证码错误")
 )
 
-// 注册
+// SignUp 注册对象
 type SignUp struct {
 	*SignIn
 	smsValidator *SMSValidator
 }
 
+// NewSignUp 生成一个注册用户对象
 func NewSignUp(data *forms.SignUpForm) *SignUp {
 	s := new(SignUp)
-
 	s.SignIn = NewSignInByRawData(data.Phone, data.Password)
-
-	//s.smsValidator = NewSMSValidator()
+	s.smsValidator = NewSMSValidator(data.Phone, data.Code)
 
 	return s
 }
 
-// 将数据保存到db
-func (s *SignUp) save() error {
-	utils.GetLog().Debug("s = %s", utils.Sdump(s))
-	fmt.Println("s.phone = ", s.phone)
-
-	s.userModel.Phone = s.phone
-	s.userModel.Salt = s.password.GenSalt()
-	s.userModel.Password = s.password.GenPwd()
-
-	if err := s.userModel.Create(); err != nil {
-		return err
+// Do 做具体注册的操作
+func (s *SignUp) Do() (err error) {
+	if err = s.findPhone(); err != nil {
+		return
 	}
 
-	if err := s.updateToken(); err != nil {
-		return err
+	if err = s.smsValidator.Valid(); err != nil {
+		return
 	}
-	return nil
-}
+	if err = s.save(); err != nil {
+		return
+	}
 
-func (s *SignUp) validSMSCode() error {
-	return nil
+	return
 }
 
 func (s *SignUp) findPhone() error {
@@ -59,17 +51,22 @@ func (s *SignUp) findPhone() error {
 	return nil
 }
 
-func (s *SignUp) Do() error {
-	// validate phone number is exists
-	if err := s.findPhone(); err != nil {
-		return err
+// save 将数据保存到db
+func (s *SignUp) save() (err error) {
+	s.userModel.Phone = s.phone
+	s.userModel.Salt = s.password.GenSalt()
+	s.userModel.Password = s.password.GenPwd()
+
+	if err = s.userModel.Create(); err != nil {
+		return
 	}
 
-	// validate sms code
-
-	// save to db
-	if err := s.save(); err != nil {
-		return err
+	if err = s.updateToken(); err != nil {
+		return
 	}
-	return nil
+
+	if err = s.smsValidator.useCode(); err != nil {
+		return
+	}
+	return
 }

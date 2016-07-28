@@ -53,5 +53,5 @@ func (s *SignUpForm) validCode() error {
 		fmt.Println(v.Error)
 	}
 
-	return fmt.Errorf("验证码错误: %d", s.Code)
+	return fmt.Errorf("验证码错误: %s", s.Code)
 }

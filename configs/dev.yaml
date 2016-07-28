@@ -3,7 +3,7 @@ app:
     http_port: 8081
 
 database:
-    host: localhost
+    host: localhost:5432
     username: odyssey
     password: odyssey
     dbname: odyssey

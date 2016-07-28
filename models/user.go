@@ -11,25 +11,25 @@ type User struct {
 	TableName struct{} `sql:"users"`
 	ID        int      `json:"user_id"`
 	Phone     string   `json:"phone"`
-	Email     string   `json:"email"` // 通过email向register发送用户统计数据
-	Nickname  string   `json:"nickname"`
+	Email     string   `sql:",null" json:"email"` // 通过email向register发送用户统计数据
+	Nickname  string   `sql:",null" json:"nickname"`
 	Password  string   `json:"-"`
 	Salt      string   `json:"-"`
-	Avatar    string   `json:"avatar"`
+	Avatar    string   `sql:",null" json:"avatar"`
 
-	Sex      uint8     `json:"sex"`
-	Height   float64   `json:"height"`
-	Weight   float64   `json:"weight"`
-	Birthday time.Time `json:"birthday"`
+	Sex      uint8     `sql:",null" json:"sex"`
+	Height   float64   `sql:",null" json:"height"`
+	Weight   float64   `sql:",null" json:"weight"`
+	Birthday time.Time `sql:",null" json:"birthday"`
 
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
+	Latitude  float64 `sql:",null" json:"latitude"`
+	Longitude float64 `sql:",null" json:"longitude"`
 
 	Token string `json:"token"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt time.Time `json:"-"`
+	DeletedAt time.Time `sql:",null" json:"-"`
 }
 
 // IsPhoneExists 检查手机号是否已经存在

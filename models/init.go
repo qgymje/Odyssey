@@ -2,6 +2,8 @@ package models
 
 import (
 	"Odyssey/utils"
+	"log"
+	"os"
 	"strconv"
 
 	pg "gopkg.in/pg.v4"
@@ -32,6 +34,8 @@ func InitModels() (err error) {
 		SSL:      sslmode,
 		PoolSize: poolsize,
 	})
+
+	pg.SetQueryLogger(log.New(os.Stdout, "", log.LstdFlags))
 
 	return
 }

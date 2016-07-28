@@ -12,17 +12,21 @@ type User struct {
 	Base
 }
 
-// 获取验证码
+// SMSCode 获取验证码
 func (u *User) SMSCode(c *gin.Context) {
 	form, err := forms.NewSMSCodeForm(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, form.ErrorMsg())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": form.ErrorMsg(),
+		})
 		return
 	}
 
 	sms := users.NewSMS(form)
-	if err := sms.Valid(); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+	if err := sms.Do(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -32,7 +36,7 @@ func (u *User) SMSCode(c *gin.Context) {
 	})
 }
 
-// 注册
+// SignUp 注册
 func (u *User) SignUp(c *gin.Context) {
 	form, err := forms.NewSignUpForm(c)
 	if err != nil {

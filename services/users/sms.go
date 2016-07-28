@@ -5,6 +5,7 @@ import (
 	"Odyssey/models"
 	"Odyssey/utils"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"sync"
@@ -12,6 +13,12 @@ import (
 
 	"github.com/streadway/amqp"
 )
+
+// ErrRequestInOneMinute 限制请求次数
+var ErrRequestInOneMinute = errors.New("一分钟以后再尝试")
+
+// ErrCodeNotExists 验证码还未生成
+var ErrCodeNotExists = errors.New("验证码不存在")
 
 var once sync.Once
 var connection *amqp.Connection
@@ -25,7 +32,7 @@ func initSMS() {
 type SMS struct {
 	phone        string
 	code         string
-	modelSmscode *models.SMSCode
+	smscodeModel models.SMSCode
 }
 
 // NewSMS 用于生成一个验证码对象, 用于生成验证码
@@ -45,24 +52,35 @@ func newSMSByRawData(phone string, code string) *SMS {
 	return s
 }
 
-// Valid 验证输入的数据是否有效
-func (s *SMS) Valid() (err error) {
-	//手机号是否已经存在?
-	s.generate()
+// Do 主要业务逻辑操作
+func (s *SMS) Do() (err error) {
+	if models.IsPhoneExists(s.phone) {
+		return ErrPhoneExists
+	}
+
+	if err = s.findSMSCode(); err != nil {
+		if time.Since(s.smscodeModel.CreatedAt) < 1*time.Minute {
+			return ErrRequestInOneMinute
+		}
+	}
+
+	_ = s.generate()
+
 	if err = s.save(); err != nil {
 		return
 	}
 	if err = s.send(); err != nil {
 		return
 	}
+
 	return
 }
 
-func (s *SMS) GetCode() string {
-	return s.code
+func (s *SMS) findSMSCode() (err error) {
+	s.smscodeModel, err = models.FindSMSCode(s.phone)
+	return
 }
 
-// Generate 生成一个验证码
 func (s *SMS) generate() string {
 	code := utils.RandomInt(100000, 1000000)
 	s.code = fmt.Sprintf("%d", code)
@@ -70,24 +88,40 @@ func (s *SMS) generate() string {
 	return s.code
 }
 
-// 保存验证码
+// GetCode 无论如何, 拿验证码
+func (s *SMS) GetCode() string {
+	return s.code
+}
+
 func (s *SMS) save() (err error) {
-	s.modelSmscode = &models.SMSCode{
+	s.smscodeModel = models.SMSCode{
 		Phone:     s.phone,
 		Code:      s.code,
 		CreatedAt: time.Now(),
 	}
 	// save to db
-	return nil
+	err = s.smscodeModel.Create()
+	return
+}
+
+func (s *SMS) useCode() (err error) {
+	s.smscodeModel.UsedAt = time.Now()
+	where := map[string]interface{}{
+		"id=?": s.smscodeModel.ID,
+	}
+	update := map[string]interface{}{
+		"used_at=?": s.smscodeModel.UsedAt,
+	}
+	err = s.smscodeModel.Update(where, update)
+	return
 }
 
 type smsContent struct {
-	Phone string `json:"phone"` // 目标手机号
-
+	Phone   string `json:"phone"`   // 目标手机号
 	Content string `json:"content"` // 发送的内容
 }
 
-func (sc smsContent) marshal(phone string, content string) (body []byte, err error) {
+func (sc smsContent) toJSON(phone string, content string) (body []byte, err error) {
 	sc = smsContent{
 		Phone:   phone,
 		Content: content,
@@ -123,7 +157,7 @@ func (s *SMS) send() (err error) {
 	var sc smsContent
 	var body []byte
 
-	if body, err = sc.marshal(s.phone, s.code); err != nil {
+	if body, err = sc.toJSON(s.phone, s.code); err != nil {
 		log.Fatal(err)
 	}
 
@@ -172,22 +206,29 @@ func confirm() {
 
 // SMSValidator 用于验证sms cdoe
 type SMSValidator struct {
-	sms *SMS
+	*SMS
 }
 
 // NewSMSValidator 用于用户提交验证码时, 判断验证码是否有效
 func NewSMSValidator(phone string, code string) *SMSValidator {
 	smsValidator := new(SMSValidator)
-	smsValidator.sms = newSMSByRawData(phone, code)
+	smsValidator.SMS = newSMSByRawData(phone, code)
 	return smsValidator
 }
 
 // Vaild 做验证
-func (s *SMSValidator) Valid(code string) error {
-	return nil
-}
+func (s *SMSValidator) Valid() (err error) {
+	if err = s.findSMSCode(); err == nil {
+		if s.smscodeModel.Code != s.code {
+			return ErrCodeNotExists
+		}
 
-// 判断这个phone号码是否已经请求过验证码了
-func (s *SMSValidator) isRequestedCode() bool {
-	return true
+		if s.smscodeModel.IsUsed() {
+			return errors.New("验证码已被使用")
+		}
+	} else {
+		return ErrCodeNotExists
+	}
+
+	return
 }
