@@ -2,44 +2,41 @@ package models
 
 import (
 	"Odyssey/utils"
-	"database/sql"
-	"fmt"
-	"log"
 	"strconv"
 
-	_ "github.com/lib/pq"
+	pg "gopkg.in/pg.v4"
 )
 
-var db *sql.DB
+var db *pg.DB
 
-const driverName = "postgres"
+//const driverName = "postgres"
 
-// 接收一个参数用于启动db
-func InitModels() error {
+// InitModels 连接数据库
+func InitModels() (err error) {
 	c := utils.GetConf().GetStringMapString("database")
 
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", c["username"], c["password"], c["host"], c["port"], c["dbname"], c["sslmode"])
+	//dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", c["username"], c["password"], c["host"], c["port"], c["dbname"], c["sslmode"])
+	//dsn := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=%s password=%s", c["host"], c["username"], c["dbname"], c["sslmode"], c["password"])
 
-	var err error
-	db, err = sql.Open(driverName, dsn)
-	if err != nil {
-		log.Fatal(err)
-		return err
+	var sslmode bool
+	if c["sslmode"] != "disable" {
+		sslmode = true
 	}
-	if err = db.Ping(); err != nil {
-		log.Fatal("connect ping error: ", err)
-	} else {
-		log.Println("connect db success")
-	}
+	poolsize, _ := strconv.Atoi(c["poolsize"])
 
-	maxIdleConns, _ := strconv.Atoi(c[",axIdleConns"])
-	maxOpenConns, _ := strconv.Atoi(c["maxOpenConns"])
-	db.SetMaxIdleConns(maxIdleConns)
-	db.SetMaxOpenConns(maxOpenConns)
+	db = pg.Connect(&pg.Options{
+		Addr:     c["host"],
+		User:     c["username"],
+		Password: c["password"],
+		Database: c["dbname"],
+		SSL:      sslmode,
+		PoolSize: poolsize,
+	})
 
-	return nil
+	return
 }
 
-func GetDB() *sql.DB {
+// GetDB 获取*pg.DB对象
+func GetDB() *pg.DB {
 	return db
 }

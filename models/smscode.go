@@ -3,8 +3,6 @@ package models
 import (
 	"Odyssey/utils"
 	"time"
-
-	sq "github.com/lann/squirrel"
 )
 
 const (
@@ -14,22 +12,17 @@ const (
 
 // SMSCode model 表示一次生成短信验证码纪录
 type SMSCode struct {
-	Id    uint64
-	Phone string
-	Code  string
+	TableName struct{} `sql:"smscodes"`
+	ID        int      `json:"smscode_id"`
+	Phone     string   `json:"phone"`
+	Code      string   `json:"code"`
 
-	UsedAt    time.Time
-	CreatedAt time.Time
-
-	Base
+	UsedAt    time.Time `json:"used_at"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
-func (SMSCode) TableName() string {
-	return "smscodes"
-}
-
-func (s *SMSCode) Create() error {
-	var err error
+// Create 生成一条db纪录
+func (s *SMSCode) Create() (err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.smscode.Create error: %v", err)
@@ -37,88 +30,48 @@ func (s *SMSCode) Create() error {
 	}()
 
 	s.CreatedAt = time.Now()
-	query := sq.Insert(s.TableName()).
-		Columns("phone", "code", "used_at", "created_at").
-		Values(s.Phone, s.Code, s.UsedAt, s.CreatedAt)
+	err = GetDB().Create(s)
 
-	result, err := query.RunWith(GetDB()).
-		PlaceholderFormat(sq.Dollar).
-		Exec()
-
-	if err != nil {
-		return err
-	}
-	if n, err := result.RowsAffected(); n == 0 && err != nil {
-		return err
-	}
-	return nil
+	return
 }
 
+// IsUsed 判断一个code是否已经被使用过了
 func (s *SMSCode) IsUsed() bool {
-	if s.UsedAt.IsZero() {
-		return false
-	}
-	return true
+	return !s.UsedAt.IsZero()
 }
 
-func (s *SMSCode) Update(where map[string]interface{}, update map[string]interface{}) error {
-	var err error
+// Update 更新一条验证码纪录
+func (s *SMSCode) Update(where map[string]interface{}, update map[string]interface{}) (err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.smscode.Update error: %v", err)
 		}
 	}()
 
-	query := sq.Update(s.TableName()).
-		SetMap(sq.Eq(update))
+	update["created_at=?"] = time.Now()
 
-	for k, v := range where {
-		query = query.Where(sq.Eq{k: v})
+	query := GetDB().Model(s)
+	for key, val := range update {
+		query = query.Set(key, val)
 	}
-
-	sql, _, err := query.ToSql()
-	if err != nil {
-		return err
-	} else {
-		utils.GetLog().Debug("models.smscode.Update sql = : %s", sql)
+	for key, val := range where {
+		query = query.Where(key, val)
 	}
+	// 判断第一个返回值
+	_, err = query.Update()
 
-	result, err := query.RunWith(GetDB()).
-		PlaceholderFormat(sq.Dollar).
-		Exec()
-
-	if err != nil {
-		return err
-	}
-	if n, err := result.RowsAffected(); n == 0 && err != nil {
-		return err
-	}
-
-	return nil
+	return
 }
 
-func FindSMSCode(where map[string]interface{}) (*SMSCode, error) {
-	var err error
+// FindSMSCode 根据手机号查找一条验证码信息
+func FindSMSCode(phone string) (sms *SMSCode, err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.feedback.FindSMSCode error: %v", err)
 		}
 	}()
 
-	query := sq.Select("id, phone, code, used_at, created_at").From(SMSCode{}.TableName()).OrderBy("created_at desc").Limit(1)
-	for k, v := range where {
-		query = query.Where(sq.Eq{k: v})
-	}
+	err = GetDB().Model(sms).Where("phone=?", phone).Select()
 
-	s := &SMSCode{}
-	err = query.RunWith(GetDB()).
-		PlaceholderFormat(sq.Dollar).
-		QueryRow().
-		Scan(&s.Id, &s.Phone, &s.Code, &s.UsedAt, &s.CreatedAt)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return s, nil
+	return
 }

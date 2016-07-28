@@ -6,10 +6,10 @@ import "time"
 type PayState int
 
 const (
-	Unpayed PayState = iota
-	Failed
-	Payed
-	Refunded
+	PayStateUnpayed PayState = iota
+	PayStateFailed
+	PayStatePayed
+	PayStateRefunded
 )
 
 var payStateDesc = [...]string{

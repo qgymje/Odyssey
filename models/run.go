@@ -3,32 +3,27 @@ package models
 import (
 	"Odyssey/utils"
 	"time"
-
-	sq "github.com/lann/squirrel"
 )
 
 // Run model 表示一个用户的一次跑步的纪录
 type Run struct {
-	Id       uint64  `json:"run_id"`
-	UserId   uint64  `json:"user_id"`
-	Distance float64 `json:"distance"`
-	Duration int     `json:"duration"`
+	TableName struct{} `sql:"runs"`
+	ID        int      `json:"run_id"`
+	User      *User    `json:"user_id"`
+	Distance  float64  `json:"distance"`
+	Duration  int      `json:"duration"`
 	//Setps     int       `json:"steps"` // 步数
-	IsPublic     bool         `json:"is_public"`
-	Comment      string       `json:"comment"`
-	RunLocations RunLocations `json:"run_locaitons"`
+	IsPublic     bool           `json:"is_public"`
+	Comment      string         `json:"comment"`
+	RunLocations []*RunLocation `json:"run_locaitons"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	DeletedAt time.Time `json:"deleted_at"`
 }
 
-func (Run) TableName() string {
-	return "runs"
-}
-
-func (r *Run) Create() error {
-	var err error
+// Create 创建一条跑步纪录, 需要RunLocation数据
+func (r *Run) Create() (err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.run.Create error: %v", err)
@@ -36,50 +31,24 @@ func (r *Run) Create() error {
 	}()
 
 	r.CreatedAt = time.Now()
-	query := sq.Insert(r.TableName()).
-		Columns("user_id", "distance", "duration", "is_public", "comment", "created_at", "updated_at", "deleted_at").
-		Values(r.UserId, r.Distance, r.Duration, r.IsPublic, r.Comment, r.CreatedAt, r.UpdatedAt, r.DeletedAt).
-		Suffix("RETURNING \"id\"").
-		RunWith(GetDB()).
-		PlaceholderFormat(sq.Dollar)
+	err = GetDB().Create(r)
 
-	// 注意这里必须要传指针
-	if err = query.QueryRow().Scan(&r.Id); err != nil {
-		return err
-	}
-	return nil
+	return
 }
 
-func FindRuns(where map[string]interface{}) ([]*Run, error) {
-	var err error
+// FindRuns 查找跑步纪录
+func FindRuns(where map[string]interface{}, order string, limit int, offset int) (runs []*Run, err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.run.FindRun error: %v", err)
 		}
 	}()
 
-	query := sq.Select("id, user_id, distance, duration, is_public, comment, created_at, updated_at, deleted_at").From(Run{}.TableName()).OrderBy("created_at desc")
-	for k, v := range where {
-		query = query.Where(sq.Eq{k: v})
+	query := GetDB().Model(&runs)
+	for key, val := range where {
+		query = query.Where(key, val)
 	}
+	err = query.Order(order).Limit(limit).Offset(offset).Select()
 
-	rows, err := query.RunWith(GetDB()).
-		PlaceholderFormat(sq.Dollar).
-		Query()
-
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var r Run
-	rs := []*Run{}
-	for rows.Next() {
-		err = rows.Scan(&r.Id, &r.UserId, &r.Distance, &r.Duration, &r.IsPublic, &r.Comment, &r.CreatedAt, &r.UpdatedAt, &r.DeletedAt)
-		if err != nil {
-			return nil, err
-		}
-		rs = append(rs, &r)
-	}
-	return rs, nil
+	return
 }

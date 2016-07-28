@@ -3,15 +3,14 @@ package models
 import (
 	"Odyssey/utils"
 	"time"
-
-	sq "github.com/lann/squirrel"
 )
 
 // RunLocation model纪录用户的跑步过程中GPS数据
 // 仿照iOS CLRunLocation的结构
 type RunLocation struct {
-	Id        uint64    `json:"id"`
-	RunId     uint64    `json:"run_id"`
+	TableName struct{}  `sql:"run_locations"`
+	ID        int       `json:"id"`
+	Run       *Run      `json:"run"`
 	Latitude  float64   `json:"lat"`
 	Longitude float64   `json:"lng"`
 	Altitude  float64   `json:"alt"`
@@ -21,79 +20,41 @@ type RunLocation struct {
 	//Steps     int       `json:"stpes"` //距离上个location走出的步数
 	//HeartRate
 
-	CreatedAt time.Time
+	CreatedAt time.Time `json:"-"`
 }
 
-func (RunLocation) TableName() string {
-	return "locations"
-}
-
-/*
-func (l RunLocation) UnmarshalJSON([]byte) error {
-	return nil
-}
-*/
-
-type RunLocations []RunLocation
-
-// 插入location data
-func (ls RunLocations) Create(runId uint64) error {
-	var err error
+// CreateRunLocations 跑步GPS数据入库
+func CreateRunLocations(runID int, ls []*RunLocation) (err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.location.Create error: %v", err)
+			utils.GetLog().Error("models.CreateRunLocations error: %v", err)
 		}
 	}()
 
-	createdAt := time.Now()
-	query := sq.Insert(RunLocation{}.TableName()).
-		Columns("run_id", "latitude", "longitude", "altitude", "timestamp", "course", "speed", "created_at")
-
+	now := time.Now()
 	for _, l := range ls {
-		query = query.Values(runId, l.Latitude, l.Longitude, l.Altitude, l.Timestamp, l.Course, l.Speed, createdAt)
+		l.Run.ID = runID
+		l.CreatedAt = now
 	}
 
-	result, err := query.RunWith(GetDB()).PlaceholderFormat(sq.Dollar).Exec()
-	if err != nil {
-		return err
-	}
-	if n, err := result.RowsAffected(); n == 0 && err != nil {
-		return err
-	}
+	err = GetDB().Create(&ls)
 
-	return nil
+	return
 }
 
-func FindRunLocations(where map[string]interface{}) (RunLocations, error) {
-	var err error
+// FindRunLocations 查找跑步GPS纪录
+func FindRunLocations(where map[string]interface{}, order string, limit int, offset int) (ls []*RunLocation, err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.FindRunLocations error: %v", err)
 		}
 	}()
 
-	query := sq.Select("id, run_id, latitude, longitude, altitude, timestamp, course, speed, created_at").From(RunLocation{}.TableName()).OrderBy("created_at desc")
-	for k, v := range where {
-		query = query.Where(sq.Eq{k: v})
+	query := GetDB().Model(&ls)
+	for key, val := range where {
+		query = query.Where(key, val)
 	}
+	err = query.Order(order).Limit(limit).Offset(offset).Select()
 
-	rows, err := query.RunWith(GetDB()).
-		PlaceholderFormat(sq.Dollar).
-		Query()
-
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var l RunLocation
-	ls := RunLocations{}
-	for rows.Next() {
-		err = rows.Scan(&l.Id, &l.RunId, &l.Latitude, &l.Longitude, &l.Altitude, &l.Timestamp, &l.Course, &l.Speed, &l.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-		ls = append(ls, l)
-	}
-	return ls, nil
+	return
 }

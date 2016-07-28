@@ -4,5 +4,5 @@ pack: clean
 clean:
 	go clean
 
-serve:
+server:
 	fswatch

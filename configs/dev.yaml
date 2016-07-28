@@ -7,6 +7,7 @@ database:
     password: odyssey
     dbname: odyssey
     sslmode: disable
+    poolsize: 20
     maxIdleConns: 5 
     maxOpenConns: 10
     

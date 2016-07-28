@@ -3,19 +3,18 @@ package models
 import (
 	"Odyssey/utils"
 	"time"
-
-	sq "github.com/lann/squirrel"
 )
 
 // User model 表示一个用户
 type User struct {
-	Id       uint64 `json:"id"`
-	Phone    string `json:"phone"`
-	Email    string `json:"email"` // 通过email向register发送用户统计数据
-	Nickname string `json:"nickname"`
-	Password string `json:"-"`
-	Salt     string `json:"-"`
-	Avatar   string `json:"avatar"`
+	TableName struct{} `sql:"users"`
+	ID        int      `json:"user_id"`
+	Phone     string   `json:"phone"`
+	Email     string   `json:"email"` // 通过email向register发送用户统计数据
+	Nickname  string   `json:"nickname"`
+	Password  string   `json:"-"`
+	Salt      string   `json:"-"`
+	Avatar    string   `json:"avatar"`
 
 	Sex      uint8     `json:"sex"`
 	Height   float64   `json:"height"`
@@ -27,85 +26,65 @@ type User struct {
 
 	Token string `json:"token"`
 
-	UpdatedAt time.Time `json:"updated_at"`
 	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 	DeletedAt time.Time `json:"-"`
-
-	Base
 }
 
-func NewUser() *User {
-	u := new(User)
-	return u
-}
-
-func (User) TableName() string {
-	return "users"
-}
-
-func (u *User) Create() error {
+// IsPhoneExists 检查手机号是否已经存在
+func IsPhoneExists(phone string) bool {
 	var err error
+	defer func() {
+		if err != nil {
+			utils.GetLog().Error("models.IsPhoneExists error: %v", err)
+		}
+	}()
+
+	cnt, err := GetDB().Model(&User{}).Where("phone=?", phone).Count()
+	return cnt > 0
+}
+
+// Create 用于创建一个用户
+func (u *User) Create() (err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.user.Create error: %v", err)
 		}
 	}()
 
-	u.CreatedAt = time.Now()
-	query := sq.Insert(u.TableName()).
-		Columns("phone", "nickname", "password", "salt", "avatar", "height", "weight", "birthday", "latitude", "longitude", "token", "updated_at", "created_at", "deleted_at").
-		Values(u.Phone, u.Nickname, u.Password, u.Salt, u.Avatar, u.Height, u.Weight, u.Birthday, u.Latitude, u.Longitude, u.Token, u.UpdatedAt, u.CreatedAt, u.DeletedAt).
-		Suffix("RETURNING \"id\"").
-		RunWith(GetDB()).
-		PlaceholderFormat(sq.Dollar)
+	now := time.Now()
+	u.CreatedAt = now
+	u.UpdatedAt = now
+	err = GetDB().Create(u)
 
-	// 注意这里必须要传指针
-	if err = query.QueryRow().Scan(&u.Id); err != nil {
-		return err
-	}
-	return nil
+	return
 }
 
-func (u *User) Update(where map[string]interface{}, update map[string]interface{}) error {
-	var err error
+// Update 更新一个用户的信息
+func (u *User) Update(where map[string]interface{}, update map[string]interface{}) (err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.user.Update error: %v", err)
 		}
 	}()
 
-	u.UpdatedAt = time.Now()
-	query := sq.Update(u.TableName()).
-		SetMap(sq.Eq(update)).
-		Set("updated_at", u.UpdatedAt)
+	update["created_at=?"] = time.Now()
 
-	for k, v := range where {
-		query = query.Where(sq.Eq{k: v})
+	query := GetDB().Model(u)
+	for key, val := range update {
+		query = query.Set(key, val)
 	}
-
-	sql, _, err := query.ToSql()
-	if err != nil {
-		return err
-	} else {
-		utils.GetLog().Debug("models.user.Update sql = : %s", sql)
+	for key, val := range where {
+		query = query.Where(key, val)
 	}
+	// 判断第一个返回值
+	_, err = query.Update()
 
-	result, err := query.RunWith(GetDB()).
-		PlaceholderFormat(sq.Dollar).
-		Exec()
-
-	if err != nil {
-		return err
-	}
-	if n, err := result.RowsAffected(); n == 0 && err != nil {
-		return err
-	}
-
-	return nil
+	return
 }
 
-func (u *User) Delete(where map[string]interface{}) error {
-	var err error
+// Delete 表示注销一个用户
+func (u *User) Delete(where map[string]interface{}) (err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.user.Delete error: %v", err)
@@ -113,7 +92,7 @@ func (u *User) Delete(where map[string]interface{}) error {
 	}()
 
 	update := map[string]interface{}{
-		"deleted_at": time.Now(),
+		"deleted_at=?": time.Now(),
 	}
 
 	if err := u.Update(where, update); err != nil {
@@ -123,40 +102,26 @@ func (u *User) Delete(where map[string]interface{}) error {
 	return nil
 }
 
+// IsDeleted 判断用户是否已经注销
 func (u *User) IsDeleted() bool {
 	return u.DeletedAt.IsZero()
 }
 
-func FindUsers(where map[string]interface{}) ([]*User, error) {
-	var err error
+// FindUsers 根据条件查找用户
+// where map[string]interface{}
+// key与val必须为sql语法, 比如where["id=?] = 1
+func FindUsers(where map[string]interface{}, order string, limit int, offset int) (users []*User, err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.user.FindUsers error: %v", err)
 		}
 	}()
 
-	query := sq.Select("id, phone, nickname, password, salt, avatar, height, weight, birthday, latitude, longitude, token, created_at, updated_at, deleted_at").From(User{}.TableName())
-	for k, v := range where {
-		query = query.Where(sq.Eq{k: v})
+	query := GetDB().Model(&users)
+	for key, val := range where {
+		query = query.Where(key, val)
 	}
+	err = query.Order(order).Limit(limit).Offset(offset).Select()
 
-	rows, err := query.RunWith(GetDB()).
-		PlaceholderFormat(sq.Dollar).
-		Query()
-
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var u User
-	users := []*User{}
-	for rows.Next() {
-		err = rows.Scan(&u.Id, &u.Phone, &u.Nickname, &u.Password, &u.Salt, &u.Avatar, &u.Height, &u.Weight, &u.Birthday, &u.Latitude, &u.Longitude, &u.Token, &u.CreatedAt, &u.UpdatedAt, &u.DeletedAt)
-		if err != nil {
-			return nil, err
-		}
-		users = append(users, &u)
-	}
-	return users, nil
+	return
 }

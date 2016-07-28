@@ -20,10 +20,13 @@ func (u *User) SMSCode(c *gin.Context) {
 		return
 	}
 
-	// passing form to service
 	sms := users.NewSMS(form)
-	code := sms.Generate()
+	if err := sms.Valid(); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
 
+	code := sms.Generate()
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
 	})
