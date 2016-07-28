@@ -9,9 +9,9 @@ import (
 
 var conf *viper.Viper
 
-func InitConfig() {
+func InitConfig(path string) {
 	conf = viper.New()
-	conf.AddConfigPath("./configs/")
+	conf.AddConfigPath(path)
 	conf.SetConfigName(fmt.Sprintf("%s", env))
 	if err := conf.ReadInConfig(); err != nil {
 		log.Fatal("read config file error: ", err)

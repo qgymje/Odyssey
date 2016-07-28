@@ -22,7 +22,7 @@ func initEnv() {
 
 func init() {
 	initEnv()
-	utils.InitConfig()
+	utils.InitConfig("../../configs/")
 	utils.InitLogger()
 	utils.InitRander()
 	models.InitModels()
@@ -35,7 +35,7 @@ func main() {
 	connection, channel = utils.GetAMQP()
 
 	var (
-		exchnage   = "smssender"
+		exchange   = "smssender"
 		queue      = exchange
 		bindingKey = queue
 	)
@@ -56,13 +56,27 @@ func main() {
 	if err = channel.QueueBind(
 		q.Name,
 		bindingKey, // here is the binding key
-		exchnage,   // exchange name
+		exchange,   // exchange name
 		false,
 		nil,
 	); err != nil {
 		log.Fatal(err)
 	}
 
+	//func (me *Channel) Consume(queue, consumer string, autoAck, exclusive, noLocal, noWait bool, args Table) (<-chan Delivery, error)
+	msgs, err := channel.Consume(
+		q.Name,
+		"",    // consumer
+		false, // auto-ack
+		false, // exclusive
+		false, // no-local
+		false,
+		nil,
+	)
+	if err != nil {
+		log.Fatal(err)
+
+	}
 	go func() {
 		for d := range msgs {
 			handleMessage(d.Body)

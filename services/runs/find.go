@@ -1,10 +1,6 @@
 package runs
 
-import (
-	"Odyssey/models"
-	"Odyssey/utils"
-)
-
+/*
 func FindOne(userId, runId uint64) (*models.Run, error) {
 	var err error
 	where := map[string]interface{}{
@@ -34,3 +30,4 @@ func Find(userId, runId uint64) ([]*models.Run, error) {
 
 	return models.FindRuns(where)
 }
+*/

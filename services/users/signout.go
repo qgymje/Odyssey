@@ -46,27 +46,22 @@ func (s *SignOut) varifyToken() error {
 	return nil
 }
 
-func (s *SignOut) findUser() error {
+func (s *SignOut) findUser() (err error) {
 	where := map[string]interface{}{
 		"token": s.token,
 	}
-	us, err := models.FindUsers(where)
+	s.userModel, err = models.FindUser(where)
 	if err != nil {
-		return err
-	}
-	if len(us) > 0 {
-		s.userModel = us[0]
-		s.ensureDidFindUser = true
-	} else {
 		return ErrSignOut
 	}
+	s.ensureDidFindUser = true
 	return nil
 }
 
 func (s *SignOut) updateToken() error {
 	// generate token
 	claims := map[string]interface{}{
-		"id": s.userModel.Id,
+		"id": s.userModel.ID,
 	}
 	token, err := NewToken().Generate(claims)
 	if err != nil {
@@ -75,7 +70,7 @@ func (s *SignOut) updateToken() error {
 	s.userModel.Token = token
 
 	where := map[string]interface{}{
-		"id": s.userModel.Id,
+		"id": s.userModel.ID,
 	}
 	update := map[string]interface{}{
 		"token": token,

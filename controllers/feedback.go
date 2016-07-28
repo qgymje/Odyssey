@@ -1,17 +1,10 @@
 package controllers
 
-import (
-	"Odyssey/forms"
-	"Odyssey/services/feedbacks"
-	"net/http"
-
-	"github.com/gin-gonic/gin"
-)
-
 type Feedback struct {
 	Base
 }
 
+/*
 func (f *Feedback) Create(c *gin.Context) {
 	form, err := forms.NewFeedbackForm(c)
 	if err != nil {
@@ -35,3 +28,4 @@ func (f *Feedback) Create(c *gin.Context) {
 func (f *Feedback) Read(c *gin.Context) {
 
 }
+*/

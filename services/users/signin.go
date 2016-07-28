@@ -35,21 +35,16 @@ func NewSignInByRawData(phone, password string) *SignIn {
 	return form
 }
 
-func (s *SignIn) findUser() error {
+func (s *SignIn) findUser() (err error) {
 	where := map[string]interface{}{
 		"phone": s.phone,
 	}
-	us, err := models.FindUsers(where)
+	s.userModel, err = models.FindUser(where)
 	if err != nil {
 		return err
 	}
-	if len(us) > 0 {
-		s.userModel = us[0]
-		s.ensureDidFindUser = true
-	} else {
-		return ErrSignIn2
-	}
-	return nil
+	s.ensureDidFindUser = true
+	return
 }
 
 func (s *SignIn) validPassword() error {
@@ -81,7 +76,7 @@ func (s *SignIn) Do() error {
 func (s *SignIn) updateToken() error {
 	// generate token
 	claims := map[string]interface{}{
-		"id": s.userModel.Id,
+		"id": s.userModel.ID,
 	}
 	token, err := NewToken().Generate(claims)
 	if err != nil {
@@ -90,7 +85,7 @@ func (s *SignIn) updateToken() error {
 	s.userModel.Token = token
 
 	where := map[string]interface{}{
-		"id": s.userModel.Id,
+		"id": s.userModel.ID,
 	}
 	update := map[string]interface{}{
 		"token": token,
@@ -103,14 +98,14 @@ func (s *SignIn) updateToken() error {
 }
 
 type User struct {
-	Id    uint64 `json:"id"`
+	ID    int    `json:"id"`
 	Phone string `json:"phone"`
 	Token string `json:"token"`
 }
 
 func (s *SignIn) UserInfo() *User {
 	u := &User{
-		Id:    s.userModel.Id,
+		ID:    s.userModel.ID,
 		Phone: s.userModel.Phone,
 		Token: s.userModel.Token,
 	}

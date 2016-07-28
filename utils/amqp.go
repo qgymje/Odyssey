@@ -12,9 +12,8 @@ func GetAMQP() (conn *amqp.Connection, ch *amqp.Channel) {
 	conn, err := amqp.Dial(amqpAddr)
 	if err != nil {
 		log.Fatal(err)
-
 	}
-	defer conn.Close()
+	//defer conn.Close()
 
 	ch, err = conn.Channel()
 	if err != nil {

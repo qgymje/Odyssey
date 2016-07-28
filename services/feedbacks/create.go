@@ -1,14 +1,12 @@
 package feedbacks
 
-import (
-	"Odyssey/forms"
-	"Odyssey/models"
-)
+import "Odyssey/models"
 
 type Feedback struct {
 	fbModel *models.Feedback
 }
 
+/*
 func NewFeedback(form *forms.FeedbackForm) *Feedback {
 	fb := new(Feedback)
 	fb.fbModel = &models.Feedback{
@@ -25,3 +23,5 @@ func (fb *Feedback) Do() error {
 	}
 	return nil
 }
+
+*/

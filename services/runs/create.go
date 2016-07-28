@@ -1,12 +1,6 @@
 package runs
 
-import (
-	"Odyssey/forms"
-	"Odyssey/models"
-	"Odyssey/utils"
-	"encoding/json"
-	"time"
-)
+import "Odyssey/models"
 
 type Run struct {
 	runModel *models.Run
@@ -14,6 +8,7 @@ type Run struct {
 	rawLocations string // formatted in json
 }
 
+/*
 func NewRun(form *forms.RunForm) *Run {
 	r := new(Run)
 	r.runModel = &models.Run{
@@ -69,3 +64,5 @@ func (r *Run) RunInfo() *RunInfo {
 		CreatedAt: r.runModel.CreatedAt,
 	}
 }
+
+*/

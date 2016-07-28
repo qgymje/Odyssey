@@ -26,7 +26,7 @@ func (u *User) SMSCode(c *gin.Context) {
 		return
 	}
 
-	code := sms.Generate()
+	code := sms.GetCode()
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
 	})

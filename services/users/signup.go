@@ -53,16 +53,7 @@ func (s *SignUp) validSMSCode() error {
 }
 
 func (s *SignUp) findPhone() error {
-	where := map[string]interface{}{
-		"phone": s.phone,
-	}
-	us, err := models.FindUsers(where)
-	if err != nil {
-		us = nil
-		return err
-	}
-
-	if len(us) > 0 {
+	if models.IsPhoneExists(s.phone) {
 		return ErrPhoneExists
 	}
 	return nil

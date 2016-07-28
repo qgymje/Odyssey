@@ -1,20 +1,10 @@
 package controllers
 
-import (
-	"Odyssey/forms"
-	"Odyssey/models"
-	"Odyssey/services/runs"
-	"errors"
-	"net/http"
-	"strconv"
-
-	"github.com/gin-gonic/gin"
-)
-
 type Run struct {
 	Base
 }
 
+/*
 func (r *Run) Create(c *gin.Context) {
 	var userId uint64
 	var err error
@@ -88,3 +78,4 @@ func (r *Run) ReadOne(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+*/

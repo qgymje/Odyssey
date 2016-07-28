@@ -30,9 +30,11 @@ type SMS struct {
 
 // NewSMS 用于生成一个验证码对象, 用于生成验证码
 func NewSMS(form *forms.SMSCodeForm) *SMS {
+	// make sure the mq service is started
+	once.Do(initSMS)
+
 	s := new(SMS)
 	s.phone = form.Phone
-	once.Do(initSMS)
 	return s
 }
 
@@ -80,14 +82,15 @@ func (s *SMS) save() (err error) {
 }
 
 type smsContent struct {
-	phone   string // 目标手机号
-	content string // 发送的内容
+	Phone string `json:"phone"` // 目标手机号
+
+	Content string `json:"content"` // 发送的内容
 }
 
 func (sc smsContent) marshal(phone string, content string) (body []byte, err error) {
 	sc = smsContent{
-		phone:   phone,
-		content: content,
+		Phone:   phone,
+		Content: content,
 	}
 
 	body, err = json.Marshal(&sc)
@@ -143,7 +146,7 @@ func (s *SMS) send() (err error) {
 	}
 
 	// should add a callback function
-	confirm()
+	once.Do(confirm)
 	return nil
 }
 

@@ -2,6 +2,7 @@ package models
 
 import (
 	"Odyssey/utils"
+	"errors"
 	"time"
 )
 
@@ -124,4 +125,17 @@ func FindUsers(where map[string]interface{}, order string, limit int, offset int
 	err = query.Order(order).Limit(limit).Offset(offset).Select()
 
 	return
+}
+
+// FindUser 根据条件查找一个用户
+func FindUser(where map[string]interface{}) (user *User, err error) {
+	users, err := FindUsers(where, "id ASC", 1, 1)
+	if err != nil {
+		return nil, err
+	}
+	if len(users) == 1 {
+		return users[0], nil
+	} else {
+		return nil, errors.New("models.FindUser conditions unfit")
+	}
 }
