@@ -18,7 +18,7 @@ log:
 
 auth:
     secret_key: GO5U9fS8D7WkDay8
-    expires: 86400
+    expires: 2592000
 
 
 feedback:

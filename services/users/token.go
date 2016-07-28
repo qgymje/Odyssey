@@ -37,12 +37,8 @@ func (t *Token) Generate(claims map[string]interface{}) (tokenString string, err
 	var actualErr error
 
 	defer func() {
-		place := "services.Token.Generate"
 		if err != nil {
-			utils.GetLog().Error("%s : %s", place, actualErr.Error())
-		} else {
-			// can not leave the tokne string in logger file
-			utils.GetLog().Debug("%s : generate token success", place)
+			utils.GetLog().Error("services.Token.Generate error: ", actualErr.Error())
 		}
 	}()
 
@@ -67,15 +63,11 @@ func (t *Token) Verify(tokenString string) (valid bool, err error) {
 	var actualErr error
 
 	defer func() {
-		place := "services.Token.Verify"
 		if err != nil {
-			utils.GetLog().Error("%s : %s", place, actualErr.Error())
-		} else {
-			utils.GetLog().Debug("%s : token verify success", place)
+			utils.GetLog().Error("services.Token.Verify error: ", actualErr.Error())
 		}
 	}()
 
-	utils.GetLog().Debug("services.Token.Verify : tokenString : %s", tokenString)
 	//自带过期处理
 	t.token, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -92,6 +84,7 @@ func (t *Token) Verify(tokenString string) (valid bool, err error) {
 	return
 }
 
+// Claims 获取jwt 里的数据
 func (t *Token) Claims() map[string]interface{} {
 	return t.token.Claims
 }

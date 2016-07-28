@@ -54,6 +54,12 @@ func newSMSByRawData(phone string, code string) *SMS {
 
 // Do 主要业务逻辑操作
 func (s *SMS) Do() (err error) {
+	defer func() {
+		if err != nil {
+			utils.GetLog().Error("services.users.SMS.Do error: ", err)
+		}
+	}()
+
 	if models.IsPhoneExists(s.phone) {
 		return ErrPhoneExists
 	}
@@ -136,6 +142,12 @@ func (sc smsContent) toJSON(phone string, content string) (body []byte, err erro
 
 // Send 将数据发送到rabbitmq里, 然后由rabbitmq的worker来发送短信到用户手机
 func (s *SMS) send() (err error) {
+	defer func() {
+		if err != nil {
+			utils.GetLog().Error("services.users.SMS.send error: ", err)
+		}
+	}()
+
 	var (
 		exchange     = "smssender"
 		routingKey   = "smssender"
@@ -151,14 +163,14 @@ func (s *SMS) send() (err error) {
 		false,
 		nil,
 	); err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	var sc smsContent
 	var body []byte
 
 	if body, err = sc.toJSON(s.phone, s.code); err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	err = channel.Publish(
@@ -176,12 +188,12 @@ func (s *SMS) send() (err error) {
 		},
 	)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	// should add a callback function
 	once.Do(confirm)
-	return nil
+	return
 }
 
 func confirm() {
@@ -218,6 +230,12 @@ func NewSMSValidator(phone string, code string) *SMSValidator {
 
 // Vaild 做验证
 func (s *SMSValidator) Valid() (err error) {
+	defer func() {
+		if err != nil {
+			utils.GetLog().Error("services.users.SMSValidator.Valid error: ", err)
+		}
+	}()
+
 	if err = s.findSMSCode(); err == nil {
 		if s.smscodeModel.Code != s.code {
 			return ErrCodeNotExists

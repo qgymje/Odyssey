@@ -42,12 +42,13 @@ func main() {
 		v1.POST("/sign_up", user.SignUp)
 		v1.POST("/sign_in", user.SignIn)
 		v1.DELETE("/sign_out", user.SignOut)
-		/*
-			run := new(controllers.Run)
-			v1.POST("/run/create", run.Create)
-			v1.GET("/run/:user_id", run.Read)
-			v1.GET("/run/:user_id/:run_id", run.ReadOne)
 
+		run := new(controllers.Run)
+		v1.POST("/run/create", run.Create)
+		v1.GET("/run/:user_id", run.Read)
+		v1.GET("/run/:user_id/:run_id", run.ReadOne)
+
+		/*
 			feedback := new(controllers.Feedback)
 			v1.POST("/feedback/create", feedback.Create)
 			v1.GET("/feedbacks", feedback.Read)

@@ -2,6 +2,7 @@ package users
 
 import (
 	"Odyssey/models"
+	"Odyssey/utils"
 	"errors"
 )
 
@@ -24,19 +25,25 @@ func NewSignOut(token string) *SignOut {
 	return s
 }
 
-func (s *SignOut) Do() error {
-	if err := s.varifyToken(); err != nil {
-		return err
+func (s *SignOut) Do() (err error) {
+	defer func() {
+		if err != nil {
+			utils.GetLog().Error("services.users.SignOut.Do error: ", err)
+		}
+	}()
+
+	if err = s.varifyToken(); err != nil {
+		return
 	}
 
-	if err := s.findUser(); err != nil {
-		return err
+	if err = s.findUser(); err != nil {
+		return
 	}
 
-	if err := s.removeToken(); err != nil {
-		return err
+	if err = s.removeToken(); err != nil {
+		return
 	}
-	return nil
+	return
 }
 
 func (s *SignOut) varifyToken() error {

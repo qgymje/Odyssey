@@ -1,37 +1,45 @@
 package runs
 
-import "Odyssey/models"
+import (
+	"Odyssey/forms"
+	"Odyssey/models"
+	"encoding/json"
+	"time"
+)
 
+// Run 表示Services里的Run业务集合
 type Run struct {
 	runModel *models.Run
 
 	rawLocations string // formatted in json
 }
 
-/*
+// NewRun 创建一个Run业务单元
 func NewRun(form *forms.RunForm) *Run {
 	r := new(Run)
 	r.runModel = &models.Run{
-		UserId:       form.UserId,
+		UserID:       form.UserID,
 		Distance:     form.Distance,
 		Duration:     form.Duration,
 		IsPublic:     form.IsPublic,
 		Comment:      form.Comment,
-		RunLocations: models.RunLocations{},
+		RunLocations: []models.RunLocation{},
 	}
 	r.rawLocations = form.RunLocations
 	return r
 }
 
-func (r *Run) Do() error {
-	if err := r.validLocations(); err != nil {
-		return err
+// Do dodododo...
+func (r *Run) Do() (err error) {
+	if err = r.validLocations(); err != nil {
+		return
 	}
 
-	if err := r.save(); err != nil {
-		return err
+	if err = r.save(); err != nil {
+		return
 	}
-	return nil
+
+	return
 }
 
 func (r *Run) save() error {
@@ -39,30 +47,27 @@ func (r *Run) save() error {
 		return err
 	}
 
-	utils.Dump(r)
-	if err := r.runModel.RunLocations.Create(r.runModel.Id); err != nil {
+	if err := models.CreateRunLocations(r.runModel.ID, r.runModel.RunLocations); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *Run) validLocations() error {
-	if err := json.Unmarshal([]byte(r.rawLocations), &r.runModel.RunLocations); err != nil {
-		return err
+func (r *Run) validLocations() (err error) {
+	if err = json.Unmarshal([]byte(r.rawLocations), &r.runModel.RunLocations); err != nil {
+		return
 	}
-	return nil
+	return
 }
 
 type RunInfo struct {
-	RunId     uint64    `json:"run_id"`
+	RunID     int       `json:"run_id"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 func (r *Run) RunInfo() *RunInfo {
 	return &RunInfo{
-		RunId:     r.runModel.Id,
+		RunID:     r.runModel.ID,
 		CreatedAt: r.runModel.CreatedAt,
 	}
 }
-
-*/

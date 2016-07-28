@@ -20,7 +20,7 @@ type SMSCode struct {
 func (s *SMSCode) Create() (err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.smscode.Create error: %v", err)
+			utils.GetLog().Error("models.smscode.Create error: ", err)
 		}
 	}()
 
@@ -39,7 +39,7 @@ func (s *SMSCode) IsUsed() bool {
 func (s *SMSCode) Update(where map[string]interface{}, update map[string]interface{}) (err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.smscode.Update error: %v", err)
+			utils.GetLog().Error("models.smscode.Update error: ", err)
 		}
 	}()
 
@@ -60,7 +60,7 @@ func (s *SMSCode) Update(where map[string]interface{}, update map[string]interfa
 func FindSMSCode(phone string) (sms SMSCode, err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.smscode.FindSMSCode error: %v", err)
+			utils.GetLog().Error("models.smscode.FindSMSCode error: ", err)
 		}
 	}()
 

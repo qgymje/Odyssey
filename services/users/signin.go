@@ -3,6 +3,7 @@ package users
 import (
 	"Odyssey/forms"
 	"Odyssey/models"
+	"Odyssey/utils"
 	"errors"
 )
 
@@ -36,15 +37,21 @@ func NewSignInByRawData(phone, password string) *SignIn {
 	return form
 }
 
-func (s *SignIn) Do() error {
-	if err := s.validPassword(); err != nil {
-		return err
+func (s *SignIn) Do() (err error) {
+	defer func() {
+		if err != nil {
+			utils.GetLog().Error("services.users.SignIn.Do error: ", err)
+		}
+	}()
+
+	if err = s.validPassword(); err != nil {
+		return
 	}
 
-	if err := s.updateToken(); err != nil {
-		return err
+	if err = s.updateToken(); err != nil {
+		return
 	}
-	return nil
+	return
 }
 
 func (s *SignIn) findUser() (err error) {

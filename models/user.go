@@ -38,7 +38,7 @@ func IsPhoneExists(phone string) bool {
 	var err error
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.IsPhoneExists error: %v", err)
+			utils.GetLog().Error("models.IsPhoneExists error: ", err)
 		}
 	}()
 
@@ -50,7 +50,7 @@ func IsPhoneExists(phone string) bool {
 func (u *User) Create() (err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.user.Create error: %v", err)
+			utils.GetLog().Error("models.user.Create error: ", err)
 		}
 	}()
 
@@ -66,7 +66,7 @@ func (u *User) Create() (err error) {
 func (u *User) Update(where map[string]interface{}, update map[string]interface{}) (err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.user.Update error: %v", err)
+			utils.GetLog().Error("models.user.Update error: ", err)
 		}
 	}()
 
@@ -89,7 +89,7 @@ func (u *User) Update(where map[string]interface{}, update map[string]interface{
 func (u *User) Delete(where map[string]interface{}) (err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.user.Delete error: %v", err)
+			utils.GetLog().Error("models.user.Delete error: ", err)
 		}
 	}()
 
@@ -115,7 +115,7 @@ func (u *User) IsDeleted() bool {
 func FindUsers(where map[string]interface{}, order string, limit int, offset int) (users []*User, err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.user.FindUsers error: %v", err)
+			utils.GetLog().Error("models.user.FindUsers error: ", err)
 		}
 	}()
 

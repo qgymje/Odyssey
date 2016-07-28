@@ -9,13 +9,14 @@ import (
 type Run struct {
 	TableName struct{} `sql:"runs"`
 	ID        int      `json:"run_id"`
-	User      *User    `json:"user_id"`
+	UserID    int      `json:"user_id"`
+	User      *User    `pg:",has_one:users" json:"user"` // has one
 	Distance  float64  `json:"distance"`
 	Duration  int      `json:"duration"`
 	//Setps     int       `json:"steps"` // 步数
-	IsPublic     bool           `json:"is_public"`
-	Comment      string         `json:"comment"`
-	RunLocations []*RunLocation `json:"run_locaitons"`
+	IsPublic     bool          `json:"is_public"`
+	Comment      string        `json:"comment"`
+	RunLocations []RunLocation `json:"run_locaitons"` // has many
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

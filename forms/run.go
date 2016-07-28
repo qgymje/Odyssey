@@ -6,12 +6,12 @@ import (
 )
 
 type RunForm struct {
-	UserId       uint64  `form:"user_id" binding:"required"`
+	UserID       int     `form:"user_id" binding:"required"`
 	Distance     float64 `form:"distance" binding:"required"`
 	Duration     int     `form:"duration" binding:"required"`
 	IsPublic     bool    `form:"is_public" binding:"required"`
 	Comment      string  `form:"comment" binding:"required"`
-	RunLocations string  `form:"run_locations" binding:"required"`
+	RunLocations string  `form:"locations" binding:"required"`
 
 	valid *validation.Validation
 

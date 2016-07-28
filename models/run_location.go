@@ -24,7 +24,7 @@ type RunLocation struct {
 }
 
 // CreateRunLocations 跑步GPS数据入库
-func CreateRunLocations(runID int, ls []*RunLocation) (err error) {
+func CreateRunLocations(runID int, ls []RunLocation) (err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.CreateRunLocations error: %v", err)

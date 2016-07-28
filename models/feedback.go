@@ -8,7 +8,7 @@ import (
 // Feedback model 表示用户发来的反馈
 type Feedback struct {
 	TableName struct{} `sql:"feedbacks"`
-	Id        int
+	ID        int
 	User      *User
 	Content   string
 	IsRead    bool
@@ -20,7 +20,7 @@ type Feedback struct {
 func (f *Feedback) Create() (err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.feedback.Create error: %v", err)
+			utils.GetLog().Error("models.feedback.Create error: ", err)
 		}
 	}()
 
@@ -35,7 +35,7 @@ func (f *Feedback) Create() (err error) {
 func FindFeedbacks(where map[string]interface{}, order string, limit int, offset int) (feedbacks []*Feedback, err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.feedback.FindFeedbacsk error: %v", err)
+			utils.GetLog().Error("models.feedback.FindFeedbacsk error: ", err)
 		}
 	}()
 	query := GetDB().Model(&feedbacks)

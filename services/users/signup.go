@@ -3,6 +3,7 @@ package users
 import (
 	"Odyssey/forms"
 	"Odyssey/models"
+	"Odyssey/utils"
 	"errors"
 )
 
@@ -30,6 +31,12 @@ func NewSignUp(data *forms.SignUpForm) *SignUp {
 
 // Do 做具体注册的操作
 func (s *SignUp) Do() (err error) {
+	defer func() {
+		if err != nil {
+			utils.GetLog().Error("services.users.SignUp.Do error: ", err)
+		}
+	}()
+
 	if err = s.findPhone(); err != nil {
 		return
 	}
