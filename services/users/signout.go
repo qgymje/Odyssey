@@ -9,6 +9,7 @@ var (
 	ErrSignOut = errors.New("退出失败")
 )
 
+// SignOut 登出操作
 type SignOut struct {
 	token     string
 	userModel *models.User
@@ -16,7 +17,7 @@ type SignOut struct {
 	ensureDidFindUser bool
 }
 
-// varify token and compare the claims ?
+// NewSignOut varify token and compare the claims ?
 func NewSignOut(token string) *SignOut {
 	s := new(SignOut)
 	s.token = token
@@ -32,7 +33,7 @@ func (s *SignOut) Do() error {
 		return err
 	}
 
-	if err := s.updateToken(); err != nil {
+	if err := s.removeToken(); err != nil {
 		return err
 	}
 	return nil
@@ -48,7 +49,7 @@ func (s *SignOut) varifyToken() error {
 
 func (s *SignOut) findUser() (err error) {
 	where := map[string]interface{}{
-		"token": s.token,
+		"token=?": s.token,
 	}
 	s.userModel, err = models.FindUser(where)
 	if err != nil {
@@ -58,22 +59,12 @@ func (s *SignOut) findUser() (err error) {
 	return nil
 }
 
-func (s *SignOut) updateToken() error {
-	// generate token
-	claims := map[string]interface{}{
-		"id": s.userModel.ID,
-	}
-	token, err := NewToken().Generate(claims)
-	if err != nil {
-		return err
-	}
-	s.userModel.Token = token
-
+func (s *SignOut) removeToken() error {
 	where := map[string]interface{}{
-		"id": s.userModel.ID,
+		"id=?": s.userModel.ID,
 	}
 	update := map[string]interface{}{
-		"token": token,
+		"token=?": "",
 	}
 
 	if err := s.userModel.Update(where, update); err != nil {

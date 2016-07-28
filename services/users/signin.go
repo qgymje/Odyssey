@@ -7,10 +7,11 @@ import (
 )
 
 var (
-	ErrSignIn  = errors.New("登录失败, 手机号码或者密码错误")
-	ErrSignIn2 = errors.New("登录失败, 手机号码或密码错误")
+	// ErrSignIn 登录失败
+	ErrSignIn = errors.New("登录失败, 手机号码或者密码错误")
 )
 
+// SignIn 用于登录操作
 type SignIn struct {
 	phone     string
 	password  *Password
@@ -48,7 +49,7 @@ func (s *SignIn) Do() error {
 
 func (s *SignIn) findUser() (err error) {
 	where := map[string]interface{}{
-		"phone": s.phone,
+		"phone=?": s.phone,
 	}
 	s.userModel, err = models.FindUser(where)
 	if err != nil {

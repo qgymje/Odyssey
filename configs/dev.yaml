@@ -26,3 +26,8 @@ feedback:
 
 rabbitmq:
     url: amqp://odyssey:odyssey@localhost:5672/odyssey    
+    log: 
+        filename: /logs/sendsms.log
+        enable_func_call_depth: true
+
+   

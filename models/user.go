@@ -3,6 +3,7 @@ package models
 import (
 	"Odyssey/utils"
 	"errors"
+	"log"
 	"time"
 )
 
@@ -129,10 +130,11 @@ func FindUsers(where map[string]interface{}, order string, limit int, offset int
 
 // FindUser 根据条件查找一个用户
 func FindUser(where map[string]interface{}) (user *User, err error) {
-	users, err := FindUsers(where, "id ASC", 1, 1)
+	users, err := FindUsers(where, "id ASC", 1, 0)
 	if err != nil {
 		return nil, err
 	}
+	log.Println(users)
 	if len(users) == 1 {
 		return users[0], nil
 	} else {

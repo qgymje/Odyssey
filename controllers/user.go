@@ -97,7 +97,3 @@ func (u *User) SignOut(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"status": 200})
 }
-
-func (u *User) DeleteAccount(c *gin.Context) {
-
-}

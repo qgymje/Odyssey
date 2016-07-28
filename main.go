@@ -42,7 +42,6 @@ func main() {
 		v1.POST("/sign_up", user.SignUp)
 		v1.POST("/sign_in", user.SignIn)
 		v1.DELETE("/sign_out", user.SignOut)
-		v1.DELETE("/delete_account", user.DeleteAccount)
 		/*
 			run := new(controllers.Run)
 			v1.POST("/run/create", run.Create)
