@@ -3,18 +3,18 @@ package models
 import (
 	"Odyssey/utils"
 	"database/sql"
-	"errors"
+	"log"
 	"time"
 )
 
 // User model 表示一个用户
 type User struct {
 	ID        int
-	Phone     string         `gorm:"index:idx_user_phone;type:varchar(11)"`
+	Phone     string         `gorm:"not null;index:idx_user_phone;type:varchar(11)"`
 	Email     sql.NullString `gorm:"type:varchar(64)"` // 通过email向register发送用户统计数据
 	Nickname  string         `gorm:"type:varchar(16)"`
-	Password  string         `gorm:"type:char(32)"`
-	Salt      string         `gorm:"type:char(6)"`
+	Password  string         `gorm:"not null;type:char(32)"`
+	Salt      string         `gorm:"not null;type:char(6)"`
 	Avatar    NullString
 	Sex       NullUint8
 	Height    NullUint8
@@ -65,16 +65,16 @@ func (u *User) Update(where map[string]interface{}, update map[string]interface{
 			utils.GetLog().Error("models.user.Update error: ", err)
 		}
 	}()
+	update["updated_at=?"] = time.Now()
 
-	update["created_at=?"] = time.Now()
-
-	db := GetDB().Model(u)
+	query := GetDB().Model(u)
 	for key, val := range where {
-		db = db.Where(key, val)
+		query = query.Where(key, val)
 	}
 	// 判断第一个返回值
-	db.Updates(update)
+	query.Updates(update)
 
+	log.Println(u)
 	return
 }
 
@@ -123,14 +123,14 @@ func FindUsers(where map[string]interface{}, order string, limit int, offset int
 }
 
 // FindUser 根据条件查找一个用户
-func FindUser(where map[string]interface{}) (user *User, err error) {
-	users, err := FindUsers(where, "id ASC", 1, 0)
-	if err != nil {
-		return nil, err
+func FindUser(where map[string]interface{}) (*User, error) {
+	var err error
+	var user User
+	query := GetDB()
+	for key, val := range where {
+		query = query.Where(key, val)
 	}
-	if len(users) == 1 {
-		return users[0], nil
-	} else {
-		return nil, errors.New("models.FindUser conditions unfit")
-	}
+	query.First(&user)
+
+	return &user, err
 }

@@ -32,7 +32,7 @@ func initSMS() {
 type SMS struct {
 	phone        string
 	code         string
-	smscodeModel models.SMSCode
+	smscodeModel *models.SMSCode
 }
 
 // NewSMS 用于生成一个验证码对象, 用于生成验证码
@@ -42,6 +42,7 @@ func NewSMS(form *forms.SMSCodeForm) *SMS {
 
 	s := new(SMS)
 	s.phone = form.Phone
+	s.smscodeModel = &models.SMSCode{}
 	return s
 }
 
@@ -64,8 +65,7 @@ func (s *SMS) Do() (err error) {
 		return ErrPhoneExists
 	}
 
-	if err = s.findSMSCode(); err != nil {
-		log.Println(s.smscodeModel.CreatedAt)
+	if err = s.findSMSCode(); err == nil {
 		if time.Since(s.smscodeModel.CreatedAt) < 1*time.Minute {
 			return ErrRequestInOneMinute
 		}
@@ -101,7 +101,7 @@ func (s *SMS) GetCode() string {
 }
 
 func (s *SMS) save() (err error) {
-	s.smscodeModel = models.SMSCode{
+	s.smscodeModel = &models.SMSCode{
 		Phone:     s.phone,
 		Code:      s.code,
 		CreatedAt: time.Now(),
