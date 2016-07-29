@@ -10,7 +10,7 @@ import (
 type RunLocation struct {
 	TableName struct{}  `sql:"run_locations"`
 	ID        int       `json:"id"`
-	Run       *Run      `json:"run"`
+	RunID     int       `json:"run_id"`
 	Latitude  float64   `json:"lat"`
 	Longitude float64   `json:"lng"`
 	Altitude  float64   `json:"alt"`
@@ -27,14 +27,14 @@ type RunLocation struct {
 func CreateRunLocations(runID int, ls []RunLocation) (err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.CreateRunLocations error: %v", err)
+			utils.GetLog().Error("models.CreateRunLocations error: ", err)
 		}
 	}()
 
 	now := time.Now()
-	for _, l := range ls {
-		l.Run.ID = runID
-		l.CreatedAt = now
+	for i, _ := range ls {
+		ls[i].RunID = runID
+		ls[i].CreatedAt = now
 	}
 
 	err = GetDB().Create(&ls)
@@ -43,10 +43,10 @@ func CreateRunLocations(runID int, ls []RunLocation) (err error) {
 }
 
 // FindRunLocations 查找跑步GPS纪录
-func FindRunLocations(where map[string]interface{}, order string, limit int, offset int) (ls []*RunLocation, err error) {
+func FindRunLocations(where map[string]interface{}, order string, limit int, offset int) (ls []RunLocation, err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("models.FindRunLocations error: %v", err)
+			utils.GetLog().Error("models.FindRunLocations error: ", err)
 		}
 	}()
 

@@ -42,15 +42,14 @@ func (r *Run) Do() (err error) {
 	return
 }
 
-func (r *Run) save() error {
-	if err := r.runModel.Create(); err != nil {
-		return err
+func (r *Run) save() (err error) {
+	if err = r.runModel.Create(); err != nil {
+		return
 	}
-
-	if err := models.CreateRunLocations(r.runModel.ID, r.runModel.RunLocations); err != nil {
-		return err
+	if err = models.CreateRunLocations(r.runModel.ID, r.runModel.RunLocations); err != nil {
+		return
 	}
-	return nil
+	return
 }
 
 func (r *Run) validLocations() (err error) {

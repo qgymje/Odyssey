@@ -5,6 +5,7 @@ import (
 	"Odyssey/models"
 	"Odyssey/utils"
 	"errors"
+	"time"
 )
 
 var (
@@ -107,16 +108,18 @@ func (s *SignIn) updateToken() error {
 
 // User 输出结果
 type User struct {
-	ID    int    `json:"id"`
-	Phone string `json:"phone"`
-	Token string `json:"token"`
+	ID        int       `json:"id"`
+	Phone     string    `json:"phone"`
+	Token     string    `json:"token"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (s *SignIn) UserInfo() *User {
 	u := &User{
-		ID:    s.userModel.ID,
-		Phone: s.userModel.Phone,
-		Token: s.userModel.Token,
+		ID:        s.userModel.ID,
+		Phone:     s.userModel.Phone,
+		Token:     s.userModel.Token,
+		CreatedAt: s.userModel.CreatedAt,
 	}
 	return u
 }
