@@ -18,6 +18,7 @@ func (u *User) SMSCode(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": form.ErrorMsg(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
@@ -26,6 +27,7 @@ func (u *User) SMSCode(c *gin.Context) {
 	if err := sms.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
@@ -42,6 +44,7 @@ func (u *User) SignUp(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
@@ -50,6 +53,7 @@ func (u *User) SignUp(c *gin.Context) {
 	if err := su.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
@@ -62,6 +66,7 @@ func (u *User) SignIn(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
@@ -70,6 +75,7 @@ func (u *User) SignIn(c *gin.Context) {
 	if err := si.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
@@ -82,6 +88,7 @@ func (u *User) SignOut(c *gin.Context) {
 	if err := p.Parse(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
@@ -91,6 +98,7 @@ func (u *User) SignOut(c *gin.Context) {
 	if err := so.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
