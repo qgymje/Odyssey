@@ -1,5 +1,6 @@
 package models
 
+/*
 import (
 	"Odyssey/utils"
 	"time"
@@ -46,3 +47,5 @@ func FindFeedbacks(where map[string]interface{}, order string, limit int, offset
 
 	return
 }
+
+*/

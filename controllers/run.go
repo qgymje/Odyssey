@@ -1,16 +1,6 @@
 package controllers
 
-import (
-	"Odyssey/forms"
-	"errors"
-	"net/http"
-	"strconv"
-
-	"Odyssey/services/runs"
-
-	"github.com/gin-gonic/gin"
-)
-
+/*
 type Run struct {
 	Base
 }
@@ -24,6 +14,7 @@ func (r *Run) Create(c *gin.Context) {
 	if userID, err = r.parseUserID(c); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  r.Meta(c),
 		})
 		return
 	}
@@ -32,7 +23,7 @@ func (r *Run) Create(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": form.ErrorMsg(),
-			"meta":  r.Meta(),
+			"meta":  r.Meta(c),
 		})
 		return
 	}
@@ -42,12 +33,42 @@ func (r *Run) Create(c *gin.Context) {
 	if err := rs.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
-			"meta":  r.Meta(),
+			"meta":  r.Meta(c),
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, rs.RunInfo())
+}
+
+// Index 显示一个用户的所有跑步纪录
+func (r *Run) Index(c *gin.Context) {
+	var userID int
+	var err error
+	if userID, err = r.parseUserID(c); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+			"meta":  r.Meta(c),
+		})
+		return
+	}
+
+	var result []*models.Run
+	result, err = runs.Find(userID, r.GetPageNum(c), r.GetPageSize(c))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+			"meta":  r.Meta(c),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+//Show 显示一条跑步纪录
+func (r *Run) Show(c *gin.Context) {
+
 }
 
 func (r *Run) parseUserID(c *gin.Context) (id int, err error) {
@@ -72,37 +93,4 @@ func (r *Run) parseRunID(c *gin.Context) (id int, err error) {
 	return
 }
 
-func (r *Run) Read(c *gin.Context) {
-}
-
-func (r *Run) ReadOne(c *gin.Context) {
-	/*
-		var userID int
-		var runID int
-		var err error
-		if userID, err = r.parseUserID(c); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		if runID, err = r.parseRunID(c); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		var result *models.Run
-		result, err = runs.FindOne(userID, runID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, result)
-	*/
-}
+*/

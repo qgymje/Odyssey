@@ -1,6 +1,26 @@
 package runs
+/*
+import (
+	"Odyssey/models"
+	"math"
+)
 
-import "Odyssey/models"
+func Find(userID, pageNum, pageSize int) (runs []*models.Run, err error) {
+	columns := []string{
+		"runs.*", "RunLocations",
+	}
+
+	relations := map[string]string{}
+
+	where := map[string]interface{}{
+		"user_id=?": userID,
+	}
+
+	offset := math.Max(float64(pageNum-1), 0.0)
+	runs, err = models.FindRuns(columns, relations, where, "id DESC", pageSize, int(offset))
+
+	return
+}
 
 func FindOne(userID, runID int) (run *models.Run, err error) {
 	/*
@@ -15,12 +35,4 @@ func FindOne(userID, runID int) (run *models.Run, err error) {
 	return
 }
 
-func Find(userId, runId uint64) (runs []models.Run, err error) {
-	/*
-		where := map[string]interface{}{
-			"user_id=?": userId,
-		}
-	*/
-
-	return
-}
+*/

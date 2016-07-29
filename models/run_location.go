@@ -1,14 +1,10 @@
 package models
 
-import (
-	"Odyssey/utils"
-	"time"
-)
-
+/*
 // RunLocation model纪录用户的跑步过程中GPS数据
 // 仿照iOS CLRunLocation的结构
 type RunLocation struct {
-	TableName struct{}  `sql:"run_locations"`
+	TableName struct{}  `sql:"run_locations" json:"-"`
 	ID        int       `json:"id"`
 	RunID     int       `json:"run_id"`
 	Latitude  float64   `json:"lat"`
@@ -24,7 +20,7 @@ type RunLocation struct {
 }
 
 // CreateRunLocations 跑步GPS数据入库
-func CreateRunLocations(runID int, ls []RunLocation) (err error) {
+func CreateRunLocations(runID int, ls []*RunLocation) (err error) {
 	defer func() {
 		if err != nil {
 			utils.GetLog().Error("models.CreateRunLocations error: ", err)
@@ -58,3 +54,5 @@ func FindRunLocations(where map[string]interface{}, order string, limit int, off
 
 	return
 }
+
+*/

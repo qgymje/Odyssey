@@ -3,7 +3,8 @@ app:
     http_port: 8081
 
 database:
-    host: localhost:5432
+    host: localhost
+    port: 3306
     username: odyssey
     password: odyssey
     dbname: odyssey
@@ -31,3 +32,5 @@ rabbitmq:
         enable_func_call_depth: true
 
    
+redis:
+    host: localhost:6379

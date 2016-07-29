@@ -18,6 +18,7 @@ func (u *User) SMSCode(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": form.ErrorMsg(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
@@ -26,6 +27,7 @@ func (u *User) SMSCode(c *gin.Context) {
 	if err := sms.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
@@ -37,60 +39,68 @@ func (u *User) SMSCode(c *gin.Context) {
 }
 
 // SignUp 注册
-func (u *User) SignUp(c *gin.Context) {
-	form, err := forms.NewSignUpForm(c)
+func (u *User) Register(c *gin.Context) {
+	form, err := forms.NewRegisterForm(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
 
-	su := users.NewSignUp(form)
-	if err := su.Do(); err != nil {
+	reg := users.NewRegister(form)
+	if err := reg.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, su.UserInfo())
+	c.JSON(http.StatusOK, reg.UserInfo())
 }
 
-func (u *User) SignIn(c *gin.Context) {
-	form, err := forms.NewSignInForm(c)
+// Login 登录 action
+func (u *User) Login(c *gin.Context) {
+	form, err := forms.NewLoginForm(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
 
-	si := users.NewSignIn(form)
-	if err := si.Do(); err != nil {
+	li := users.NewLogin(form)
+	if err := li.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, si.UserInfo())
+	c.JSON(http.StatusOK, li.UserInfo())
 }
 
-func (u *User) SignOut(c *gin.Context) {
+// Logout 退出
+func (u *User) Logout(c *gin.Context) {
 	p := users.NewHeaderTokenParser(c.Request)
 	if err := p.Parse(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}
 
 	token := p.Token()
-	so := users.NewSignOut(token)
-	if err := so.Do(); err != nil {
+	lo := users.NewLogout(token)
+	if err := lo.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+			"meta":  u.Meta(c),
 		})
 		return
 	}

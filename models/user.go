@@ -2,35 +2,30 @@ package models
 
 import (
 	"Odyssey/utils"
+	"database/sql"
 	"errors"
-	"log"
 	"time"
 )
 
 // User model 表示一个用户
 type User struct {
-	TableName struct{} `sql:"users"`
-	ID        int      `json:"user_id"`
-	Phone     string   `json:"phone"`
-	Email     string   `sql:",null" json:"email"` // 通过email向register发送用户统计数据
-	Nickname  string   `sql:",null" json:"nickname"`
-	Password  string   `json:"-"`
-	Salt      string   `json:"-"`
-	Avatar    string   `sql:",null" json:"avatar"`
-
-	Sex      uint8     `sql:",null" json:"sex"`
-	Height   float64   `sql:",null" json:"height"`
-	Weight   float64   `sql:",null" json:"weight"`
-	Birthday time.Time `sql:",null" json:"birthday"`
-
-	Latitude  float64 `sql:",null" json:"latitude"`
-	Longitude float64 `sql:",null" json:"longitude"`
-
-	Token string `json:"token"`
-
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt time.Time `sql:",null" json:"-"`
+	ID        int
+	Phone     string         `gorm:"index:idx_user_phone;type:varchar(11)"`
+	Email     sql.NullString `gorm:"type:varchar(64)"` // 通过email向register发送用户统计数据
+	Nickname  string         `gorm:"type:varchar(16)"`
+	Password  string         `gorm:"type:char(32)"`
+	Salt      string         `gorm:"type:char(6)"`
+	Avatar    NullString
+	Sex       NullUint8
+	Height    NullUint8
+	Weight    NullUint8
+	Birthday  NullTime
+	Latitude  NullFloat64
+	Longitude NullFloat64
+	Token     NullString `gorm:"index:idx_user_token"`
+	CreatedAt time.Time  `gorm:"index:idx_user_created_at"`
+	UpdatedAt time.Time
+	DeletedAt NullTime
 }
 
 // IsPhoneExists 检查手机号是否已经存在
@@ -42,7 +37,8 @@ func IsPhoneExists(phone string) bool {
 		}
 	}()
 
-	cnt, err := GetDB().Model(&User{}).Where("phone=?", phone).Count()
+	var cnt int
+	GetDB().Model(&User{}).Where("phone=?", phone).Count(&cnt)
 	return cnt > 0
 }
 
@@ -57,7 +53,7 @@ func (u *User) Create() (err error) {
 	now := time.Now()
 	u.CreatedAt = now
 	u.UpdatedAt = now
-	err = GetDB().Create(u)
+	GetDB().Create(u)
 
 	return
 }
@@ -72,15 +68,12 @@ func (u *User) Update(where map[string]interface{}, update map[string]interface{
 
 	update["created_at=?"] = time.Now()
 
-	query := GetDB().Model(u)
-	for key, val := range update {
-		query = query.Set(key, val)
-	}
+	db := GetDB().Model(u)
 	for key, val := range where {
-		query = query.Where(key, val)
+		db = db.Where(key, val)
 	}
 	// 判断第一个返回值
-	_, err = query.Update()
+	db.Updates(update)
 
 	return
 }
@@ -106,7 +99,7 @@ func (u *User) Delete(where map[string]interface{}) (err error) {
 
 // IsDeleted 判断用户是否已经注销
 func (u *User) IsDeleted() bool {
-	return u.DeletedAt.IsZero()
+	return u.DeletedAt.Time.IsZero()
 }
 
 // FindUsers 根据条件查找用户
@@ -119,11 +112,12 @@ func FindUsers(where map[string]interface{}, order string, limit int, offset int
 		}
 	}()
 
-	query := GetDB().Model(&users)
+	query := GetDB()
 	for key, val := range where {
 		query = query.Where(key, val)
 	}
-	err = query.Order(order).Limit(limit).Offset(offset).Select()
+
+	query.Order(order).Limit(limit).Offset(offset).Find(&users)
 
 	return
 }
@@ -134,7 +128,6 @@ func FindUser(where map[string]interface{}) (user *User, err error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Println(users)
 	if len(users) == 1 {
 		return users[0], nil
 	} else {

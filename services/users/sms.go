@@ -65,6 +65,7 @@ func (s *SMS) Do() (err error) {
 	}
 
 	if err = s.findSMSCode(); err != nil {
+		log.Println(s.smscodeModel.CreatedAt)
 		if time.Since(s.smscodeModel.CreatedAt) < 1*time.Minute {
 			return ErrRequestInOneMinute
 		}
@@ -111,14 +112,7 @@ func (s *SMS) save() (err error) {
 }
 
 func (s *SMS) useCode() (err error) {
-	s.smscodeModel.UsedAt = time.Now()
-	where := map[string]interface{}{
-		"id=?": s.smscodeModel.ID,
-	}
-	update := map[string]interface{}{
-		"used_at=?": s.smscodeModel.UsedAt,
-	}
-	err = s.smscodeModel.Update(where, update)
+	err = s.smscodeModel.UseCode()
 	return
 }
 

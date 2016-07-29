@@ -2,45 +2,42 @@ package models
 
 import (
 	"Odyssey/utils"
-	"log"
-	"os"
-	"strconv"
+	"fmt"
 
-	pg "gopkg.in/pg.v4"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-var db *pg.DB
+var db *gorm.DB
 
-//const driverName = "postgres"
+const driverName = "mysql"
 
 // InitModels 连接数据库
 func InitModels() (err error) {
 	c := utils.GetConf().GetStringMapString("database")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset-utf8&parseTime=True&loc=Local", c["username"], c["password"], c["host"], c["port"], c["dbname"])
 
-	//dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", c["username"], c["password"], c["host"], c["port"], c["dbname"], c["sslmode"])
-	//dsn := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=%s password=%s", c["host"], c["username"], c["dbname"], c["sslmode"], c["password"])
+	db, err = gorm.Open(driverName, dsn)
 
-	var sslmode bool
-	if c["sslmode"] != "disable" {
-		sslmode = true
+	db.DB().SetMaxIdleConns(5)
+	db.DB().SetMaxOpenConns(10)
+
+	db.LogMode(true)
+
+	if err = createTables(); err != nil {
+		panic("create tables error")
 	}
-	poolsize, _ := strconv.Atoi(c["poolsize"])
-
-	db = pg.Connect(&pg.Options{
-		Addr:     c["host"],
-		User:     c["username"],
-		Password: c["password"],
-		Database: c["dbname"],
-		SSL:      sslmode,
-		PoolSize: poolsize,
-	})
-
-	pg.SetQueryLogger(log.New(os.Stdout, "", log.LstdFlags))
 
 	return
 }
 
+func createTables() (err error) {
+	db.AutoMigrate(&User{})
+	db.AutoMigrate(&SMSCode{})
+	return
+}
+
 // GetDB 获取*pg.DB对象
-func GetDB() *pg.DB {
+func GetDB() *gorm.DB {
 	return db
 }

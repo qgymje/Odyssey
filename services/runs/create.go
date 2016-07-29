@@ -1,12 +1,6 @@
 package runs
 
-import (
-	"Odyssey/forms"
-	"Odyssey/models"
-	"encoding/json"
-	"time"
-)
-
+/*
 // Run 表示Services里的Run业务集合
 type Run struct {
 	runModel *models.Run
@@ -23,7 +17,7 @@ func NewRun(form *forms.RunForm) *Run {
 		Duration:     form.Duration,
 		IsPublic:     form.IsPublic,
 		Comment:      form.Comment,
-		RunLocations: []models.RunLocation{},
+		RunLocations: []*models.RunLocation{},
 	}
 	r.rawLocations = form.RunLocations
 	return r
@@ -70,3 +64,5 @@ func (r *Run) RunInfo() *RunInfo {
 		CreatedAt: r.runModel.CreatedAt,
 	}
 }
+
+*/

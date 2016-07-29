@@ -48,6 +48,11 @@
 			"Rev": "5caaac4c5c712a9e7a7de29e6c24ef46c753017f"
 		},
 		{
+			"ImportPath": "github.com/go-sql-driver/mysql",
+			"Comment": "v1.2-194-g7ebe0a5",
+			"Rev": "7ebe0a500653eeb1859664bed5e48dec1e164e73"
+		},
+		{
 			"ImportPath": "github.com/golang/protobuf/proto",
 			"Rev": "bf531ff1a004f24ee53329dfd5ce0b41bfdc17df"
 		},
@@ -88,6 +93,20 @@
 			"Rev": "27a57f2605e04995c111273c263d51cee60d9bc4"
 		},
 		{
+			"ImportPath": "github.com/jinzhu/gorm",
+			"Comment": "v1.0-50-ga646b13",
+			"Rev": "a646b13548ec0aa812fe805b2780f460dd2771b6"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/gorm/dialects/mysql",
+			"Comment": "v1.0-50-ga646b13",
+			"Rev": "a646b13548ec0aa812fe805b2780f460dd2771b6"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/inflection",
+			"Rev": "8f4d3a0d04ce0b7c0cf3126fb98524246d00d102"
+		},
+		{
 			"ImportPath": "github.com/kr/pretty",
 			"Comment": "go.weekly.2011-12-22-29-gadd1dbc",
 			"Rev": "add1dbc86daf0f983cd4a48ceb39deb95c729b67"
@@ -95,28 +114,6 @@
 		{
 			"ImportPath": "github.com/kr/text",
 			"Rev": "bb797dc4fb8320488f47bf11de07a733d7233e1f"
-		},
-		{
-			"ImportPath": "github.com/lann/builder",
-			"Rev": "f22ce00fd9394014049dad11c244859432bd6820"
-		},
-		{
-			"ImportPath": "github.com/lann/ps",
-			"Rev": "62de8c46ede02a7675c4c79c84883eb164cb71e3"
-		},
-		{
-			"ImportPath": "github.com/lann/squirrel",
-			"Rev": "e13dbacee404686afd0acf2d44b8d34869605e03"
-		},
-		{
-			"ImportPath": "github.com/lib/pq",
-			"Comment": "go1.0-cutoff-84-g3cd0097",
-			"Rev": "3cd0097429be7d611bb644ef85b42bfb102ceea4"
-		},
-		{
-			"ImportPath": "github.com/lib/pq/oid",
-			"Comment": "go1.0-cutoff-84-g3cd0097",
-			"Rev": "3cd0097429be7d611bb644ef85b42bfb102ceea4"
 		},
 		{
 			"ImportPath": "github.com/magiconair/properties",

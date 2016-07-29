@@ -7,12 +7,11 @@ import (
 
 // SMSCode model 表示一次生成短信验证码纪录
 type SMSCode struct {
-	TableName struct{} `sql:"smscodes"`
-	ID        int      `json:"smscode_id"`
-	Phone     string   `json:"phone"`
-	Code      string   `json:"code"`
+	ID     int      `json:"smscode_id"`
+	Phone  string   `gorm:"type:varchar(11);index:idx_smscode_phone" json:"phone"`
+	Code   string   `gorm:"type:varchar(6)" json:"code"`
+	UsedAt NullTime `json:"used_at"`
 
-	UsedAt    time.Time `sql:",null" json:"used_at"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -25,14 +24,20 @@ func (s *SMSCode) Create() (err error) {
 	}()
 
 	s.CreatedAt = time.Now()
-	err = GetDB().Create(s)
+	GetDB().Create(s)
 
 	return
 }
 
 // IsUsed 判断一个code是否已经被使用过了
 func (s *SMSCode) IsUsed() bool {
-	return !s.UsedAt.IsZero()
+	return !s.UsedAt.Time.IsZero()
+}
+
+// UseCode 当注册成功之后将used_at更新
+func (s *SMSCode) UseCode() (err error) {
+	GetDB().Model(s).Update("used_at", time.Now())
+	return
 }
 
 // Update 更新一条验证码纪录
@@ -44,14 +49,10 @@ func (s *SMSCode) Update(where map[string]interface{}, update map[string]interfa
 	}()
 
 	query := GetDB().Model(s)
-	for key, val := range update {
-		query = query.Set(key, val)
-	}
 	for key, val := range where {
 		query = query.Where(key, val)
 	}
-	// 判断第一个返回值
-	_, err = query.Update()
+	query.Updates(update)
 
 	return
 }
@@ -64,7 +65,7 @@ func FindSMSCode(phone string) (sms SMSCode, err error) {
 		}
 	}()
 
-	err = GetDB().Model(&sms).Where("phone=?", phone).Order("id DESC").Limit(1).Select()
+	GetDB().Where("phone=?", phone).Order("id DESC").Limit(1).Find(&sms)
 
 	return
 }
