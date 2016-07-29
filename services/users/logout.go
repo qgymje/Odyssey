@@ -7,7 +7,9 @@ import (
 )
 
 var (
-	ErrLogout = errors.New("退出失败")
+	ErrLogout       = errors.New("退出失败")
+	ErrTokenUnvalid = errors.New("token不正确")
+	ErrToeknUpdate  = errors.New("token更新出错")
 )
 
 // Logout 登出操作
@@ -33,11 +35,11 @@ func (s *Logout) Do() (err error) {
 	}()
 
 	if err = s.varifyToken(); err != nil {
-		return
+		return ErrTokenUnvalid
 	}
 
-	if err = s.findUser(); err != nil {
-		return
+	if err = s.findUserByToken(); err != nil {
+		return ErrTokenNotFound
 	}
 
 	if err = s.removeToken(); err != nil {
@@ -54,11 +56,8 @@ func (s *Logout) varifyToken() error {
 	return nil
 }
 
-func (s *Logout) findUser() (err error) {
-	where := map[string]interface{}{
-		"token=?": s.token,
-	}
-	s.userModel, err = models.FindUser(where)
+func (s *Logout) findUserByToken() (err error) {
+	s.userModel, err = models.FindUserByToken(s.token)
 	if err != nil {
 		return ErrLogout
 	}
@@ -67,15 +66,5 @@ func (s *Logout) findUser() (err error) {
 }
 
 func (s *Logout) removeToken() error {
-	where := map[string]interface{}{
-		"id=?": s.userModel.ID,
-	}
-	update := map[string]interface{}{
-		"token=?": "",
-	}
-
-	if err := s.userModel.Update(where, update); err != nil {
-		return err
-	}
-	return nil
+	return s.userModel.RemoveToken()
 }

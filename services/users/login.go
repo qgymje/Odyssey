@@ -82,7 +82,7 @@ func (s *Login) validPassword() error {
 	return nil
 }
 
-func (s *Login) updateToken() error {
+func (s *Login) updateToken() (err error) {
 	// generate token
 	claims := map[string]interface{}{
 		"id": s.userModel.ID,
@@ -92,18 +92,9 @@ func (s *Login) updateToken() error {
 		return err
 	}
 	s.userModel.Token = models.NullString{String: token}
+	err = s.userModel.UpdateToken(token)
 
-	where := map[string]interface{}{
-		"id=?": s.userModel.ID,
-	}
-	update := map[string]interface{}{
-		"token=?": token,
-	}
-
-	if err := s.userModel.Update(where, update); err != nil {
-		return err
-	}
-	return nil
+	return
 }
 
 // User 输出结果

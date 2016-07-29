@@ -1,7 +1,6 @@
 package models
 
 import (
-	"Odyssey/utils"
 	"fmt"
 	"time"
 )
@@ -18,12 +17,6 @@ type SMSCode struct {
 
 // Create 生成一条db纪录
 func (s *SMSCode) Create() (err error) {
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("models.smscode.Create error: ", err)
-		}
-	}()
-
 	s.CreatedAt = time.Now()
 	GetDB().Create(s)
 
@@ -43,12 +36,6 @@ func (s *SMSCode) UseCode() (err error) {
 
 // Update 更新一条验证码纪录
 func (s *SMSCode) Update(where map[string]interface{}, update map[string]interface{}) (err error) {
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("models.smscode.Update error: ", err)
-		}
-	}()
-
 	query := GetDB().Model(s)
 	for key, val := range where {
 		query = query.Where(key, val)
@@ -61,11 +48,6 @@ func (s *SMSCode) Update(where map[string]interface{}, update map[string]interfa
 // FindSMSCode 根据手机号查找一条验证码信息
 func FindSMSCode(phone string) (*SMSCode, error) {
 	var err error
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("models.smscode.FindSMSCode error: ", err)
-		}
-	}()
 	var sms SMSCode
 	GetDB().Where("phone=?", phone).Order("id DESC").Limit(1).First(&sms)
 	if sms.Code == "" {

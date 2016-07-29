@@ -34,14 +34,6 @@ func NewToken() *Token {
 }
 
 func (t *Token) Generate(claims map[string]interface{}) (tokenString string, err error) {
-	var actualErr error
-
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("services.Token.Generate error: ", actualErr.Error())
-		}
-	}()
-
 	t.token = jwt.New(jwt.SigningMethodHS256)
 	for k, v := range claims {
 		t.token.Claims[k] = v
@@ -52,7 +44,6 @@ func (t *Token) Generate(claims map[string]interface{}) (tokenString string, err
 
 	tokenString, err = t.token.SignedString(t.secretKey)
 	if err != nil {
-		actualErr = err
 		err = ErrGenerate
 	}
 
@@ -60,14 +51,6 @@ func (t *Token) Generate(claims map[string]interface{}) (tokenString string, err
 }
 
 func (t *Token) Verify(tokenString string) (valid bool, err error) {
-	var actualErr error
-
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("services.Token.Verify error: ", actualErr.Error())
-		}
-	}()
-
 	//自带过期处理
 	t.token, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -76,7 +59,6 @@ func (t *Token) Verify(tokenString string) (valid bool, err error) {
 		return t.secretKey, nil
 	})
 	if err != nil {
-		actualErr = err
 		err = ErrVerify
 	}
 	valid = t.token.Valid
