@@ -41,30 +41,11 @@ func (s *Register) Do() (err error) {
 		return
 	}
 
-	if err = s.smsValidator.Valid(); err != nil {
-		return
-	}
-	if err = s.save(); err != nil {
+	if err = s.validSMSCode(); err != nil {
 		return
 	}
 
-	return
-}
-
-func (s *Register) findPhone() error {
-	if models.IsPhoneExists(s.phone) {
-		return ErrPhoneExists
-	}
-	return nil
-}
-
-// save 将数据保存到db
-func (s *Register) save() (err error) {
-	s.userModel.Phone = s.phone
-	s.userModel.Salt = s.password.GenSalt()
-	s.userModel.Password = s.password.GenPwd()
-
-	if err = s.userModel.Create(); err != nil {
+	if err = s.saveUser(); err != nil {
 		return
 	}
 
@@ -72,8 +53,33 @@ func (s *Register) save() (err error) {
 		return
 	}
 
-	if err = s.smsValidator.useCode(); err != nil {
+	if err = s.useSMSCode(); err != nil {
 		return
 	}
+
 	return
+}
+
+func (s *Register) findPhone() (err error) {
+	if models.IsPhoneExists(s.phone) {
+		return ErrPhoneExists
+	}
+	return
+}
+
+func (s *Register) validSMSCode() (err error) {
+	return s.smsValidator.Valid()
+}
+
+func (s *Register) useSMSCode() (err error) {
+	return s.smsValidator.useCode()
+}
+
+// save 将数据保存到db
+func (s *Register) saveUser() (err error) {
+	s.userModel.Phone = s.phone
+	s.userModel.Salt = s.password.GenSalt()
+	s.userModel.Password = s.password.GenPwd()
+
+	return s.userModel.Create()
 }

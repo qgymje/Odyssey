@@ -18,8 +18,6 @@ type Login struct {
 	phone     string
 	password  *Password
 	userModel *models.User
-
-	ensureDidFindUser bool
 }
 
 func NewLogin(data *forms.LoginForm) *Login {
@@ -45,6 +43,10 @@ func (s *Login) Do() (err error) {
 		}
 	}()
 
+	if err = s.findUser(); err != nil {
+		return
+	}
+
 	if err = s.validPassword(); err != nil {
 		return
 	}
@@ -56,40 +58,25 @@ func (s *Login) Do() (err error) {
 }
 
 func (s *Login) findUser() (err error) {
-	where := map[string]interface{}{
-		"phone=?": s.phone,
-	}
-	s.userModel, err = models.FindUser(where)
-	if err != nil {
-		return err
-	}
-	s.ensureDidFindUser = true
+	s.userModel, err = models.FindUserByPhone(s.phone)
 	return
 }
 
-func (s *Login) validPassword() error {
-	if !s.ensureDidFindUser {
-		if err := s.findUser(); err != nil {
-			return err
-		}
-	}
-
+func (s *Login) validPassword() (err error) {
 	s.password.SetSalt(s.userModel.Salt)
 	if !s.password.IsEncryptedSame(s.userModel.Password) {
 		return ErrLogin
 	}
-
-	return nil
+	return
 }
 
 func (s *Login) updateToken() (err error) {
-	// generate token
 	claims := map[string]interface{}{
 		"id": s.userModel.ID,
 	}
 	token, err := NewToken().Generate(claims)
 	if err != nil {
-		return err
+		return
 	}
 	s.userModel.Token = models.NullString{String: token}
 	err = s.userModel.UpdateToken(token)
