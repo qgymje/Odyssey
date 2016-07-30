@@ -1,62 +1,75 @@
 package models
 
-/*
 import (
-	"Odyssey/utils"
+	"database/sql"
 	"time"
-
-	"gopkg.in/pg.v4/orm"
 )
 
 // Run model 表示一个用户的一次跑步的纪录
 type Run struct {
-	TableName struct{} `sql:"runs,alias:runs" json:"-"`
-	ID        int      `json:"run_id"`
-	UserID    int      `json:"user_id"`
-	Distance  float64  `json:"distance"`
-	Duration  int      `json:"duration"`
-	//Setps     int       `json:"steps"` // 步数
-	IsPublic     bool           `json:"is_public"`
-	Comment      string         `sql:",null" json:"comment"`
-	RunLocations []*RunLocation `json:"run_locaitons"`
+	ID        int64
+	UserID    int64 `db:"user_id"`
+	Distance  float64
+	Duration  int
+	IsPublic  bool `db:"is_public"`
+	Comment   sql.NullString
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
+	DeletedAt NullTime  `db:"deleted_at"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `sql:",null" json:"-"`
-	DeletedAt time.Time `sql:",null" json:"-"`
+	RunLocations []*RunLocation `db:"-"`
 }
 
 // Create 创建一条跑步纪录, 需要RunLocation数据
 func (r *Run) Create() (err error) {
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("models.run.Create error: ", err)
-		}
-	}()
+	now := time.Now()
+	r.CreatedAt = now
+	r.UpdatedAt = now
 
-	r.CreatedAt = time.Now()
-	err = GetDB().Create(r)
+	result, err := GetDB().NamedExec(`insert into runs(user_id, distance, duration, is_public, comment, created_at, updated_at) values(:user_id, :distance, :duration, :is_public, :comment, :created_at, :updated_at)`, r)
+	if err != nil {
+		return
+	}
+	if _, err = result.RowsAffected(); err != nil {
+		return
+	}
+	if r.ID, err = result.LastInsertId(); err != nil {
+		return
+	}
+	if err = CreateRunLocations(r.ID, r.RunLocations); err != nil {
+		return
+	}
 
 	return
 }
 
-// FindRuns 查找跑步纪录
-func FindRuns(columns []string, relations map[string]string, where map[string]interface{}, order string, limit int, offset int) (runs []*Run, err error) {
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("models.run.FindRuns error: ", err)
-		}
-	}()
+func FindRunsByUserID(userID int64, orderby string, limit, offset int) (runs []*Run, err error) {
+	if err = GetDB().Select(runs, `select runs.* where user_id = ? order by ? limti = ? offset = ?;`, userID, orderby, limit, offset); err != nil {
+		return
+	}
 
-	for key, val := range relations {
-		query = query.Relation(key, func(*orm.Query) *orm.Query {
-			return query.Where(val)
-		})
+	runIDs := []int64{}
+	for _, r := range runs {
+		runIDs = append(runIDs, r.ID)
 	}
-	for key, val := range where {
-		query = query.Where(key, val)
+
+	var runLocations []*RunLocation
+	if err = GetDB().Select(runLocations, `select run_locations.* from run_locations where run_id in (?);`, runIDs); err != nil {
+		return
 	}
-	err = query.Order(order).Limit(limit).Offset(offset).Find(&runs)
+
+	runIDLocations := map[int64][]*RunLocation{}
+	for _, rl := range runLocations {
+		runIDLocations[rl.RunID] = append(runIDLocations[rl.RunID], rl)
+	}
+
+	for i, r := range runs {
+		runs[i].RunLocations = runIDLocations[r.ID]
+	}
 
 	return
 }
-*/
+
+func FindRunByID(runID int64) (run *Run, err error) {
+	return
+}

@@ -6,7 +6,7 @@ import (
 )
 
 type RunForm struct {
-	UserID       int     `form:"user_id" binding:"required"`
+	UserID       int64   `form:"user_id" binding:"required"`
 	Distance     float64 `form:"distance" binding:"required"`
 	Duration     int     `form:"duration" binding:"required"`
 	IsPublic     bool    `form:"is_public" binding:"required"`

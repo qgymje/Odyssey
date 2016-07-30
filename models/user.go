@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"log"
 	"time"
 )
 
@@ -38,10 +37,9 @@ func (u *User) Create() (err error) {
 	now := time.Now()
 	u.CreatedAt = now
 	u.UpdatedAt = now
-	log.Println(u)
 	//result, err := GetDB().Exec(`insert into users(phone, email, nickname, password, salt, avatar, sex, height, weight, birthday, latitude, longitude, token, created_at, updated_at, deleted_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, u.Phone, u.Email, u.Nickname, u.Password, u.Salt, u.Avatar.String, u.Sex, u.Height, u.Weight, u.Birthday, u.Latitude, u.Longitude, u.Token, u.CreatedAt, u.UpdatedAt, u.DeletedAt)
 	result, err := GetDB().NamedExec(`insert into users(phone, email, nickname, password, salt, avatar, sex, height, weight, birthday, latitude, longitude, token, created_at, updated_at, deleted_at) values(:phone, :email, :nickname, :password, :salt, :avatar, :sex, :height, :weight, :birthday, :latitude, :longitude, :token, :created_at, :updated_at, :deleted_at)`, u)
-	log.Println(err)
+
 	if err != nil {
 		return
 	}

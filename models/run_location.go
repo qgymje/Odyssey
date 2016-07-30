@@ -1,58 +1,52 @@
 package models
 
-/*
+import (
+	"fmt"
+	"log"
+	"time"
+)
+
 // RunLocation model纪录用户的跑步过程中GPS数据
 // 仿照iOS CLRunLocation的结构
 type RunLocation struct {
-	TableName struct{}  `sql:"run_locations" json:"-"`
-	ID        int       `json:"id"`
-	RunID     int       `json:"run_id"`
+	ID        int64
+	RunID     int64     `db:"run_id" json:"run_id"`
 	Latitude  float64   `json:"lat"`
 	Longitude float64   `json:"lng"`
 	Altitude  float64   `json:"alt"`
 	Timestamp time.Time `json:"ts"`
 	Course    float64   `json:"course"`
 	Speed     float64   `json:"speed"`
-	//Steps     int       `json:"stpes"` //距离上个location走出的步数
-	//HeartRate
-
-	CreatedAt time.Time `json:"-"`
+	CreatedAt time.Time `db:"created_at" json:"-"`
 }
 
 // CreateRunLocations 跑步GPS数据入库
-func CreateRunLocations(runID int, ls []*RunLocation) (err error) {
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("models.CreateRunLocations error: ", err)
-		}
-	}()
-
+func CreateRunLocations(runID int64, ls []*RunLocation) (err error) {
 	now := time.Now()
 	for i, _ := range ls {
 		ls[i].RunID = runID
 		ls[i].CreatedAt = now
 	}
 
-	err = GetDB().Create(&ls)
-
-	return
-}
-
-// FindRunLocations 查找跑步GPS纪录
-func FindRunLocations(where map[string]interface{}, order string, limit int, offset int) (ls []RunLocation, err error) {
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("models.FindRunLocations error: ", err)
-		}
-	}()
-
-	query := GetDB().Model(&ls)
-	for key, val := range where {
-		query = query.Where(key, val)
+	vals := []interface{}{}
+	rawSQL := `insert into run_locations(run_id, latitude, longitude, altitude, timestamp, course, speed,created_at) values `
+	for _, l := range ls {
+		rawSQL += `(?,?,?,?,?,?,?,?),`
+		vals = append(vals, l.RunID, l.Latitude, l.Longitude, l.Altitude, l.Timestamp, l.Course, l.Speed, l.CreatedAt)
 	}
-	err = query.Order(order).Limit(limit).Offset(offset).Select()
+	rawSQL = rawSQL[:len(rawSQL)-1]
+	log.Println(rawSQL)
+
+	result, err := GetDB().Exec(rawSQL, vals...)
+	if err != nil {
+		return
+	}
+	if cnt, err := result.RowsAffected(); err != nil {
+		if int(cnt) != len(ls) {
+			return fmt.Errorf("locations insert error: inserted %d, slice len is %d", cnt, len(ls))
+		}
+		return err
+	}
 
 	return
 }
-
-*/

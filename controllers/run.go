@@ -1,6 +1,15 @@
 package controllers
 
-/*
+import (
+	"Odyssey/forms"
+	"Odyssey/services/runs"
+	"errors"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
+
 type Run struct {
 	Base
 }
@@ -27,7 +36,7 @@ func (r *Run) Create(c *gin.Context) {
 		})
 		return
 	}
-	form.UserID = userID
+	form.UserID = int64(userID)
 
 	rs := runs.NewRun(form)
 	if err := rs.Do(); err != nil {
@@ -41,6 +50,7 @@ func (r *Run) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, rs.RunInfo())
 }
 
+/*
 // Index 显示一个用户的所有跑步纪录
 func (r *Run) Index(c *gin.Context) {
 	var userID int
@@ -70,6 +80,7 @@ func (r *Run) Index(c *gin.Context) {
 func (r *Run) Show(c *gin.Context) {
 
 }
+*/
 
 func (r *Run) parseUserID(c *gin.Context) (id int, err error) {
 	var idStr string
@@ -92,5 +103,3 @@ func (r *Run) parseRunID(c *gin.Context) (id int, err error) {
 	}
 	return
 }
-
-*/

@@ -84,15 +84,15 @@ func (s *Login) updateToken() (err error) {
 }
 
 // User 输出结果
-type User struct {
+type UserInfo struct {
 	ID        int64     `json:"id"`
 	Phone     string    `json:"phone"`
 	Token     string    `json:"token"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func (s *Login) UserInfo() *User {
-	u := &User{
+func (s *Login) UserInfo() *UserInfo {
+	u := &UserInfo{
 		ID:        s.userModel.ID,
 		Phone:     s.userModel.Phone,
 		Token:     s.userModel.Token.String,
