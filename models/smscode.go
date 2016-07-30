@@ -40,7 +40,7 @@ func (s *SMSCode) UseCode() (err error) {
 	return
 }
 
-func (s *SMSCode) GeneratedInDuration(duration time.Duration) bool {
+func (s *SMSCode) IsGeneratedInDuration(duration time.Duration) bool {
 	return time.Since(s.CreatedAt) < duration
 }
 

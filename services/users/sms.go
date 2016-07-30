@@ -66,7 +66,7 @@ func (s *SMS) Do() (err error) {
 	}
 
 	if err = s.findSMSCode(); err == nil {
-		if s.smscodeModel.GeneratedInDuration(1 * time.Minute) {
+		if s.smscodeModel.IsGeneratedInDuration(1 * time.Minute) {
 			return ErrRequestInOneMinute
 		}
 	}
