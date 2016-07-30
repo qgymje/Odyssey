@@ -1,24 +1,26 @@
 package models
 
-import (
-	"fmt"
-	"time"
-)
+import "time"
 
 // SMSCode model 表示一次生成短信验证码纪录
 type SMSCode struct {
-	ID     int      `json:"smscode_id"`
-	Phone  string   `gorm:"not null;type:varchar(11);index:idx_smscode_phone" json:"phone"`
-	Code   string   `gorm:"not null;type:varchar(6)" json:"code"`
-	UsedAt NullTime `json:"used_at"`
+	ID     int64
+	Phone  string
+	Code   string
+	UsedAt NullTime `db:"used_at"`
 
-	CreatedAt time.Time `json:"created_at"`
+	CreatedAt time.Time `db:"created_at"`
 }
 
 // Create 生成一条db纪录
 func (s *SMSCode) Create() (err error) {
 	s.CreatedAt = time.Now()
-	GetDB().Create(s)
+
+	result := GetDB().MustExec(`insert into sms_codes(phone, code, created_at) values(?,?,?)`, s.Phone, s.Code, s.CreatedAt)
+	if _, err = result.RowsAffected(); err != nil {
+		return
+	}
+	s.ID, err = result.LastInsertId()
 
 	return
 }
@@ -30,28 +32,22 @@ func (s *SMSCode) IsUsed() bool {
 
 // UseCode 当注册成功之后将used_at更新
 func (s *SMSCode) UseCode() (err error) {
-	GetDB().Model(s).Update("used_at", time.Now())
+	result := GetDB().MustExec(`update sms_codes set used_at = ? where id = ?`, s.UsedAt, s.ID)
+	if _, err = result.RowsAffected(); err != nil {
+		return
+	}
+	s.UsedAt = NullTime{Time: time.Now()}
 	return
 }
 
-// Update 更新一条验证码纪录
-func (s *SMSCode) Update(where map[string]interface{}, update map[string]interface{}) (err error) {
-	query := GetDB().Model(s)
-	for key, val := range where {
-		query = query.Where(key, val)
-	}
-	query.Updates(update)
-
-	return
+func (s *SMSCode) GeneratedInDuration(duration time.Duration) bool {
+	return time.Since(s.CreatedAt) < duration
 }
 
 // FindSMSCode 根据手机号查找一条验证码信息
-func FindSMSCode(phone string) (*SMSCode, error) {
-	var err error
+func FindSMSCodeByPhone(phone string) (*SMSCode, error) {
 	var sms SMSCode
-	GetDB().Where("phone=?", phone).Order("id DESC").Limit(1).First(&sms)
-	if sms.Code == "" {
-		return nil, fmt.Errorf("smscode not exists with phone: %s", phone)
-	}
+	var err error
+	err = db.Get(&sms, `select * from sms_codes where phone=? order by id desc limit 1`, phone)
 	return &sms, err
 }

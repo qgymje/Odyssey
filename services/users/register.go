@@ -61,7 +61,7 @@ func (s *Register) Do() (err error) {
 }
 
 func (s *Register) findPhone() (err error) {
-	if models.IsPhoneExists(s.phone) {
+	if models.IsPhoneRegisted(s.phone) {
 		return ErrPhoneExists
 	}
 	return

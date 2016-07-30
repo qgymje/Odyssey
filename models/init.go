@@ -4,11 +4,11 @@ import (
 	"Odyssey/utils"
 	"fmt"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 )
 
-var db *gorm.DB
+var db *sqlx.DB
 
 const driverName = "mysql"
 
@@ -17,27 +17,18 @@ func InitModels() (err error) {
 	c := utils.GetConf().GetStringMapString("database")
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset-utf8&parseTime=True&loc=Local", c["username"], c["password"], c["host"], c["port"], c["dbname"])
 
-	db, err = gorm.Open(driverName, dsn)
-
-	db.DB().SetMaxIdleConns(5)
-	db.DB().SetMaxOpenConns(10)
-
-	db.LogMode(true)
-
-	if err = createTables(); err != nil {
-		panic("create tables error")
+	db, err = sqlx.Connect(driverName, dsn)
+	if err != nil {
+		panic("db connections failed.")
 	}
 
+	db.DB.SetMaxIdleConns(5)
+	db.DB.SetMaxOpenConns(10)
+
 	return
 }
 
-func createTables() (err error) {
-	db.AutoMigrate(&User{})
-	db.AutoMigrate(&SMSCode{})
-	return
-}
-
-// GetDB 获取*pg.DB对象
-func GetDB() *gorm.DB {
+// GetDB 获取*sqlx.DB对象
+func GetDB() *sqlx.DB {
 	return db
 }

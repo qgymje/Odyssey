@@ -1,88 +1,63 @@
 package models
 
 import (
-	"Odyssey/utils"
 	"database/sql"
+	"log"
 	"time"
 )
 
 // User model 表示一个用户
 type User struct {
-	ID        int
-	Phone     string         `gorm:"not null;index:idx_user_phone;type:varchar(11)"`
-	Email     sql.NullString `gorm:"type:varchar(64)"` // 通过email向register发送用户统计数据
-	Nickname  string         `gorm:"type:varchar(16)"`
-	Password  string         `gorm:"not null;type:char(32)"`
-	Salt      string         `gorm:"not null;type:char(6)"`
-	Avatar    NullString
+	ID        int64
+	Phone     string
+	Email     sql.NullString // 通过email向register发送用户统计数据
+	Nickname  sql.NullString
+	Password  string
+	Salt      string
+	Avatar    sql.NullString
 	Sex       NullUint8
 	Height    NullUint8
 	Weight    NullUint8
 	Birthday  NullTime
-	Latitude  NullFloat64
-	Longitude NullFloat64
-	Token     NullString `gorm:"index:idx_user_token"`
-	CreatedAt time.Time  `gorm:"index:idx_user_created_at"`
-	UpdatedAt time.Time
-	DeletedAt NullTime
+	Latitude  sql.NullFloat64
+	Longitude sql.NullFloat64
+	Token     sql.NullString
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
+	DeletedAt NullTime  `db:"deleted_at"`
 }
 
 // Fetch 从db里获取数据, 通常用于已经有了id
 func (u *User) Fetch() (err error) {
-	GetDB().First(u)
+	err = GetDB().Get(u, "select * from users where id=?", u.ID)
 	return
 }
 
 // Create 用于创建一个用户
 func (u *User) Create() (err error) {
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("models.user.Create error: ", err)
-		}
-	}()
-
 	now := time.Now()
 	u.CreatedAt = now
 	u.UpdatedAt = now
-	GetDB().Create(u)
-
-	return
-}
-
-// UpdateUsers 更新用户表
-func UpdateUsers(where map[string]interface{}, update map[string]interface{}) (err error) {
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("models.UpdateUsers error: ", err)
-		}
-	}()
-	update["updated_at=?"] = time.Now()
-
-	query := GetDB().Model(&User{})
-	for key, val := range where {
-		query = query.Where(key, val)
+	log.Println(u)
+	//result, err := GetDB().Exec(`insert into users(phone, email, nickname, password, salt, avatar, sex, height, weight, birthday, latitude, longitude, token, created_at, updated_at, deleted_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, u.Phone, u.Email, u.Nickname, u.Password, u.Salt, u.Avatar.String, u.Sex, u.Height, u.Weight, u.Birthday, u.Latitude, u.Longitude, u.Token, u.CreatedAt, u.UpdatedAt, u.DeletedAt)
+	result, err := GetDB().NamedExec(`insert into users(phone, email, nickname, password, salt, avatar, sex, height, weight, birthday, latitude, longitude, token, created_at, updated_at, deleted_at) values(:phone, :email, :nickname, :password, :salt, :avatar, :sex, :height, :weight, :birthday, :latitude, :longitude, :token, :created_at, :updated_at, :deleted_at)`, u)
+	log.Println(err)
+	if err != nil {
+		return
 	}
-	// 判断第一个返回值
-	query.Updates(update)
-
+	if _, err = result.RowsAffected(); err != nil {
+		return
+	}
+	u.ID, err = result.LastInsertId()
 	return
 }
 
 // Delete 表示注销一个用户
 func (u *User) Delete() (err error) {
-	update := map[string]interface{}{
-		"deleted_at=?": time.Now(),
-	}
-
-	where := map[string]interface{}{
-		"id=?": u.ID,
-	}
-
-	if err := UpdateUsers(where, update); err != nil {
-		return err
-	}
-
-	return nil
+	u.DeletedAt = NullTime{Time: time.Now()}
+	result := GetDB().MustExec(`update users set deleted_at = ? where id = ?`, u.DeletedAt, u.ID)
+	_, err = result.RowsAffected()
+	return
 }
 
 // IsDeleted 判断用户是否已经注销
@@ -97,70 +72,35 @@ func (u *User) RemoveToken() (err error) {
 
 // UpdateToken 更新token
 func (u *User) UpdateToken(token string) (err error) {
-	update := map[string]interface{}{
-		"token=?": token,
+	result := GetDB().MustExec(`update users set token=? where id=?`, token, u.ID)
+	if _, err = result.RowsAffected(); err != nil {
+		return
 	}
-
-	where := map[string]interface{}{
-		"id=?": u.ID,
-	}
-
-	if err := UpdateUsers(where, update); err != nil {
-		return err
-	}
-
+	u.Token = sql.NullString{String: token}
 	return
-}
-
-// FindUser 根据条件查找一个用户
-func FindUser(where map[string]interface{}) (*User, error) {
-	var err error
-	var user User
-	query := GetDB()
-	for key, val := range where {
-		query = query.Where(key, val)
-	}
-	query.First(&user)
-
-	return &user, err
 }
 
 // FindUserByToken 根据token查找用户
-func FindUserByToken(token string) (user *User, err error) {
-	where := map[string]interface{}{
-		"token": token,
-	}
-	return FindUser(where)
+func FindUserByToken(token string) (*User, error) {
+	var user User
+	var err error
+	err = GetDB().Get(&user, `select * from users where token=?`, token)
+	return &user, err
 }
 
 // FindUserByPhone 根据phone查找用户
-func FindUserByPhone(phone string) (user *User, err error) {
-	where := map[string]interface{}{
-		"phone": phone,
-	}
-	return FindUser(where)
+func FindUserByPhone(phone string) (*User, error) {
+	var user User
+	var err error
+	err = GetDB().Get(&user, `select * from users where phone=?`, phone)
+	return &user, err
 }
 
-// IsPhoneExists 检查手机号是否已经存在
-func IsPhoneExists(phone string) bool {
-	var cnt int
-	GetDB().Model(&User{}).Where("phone=?", phone).Count(&cnt)
-	return cnt > 0
-}
-
-// Users 是一组用户的对象方法集
-type Users []*User
-
-// FindUsers 根据条件查找用户
-// where map[string]interface{}
-// key与val必须为sql语法, 比如where["id=?] = 1
-func FindUsers(where map[string]interface{}, order string, limit int, offset int) (users []*User, err error) {
-	query := GetDB()
-	for key, val := range where {
-		query = query.Where(key, val)
+// IsPhoneRegisted 检查手机号是否已经存在
+func IsPhoneRegisted(phone string) bool {
+	result := GetDB().MustExec(`select count(*) from users where phone=?`, phone)
+	if cnt, err := result.RowsAffected(); err != nil {
+		return cnt > 0
 	}
-
-	query.Order(order).Limit(limit).Offset(offset).Find(&users)
-
-	return
+	return false
 }

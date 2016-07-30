@@ -78,7 +78,6 @@ func (s *Login) updateToken() (err error) {
 	if err != nil {
 		return
 	}
-	s.userModel.Token = models.NullString{String: token}
 	err = s.userModel.UpdateToken(token)
 
 	return
@@ -86,7 +85,7 @@ func (s *Login) updateToken() (err error) {
 
 // User 输出结果
 type User struct {
-	ID        int       `json:"id"`
+	ID        int64     `json:"id"`
 	Phone     string    `json:"phone"`
 	Token     string    `json:"token"`
 	CreatedAt time.Time `json:"created_at"`

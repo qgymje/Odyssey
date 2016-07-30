@@ -61,12 +61,12 @@ func (s *SMS) Do() (err error) {
 		}
 	}()
 
-	if models.IsPhoneExists(s.phone) {
+	if models.IsPhoneRegisted(s.phone) {
 		return ErrPhoneExists
 	}
 
 	if err = s.findSMSCode(); err == nil {
-		if time.Since(s.smscodeModel.CreatedAt) < 1*time.Minute {
+		if s.smscodeModel.GeneratedInDuration(1 * time.Minute) {
 			return ErrRequestInOneMinute
 		}
 	}
@@ -84,7 +84,7 @@ func (s *SMS) Do() (err error) {
 }
 
 func (s *SMS) findSMSCode() (err error) {
-	s.smscodeModel, err = models.FindSMSCode(s.phone)
+	s.smscodeModel, err = models.FindSMSCodeByPhone(s.phone)
 	return
 }
 
@@ -136,12 +136,6 @@ func (sc smsContent) toJSON(phone string, content string) (body []byte, err erro
 
 // Send 将数据发送到rabbitmq里, 然后由rabbitmq的worker来发送短信到用户手机
 func (s *SMS) send() (err error) {
-	defer func() {
-		if err != nil {
-			utils.GetLog().Error("services.users.SMS.send error: ", err)
-		}
-	}()
-
 	var (
 		exchange     = "smssender"
 		routingKey   = "smssender"

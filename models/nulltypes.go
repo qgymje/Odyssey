@@ -1,14 +1,9 @@
 package models
 
 import (
-	"database/sql"
 	"database/sql/driver"
 	"time"
 )
-
-type NullString sql.NullString
-type NullFloat64 sql.NullFloat64
-type NullBool sql.NullBool
 
 type NullTime struct {
 	Time  time.Time
