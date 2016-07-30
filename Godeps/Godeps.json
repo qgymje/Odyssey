@@ -93,18 +93,14 @@
 			"Rev": "27a57f2605e04995c111273c263d51cee60d9bc4"
 		},
 		{
-			"ImportPath": "github.com/jinzhu/gorm",
-			"Comment": "v1.0-50-ga646b13",
-			"Rev": "a646b13548ec0aa812fe805b2780f460dd2771b6"
+			"ImportPath": "github.com/jmoiron/sqlx",
+			"Comment": "sqlx-v1.1-73-g7396209",
+			"Rev": "7396209bbeada6a4fcc28aa9408f89b2e71cac39"
 		},
 		{
-			"ImportPath": "github.com/jinzhu/gorm/dialects/mysql",
-			"Comment": "v1.0-50-ga646b13",
-			"Rev": "a646b13548ec0aa812fe805b2780f460dd2771b6"
-		},
-		{
-			"ImportPath": "github.com/jinzhu/inflection",
-			"Rev": "8f4d3a0d04ce0b7c0cf3126fb98524246d00d102"
+			"ImportPath": "github.com/jmoiron/sqlx/reflectx",
+			"Comment": "sqlx-v1.1-73-g7396209",
+			"Rev": "7396209bbeada6a4fcc28aa9408f89b2e71cac39"
 		},
 		{
 			"ImportPath": "github.com/kr/pretty",
