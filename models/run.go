@@ -46,7 +46,6 @@ func (r *Run) Create() (err error) {
 
 func FindRunsByUserID(userID int64, orderby string, limit, offset int) (runs []*Run, err error) {
 	if err = GetDB().Select(&runs, `select * from runs where user_id = ? order by ? limit ?,?;`, userID, orderby, offset, limit); err != nil {
-		log.Println(err)
 		return
 	}
 

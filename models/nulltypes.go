@@ -41,6 +41,18 @@ func (v NullString) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func MakeNullInt64(i int64) NullInt64 {
+	if i == 0 {
+		return NullInt64{sql.NullInt64{Int64: i, Valid: false}}
+	} else {
+		return NullInt64{sql.NullInt64{Int64: i, Valid: true}}
+	}
+}
+
+type NullInt64 struct {
+	sql.NullInt64
+}
+
 type NullTime struct {
 	Time  time.Time
 	Valid bool // Valid is true if Time is not NULL

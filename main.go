@@ -49,11 +49,9 @@ func main() {
 		v1.GET("/run/:user_id", run.Index)
 		v1.GET("/run/:user_id/:run_id", run.Show)
 
-		/*
-			feedback := new(controllers.Feedback)
-			v1.POST("/feedback/create", feedback.Create)
-			v1.GET("/feedbacks", feedback.Read)
-		*/
+		feedback := new(controllers.Feedback)
+		v1.POST("/feedback/create", feedback.Create)
+		v1.GET("/feedbacks", feedback.Index)
 
 	}
 

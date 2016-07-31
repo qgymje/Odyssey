@@ -6,7 +6,7 @@ import (
 )
 
 type FeedbackForm struct {
-	UserID  uint64 `form:"user_id" binding:"required"`
+	UserID  int64  `form:"user_id" binding:"required"`
 	Content string `form:"content" binding:"required"`
 
 	valid *validation.Validation
