@@ -4,19 +4,21 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/jmoiron/sqlx"
 )
 
 // RunLocation model纪录用户的跑步过程中GPS数据
 // 仿照iOS CLRunLocation的结构
 type RunLocation struct {
-	ID        int64
+	ID        int64     `json:"run_location_id"`
 	RunID     int64     `db:"run_id" json:"run_id"`
-	Latitude  float64   `json:"lat"`
-	Longitude float64   `json:"lng"`
-	Altitude  float64   `json:"alt"`
-	Timestamp time.Time `json:"ts"`
-	Course    float64   `json:"course"`
-	Speed     float64   `json:"speed"`
+	Latitude  float64   `json:"lat" json:"latitude"`
+	Longitude float64   `json:"lng" json:"longitude"`
+	Altitude  float64   `json:"alt" json:"altitude"`
+	Timestamp time.Time `json:"ts" json:"timestamp"`
+	Course    float64   `json:"course" json:"course"`
+	Speed     float64   `json:"speed" json:"speed"`
 	CreatedAt time.Time `db:"created_at" json:"-"`
 }
 
@@ -46,6 +48,27 @@ func CreateRunLocations(runID int64, ls []*RunLocation) (err error) {
 			return fmt.Errorf("locations insert error: inserted %d, slice len is %d", cnt, len(ls))
 		}
 		return err
+	}
+
+	return
+}
+
+func FindRunLocations(runIDs []int64) (runLocations []*RunLocation, err error) {
+	query, args, err := sqlx.In(`select * from run_locations where run_id in (?);`, runIDs)
+	if err != nil {
+		return
+	}
+	query = GetDB().Rebind(query)
+	rows, err := GetDB().Queryx(query, args...)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var l RunLocation
+		err = rows.StructScan(&l)
+		runLocations = append(runLocations, &l)
 	}
 
 	return

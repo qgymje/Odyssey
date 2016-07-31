@@ -28,7 +28,7 @@ type User struct {
 
 // Fetch 从db里获取数据, 通常用于已经有了id
 func (u *User) Fetch() (err error) {
-	err = GetDB().Get(u, "select * from users where id=?", u.ID)
+	err = GetDB().Get(&u, "select * from users where id=?", u.ID)
 	return
 }
 
@@ -37,7 +37,6 @@ func (u *User) Create() (err error) {
 	now := time.Now()
 	u.CreatedAt = now
 	u.UpdatedAt = now
-	//result, err := GetDB().Exec(`insert into users(phone, email, nickname, password, salt, avatar, sex, height, weight, birthday, latitude, longitude, token, created_at, updated_at, deleted_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, u.Phone, u.Email, u.Nickname, u.Password, u.Salt, u.Avatar.String, u.Sex, u.Height, u.Weight, u.Birthday, u.Latitude, u.Longitude, u.Token, u.CreatedAt, u.UpdatedAt, u.DeletedAt)
 	result, err := GetDB().NamedExec(`insert into users(phone, email, nickname, password, salt, avatar, sex, height, weight, birthday, latitude, longitude, token, created_at, updated_at, deleted_at) values(:phone, :email, :nickname, :password, :salt, :avatar, :sex, :height, :weight, :birthday, :latitude, :longitude, :token, :created_at, :updated_at, :deleted_at)`, u)
 
 	if err != nil {

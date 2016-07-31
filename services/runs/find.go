@@ -13,6 +13,6 @@ func Find(userID int64, pageNum, pageSize int) (runs []*models.Run, err error) {
 	return
 }
 
-func FindOne(runID int64) (run *models.Run, err error) {
-	return models.FindRunByID(runID)
+func FindOne(userID, runID int64) (run *models.Run, err error) {
+	return models.FindRunByID(userID, runID)
 }

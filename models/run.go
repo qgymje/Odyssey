@@ -1,23 +1,24 @@
 package models
 
 import (
-	"database/sql"
+	"log"
 	"time"
 )
 
 // Run model 表示一个用户的一次跑步的纪录
 type Run struct {
-	ID        int64
-	UserID    int64 `db:"user_id"`
-	Distance  float64
-	Duration  int
-	IsPublic  bool `db:"is_public"`
-	Comment   sql.NullString
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
-	DeletedAt NullTime  `db:"deleted_at"`
+	ID        int64      `json:"run_id"`
+	UserID    int64      `db:"user_id" json:"user_id"`
+	Distance  float64    `json:"distance"`
+	Duration  int        `json:"duration"`
+	IsPublic  bool       `db:"is_public" json:"is_public"`
+	Comment   NullString `json:"comment"`
+	CreatedAt time.Time  `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time  `db:"updated_at" json:"updated_at"`
+	DeletedAt NullTime   `db:"deleted_at" json:"-"`
 
-	RunLocations []*RunLocation `db:"-"`
+	RunLocations []*RunLocation `db:"-" json:"locations"`
+	User         *User          `db:"-" json:"-"`
 }
 
 // Create 创建一条跑步纪录, 需要RunLocation数据
@@ -44,7 +45,8 @@ func (r *Run) Create() (err error) {
 }
 
 func FindRunsByUserID(userID int64, orderby string, limit, offset int) (runs []*Run, err error) {
-	if err = GetDB().Select(runs, `select runs.* where user_id = ? order by ? limti = ? offset = ?;`, userID, orderby, limit, offset); err != nil {
+	if err = GetDB().Select(&runs, `select * from runs where user_id = ? order by ? limit ?,?;`, userID, orderby, offset, limit); err != nil {
+		log.Println(err)
 		return
 	}
 
@@ -53,8 +55,8 @@ func FindRunsByUserID(userID int64, orderby string, limit, offset int) (runs []*
 		runIDs = append(runIDs, r.ID)
 	}
 
-	var runLocations []*RunLocation
-	if err = GetDB().Select(runLocations, `select run_locations.* from run_locations where run_id in (?);`, runIDs); err != nil {
+	runLocations, err := FindRunLocations(runIDs)
+	if err != nil {
 		return
 	}
 
@@ -70,6 +72,19 @@ func FindRunsByUserID(userID int64, orderby string, limit, offset int) (runs []*
 	return
 }
 
-func FindRunByID(runID int64) (run *Run, err error) {
-	return
+func FindRunByID(userID, runID int64) (*Run, error) {
+	var run Run
+	var err error
+	if err = GetDB().Get(&run, `select runs.* from runs where id = ? and user_id = ?`, runID, userID); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	runIDs := []int64{run.ID}
+	var runLocations []*RunLocation
+	if runLocations, err = FindRunLocations(runIDs); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	run.RunLocations = runLocations
+	return &run, nil
 }

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"Odyssey/forms"
+	"Odyssey/models"
 	"Odyssey/services/runs"
 	"errors"
 	"net/http"
@@ -50,7 +51,6 @@ func (r *Run) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, rs.RunInfo())
 }
 
-/*
 // Index 显示一个用户的所有跑步纪录
 func (r *Run) Index(c *gin.Context) {
 	var userID int
@@ -64,7 +64,7 @@ func (r *Run) Index(c *gin.Context) {
 	}
 
 	var result []*models.Run
-	result, err = runs.Find(userID, r.GetPageNum(c), r.GetPageSize(c))
+	result, err = runs.Find(int64(userID), r.GetPageNum(c), r.GetPageSize(c))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -78,9 +78,36 @@ func (r *Run) Index(c *gin.Context) {
 
 //Show 显示一条跑步纪录
 func (r *Run) Show(c *gin.Context) {
+	var userID int
+	var runID int
+	var err error
+	if userID, err = r.parseUserID(c); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+			"meta":  r.Meta(c),
+		})
+		return
+	}
 
+	if runID, err = r.parseRunID(c); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+			"meta":  r.Meta(c),
+		})
+		return
+	}
+
+	run, err := runs.FindOne(int64(userID), int64(runID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+			"meta":  r.Meta(c),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, run)
 }
-*/
 
 func (r *Run) parseUserID(c *gin.Context) (id int, err error) {
 	var idStr string

@@ -4,7 +4,6 @@ import (
 	"Odyssey/forms"
 	"Odyssey/models"
 	"Odyssey/utils"
-	"database/sql"
 	"encoding/json"
 	"time"
 )
@@ -23,7 +22,7 @@ func NewRun(form *forms.RunForm) *Run {
 		Distance:     form.Distance,
 		Duration:     form.Duration,
 		IsPublic:     form.IsPublic,
-		Comment:      sql.NullString{String: form.Comment},
+		Comment:      models.MakeNullString(form.Comment),
 		RunLocations: []*models.RunLocation{},
 	}
 	r.rawLocations = form.RunLocations

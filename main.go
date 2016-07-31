@@ -46,8 +46,8 @@ func main() {
 
 		run := new(controllers.Run)
 		v1.POST("/run/create", run.Create)
-		//	v1.GET("/run/:user_id", run.Index)
-		//v1.GET("/run/:user_id/:run_id", run.Show)
+		v1.GET("/run/:user_id", run.Index)
+		v1.GET("/run/:user_id/:run_id", run.Show)
 
 		/*
 			feedback := new(controllers.Feedback)
