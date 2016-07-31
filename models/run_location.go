@@ -13,12 +13,12 @@ import (
 type RunLocation struct {
 	ID        int64     `json:"run_location_id"`
 	RunID     int64     `db:"run_id" json:"run_id"`
-	Latitude  float64   `json:"lat" json:"latitude"`
-	Longitude float64   `json:"lng" json:"longitude"`
-	Altitude  float64   `json:"alt" json:"altitude"`
-	Timestamp time.Time `json:"ts" json:"timestamp"`
-	Course    float64   `json:"course" json:"course"`
-	Speed     float64   `json:"speed" json:"speed"`
+	Latitude  float64   `json:"latitude"`
+	Longitude float64   `json:"longitude"`
+	Altitude  float64   `json:"altitude"`
+	Timestamp time.Time `json:"timestamp"`
+	Course    float64   `json:"course"`
+	Speed     float64   `json:"speed"`
 	CreatedAt time.Time `db:"created_at" json:"-"`
 }
 
@@ -64,7 +64,6 @@ func FindRunLocations(runIDs []int64) (runLocations []*RunLocation, err error) {
 		log.Println(err)
 		return
 	}
-	defer rows.Close()
 	for rows.Next() {
 		var l RunLocation
 		err = rows.StructScan(&l)
