@@ -6,6 +6,8 @@ import (
 	"Odyssey/utils"
 	"encoding/json"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // Run 表示Services里的Run业务集合
@@ -33,7 +35,8 @@ func NewRun(form *forms.RunForm) *Run {
 func (r *Run) Do() (err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("services.Run.Do error", err)
+			err = errors.Wrap(err, "services.Run.Do error")
+			utils.GetLog().Error("%+v", err)
 		}
 	}()
 
