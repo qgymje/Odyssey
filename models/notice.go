@@ -12,3 +12,9 @@ type Notice struct {
 	ToUser      *User
 	CreatedAt   time.Time
 }
+
+type NoticeType int
+
+const (
+	NoticeTypeFeedbackReply NoticeType = iota + 1
+)
