@@ -3,8 +3,15 @@ package forms
 import "github.com/astaxie/beego/validation"
 
 type Base struct {
-	*validation.Validation
-	*errmsg
+	Valid *validation.Validation
+	Msg   *errmsg
+}
+
+func newBase() *Base {
+	return &Base{
+		Valid: &validation.Validation{},
+		Msg:   newErrmsg(),
+	}
 }
 
 type errmsg struct {

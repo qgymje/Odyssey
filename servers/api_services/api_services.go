@@ -35,6 +35,8 @@ func main() {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
+	//r.Use(middlewares.FakedLogin())
+
 	v1 := r.Group("/api/v1")
 	{
 

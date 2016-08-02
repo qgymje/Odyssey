@@ -14,10 +14,12 @@ type Feedback struct {
 }
 
 func (f *Feedback) Create(c *gin.Context) {
-	form, err := forms.NewFeedbackForm(c)
+	f.Authorization(c)
+
+	form, err := forms.NewFeedbackForm(c, f.CurrentUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": form.ErrorMsg(),
+			"error": form.Msg.ErrorMsg(),
 			"meta":  f.Meta(c),
 		})
 		return

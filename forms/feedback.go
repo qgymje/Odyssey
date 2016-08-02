@@ -1,26 +1,26 @@
 package forms
 
 import (
-	"github.com/astaxie/beego/validation"
+	"Odyssey/services/users"
+
 	"github.com/gin-gonic/gin"
 )
 
 type FeedbackForm struct {
-	UserID  int64  `form:"user_id" binding:"required"`
+	UserID  int64
 	Content string `form:"content" binding:"required"`
 
-	valid *validation.Validation
-
-	*errmsg
+	*Base
 }
 
-func NewFeedbackForm(c *gin.Context) (*FeedbackForm, error) {
-	form := &FeedbackForm{}
-	form.valid = &validation.Validation{}
-	form.errmsg = newErrmsg()
+func NewFeedbackForm(c *gin.Context, user *users.UserInfo) (*FeedbackForm, error) {
+	form := &FeedbackForm{
+		Base:   newBase(),
+		UserID: user.ID,
+	}
 
 	if err := c.Bind(form); err != nil {
-		form.formatBindError(err)
+		form.Msg.formatBindError(err)
 		return form, err
 	}
 
@@ -38,19 +38,17 @@ type FeedbackReplyForm struct {
 	FeedbackID int64
 	Reply      string `form:"reply" binding:"required"`
 
-	Base
+	*Base
 }
 
 func NewFeedbackReplyForm(c *gin.Context, feedbackID int64) (*FeedbackReplyForm, error) {
 	form := &FeedbackReplyForm{
 		FeedbackID: feedbackID,
-		Base: Base{
-			Validation: &validation.Validation{},
-			errmsg:     newErrmsg()},
+		Base:       newBase(),
 	}
 
 	if err := c.Bind(form); err != nil {
-		form.formatBindError(err)
+		form.Msg.formatBindError(err)
 		return form, err
 	}
 
@@ -70,7 +68,7 @@ func (fr *FeedbackReplyForm) Valid() (err error) {
 
 func (fr *FeedbackReplyForm) validReply() (err error) {
 	if fr.Reply == "" {
-		fr.setError("reply", "回复为空")
+		fr.Msg.setError("reply", "回复为空")
 		return
 	}
 	return

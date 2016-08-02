@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"Odyssey/models"
 	"Odyssey/utils"
 
 	"github.com/dgrijalva/jwt-go"
@@ -14,9 +15,10 @@ var ErrGenerate = errors.New("生成token错误")
 var ErrVerify = errors.New("验证token失败")
 
 type Token struct {
-	token     *jwt.Token
-	secretKey []byte
-	claims    map[string]interface{}
+	token       *jwt.Token
+	secretKey   []byte
+	claims      map[string]interface{}
+	tokenString string
 }
 
 var defaultSecretKey string
@@ -62,6 +64,7 @@ func (t *Token) Verify(tokenString string) (valid bool, err error) {
 		err = ErrVerify
 	}
 	valid = t.token.Valid
+	t.tokenString = tokenString
 
 	return
 }
@@ -69,4 +72,19 @@ func (t *Token) Verify(tokenString string) (valid bool, err error) {
 // Claims 获取jwt 里的数据
 func (t *Token) Claims() map[string]interface{} {
 	return t.token.Claims
+}
+
+func (t *Token) GetUserInfo() (*UserInfo, error) {
+	user, err := models.FindUserByToken(t.tokenString)
+	if err != nil {
+		return nil, err
+	}
+
+	ui := &UserInfo{
+		ID:        user.ID,
+		Phone:     user.Phone,
+		Token:     user.Token.String,
+		CreatedAt: user.CreatedAt,
+	}
+	return ui, nil
 }
