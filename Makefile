@@ -1,5 +1,5 @@
 pack: clean
-	cd ./servers/api_services && godep save
+	godep save
 
 clean:
 	go clean

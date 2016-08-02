@@ -27,8 +27,7 @@ func init() {
 // Create 生成一条db纪录
 func (s *SMSCode) Create() (err error) {
 	s.CreatedAt = time.Now()
-
-	result := GetDB().MustExec(`insert into `+SMSCodeTable.TableName+`(`+SMSCodeTable.Phone+`, `+SMSCodeTable.UsedAt+`, `+SMSCodeTable.CreatedAt+`) values(?,?,?)`, s.Phone, s.Code, s.CreatedAt)
+	result := GetDB().MustExec(`insert into sms_codes(phone, code, created_at) values(?,?,?)`, s.Phone, s.Code, s.CreatedAt)
 	if _, err = result.RowsAffected(); err != nil {
 		return
 	}

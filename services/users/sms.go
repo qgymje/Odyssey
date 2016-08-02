@@ -11,6 +11,8 @@ import (
 	"sync"
 	"time"
 
+	errorTrace "github.com/pkg/errors"
+
 	"github.com/streadway/amqp"
 )
 
@@ -57,7 +59,8 @@ func newSMSByRawData(phone string, code string) *SMS {
 func (s *SMS) Do() (err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("services.users.SMS.Do error: ", err)
+			err = errorTrace.Wrap(err, "services.users.SMS.Do error")
+			utils.GetLog().Error("%+v", err)
 		}
 	}()
 

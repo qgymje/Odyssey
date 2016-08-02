@@ -36,7 +36,6 @@ func (b *Base) Authorization(c *gin.Context) {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		c.Abort()
 	}
-
 	log.Println("current user: ", b.CurrentUser)
 }
 

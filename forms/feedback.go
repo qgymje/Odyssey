@@ -1,10 +1,6 @@
 package forms
 
-import (
-	"Odyssey/services/users"
-
-	"github.com/gin-gonic/gin"
-)
+import "github.com/gin-gonic/gin"
 
 type FeedbackForm struct {
 	UserID  int64
@@ -13,10 +9,10 @@ type FeedbackForm struct {
 	*Base
 }
 
-func NewFeedbackForm(c *gin.Context, user *users.UserInfo) (*FeedbackForm, error) {
+func NewFeedbackForm(c *gin.Context, userID int64) (*FeedbackForm, error) {
 	form := &FeedbackForm{
 		Base:   newBase(),
-		UserID: user.ID,
+		UserID: userID,
 	}
 
 	if err := c.Bind(form); err != nil {
