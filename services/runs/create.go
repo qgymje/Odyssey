@@ -24,7 +24,7 @@ func NewRun(form *forms.RunForm) *Run {
 		Distance:     form.Distance,
 		Duration:     form.Duration,
 		IsPublic:     form.IsPublic,
-		Comment:      models.MakeNullString(form.Comment),
+		Comment:      models.NewNullString(form.Comment),
 		RunLocations: []*models.RunLocation{},
 	}
 	r.rawLocations = form.RunLocations

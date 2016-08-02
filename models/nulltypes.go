@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func MakeNullString(s string) NullString {
+func NewNullString(s string) NullString {
 	if s == "" {
 		return NullString{sql.NullString{String: s, Valid: false}}
 	} else {
@@ -41,7 +41,7 @@ func (v NullString) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func MakeNullInt64(i int64) NullInt64 {
+func NewNullInt64(i int64) NullInt64 {
 	if i == 0 {
 		return NullInt64{sql.NullInt64{Int64: i, Valid: false}}
 	} else {

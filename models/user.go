@@ -70,7 +70,7 @@ func (u *User) UpdateToken(token string) (err error) {
 	if _, err = result.RowsAffected(); err != nil {
 		return
 	}
-	u.Token = MakeNullString(token)
+	u.Token = NewNullString(token)
 	return
 }
 
