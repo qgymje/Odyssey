@@ -45,13 +45,14 @@ func main() {
 		v1.DELETE("/logout", user.Logout)
 
 		run := new(controllers.Run)
-		v1.POST("/run/create", run.Create)
+		v1.POST("/run/:user_id", run.Create)
 		v1.GET("/run/:user_id", run.Index)
 		v1.GET("/run/:user_id/:run_id", run.Show)
 
 		feedback := new(controllers.Feedback)
-		v1.POST("/feedback/create", feedback.Create)
-		v1.GET("/feedbacks", feedback.Index)
+		v1.GET("/feedback", feedback.Index)
+		v1.POST("/feedback", feedback.Create)
+		v1.POST("/feedback/:feedback_id/reply", feedback.Reply)
 
 	}
 

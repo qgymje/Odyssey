@@ -1,5 +1,12 @@
 package forms
 
+import "github.com/astaxie/beego/validation"
+
+type Base struct {
+	*validation.Validation
+	*errmsg
+}
+
 type errmsg struct {
 	msg map[string][]string
 }

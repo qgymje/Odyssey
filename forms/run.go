@@ -18,10 +18,12 @@ type RunForm struct {
 	*errmsg
 }
 
-func NewRunForm(c *gin.Context) (*RunForm, error) {
-	form := &RunForm{}
-	form.valid = &validation.Validation{}
-	form.errmsg = newErrmsg()
+func NewRunForm(c *gin.Context, userID int64) (*RunForm, error) {
+	form := &RunForm{
+		UserID: userID,
+		valid:  &validation.Validation{},
+		errmsg: newErrmsg(),
+	}
 
 	if err := c.Bind(form); err != nil {
 		form.formatBindError(err)

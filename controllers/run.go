@@ -29,7 +29,7 @@ func (r *Run) Create(c *gin.Context) {
 		return
 	}
 
-	form, err := forms.NewRunForm(c)
+	form, err := forms.NewRunForm(c, int64(userID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": form.ErrorMsg(),
@@ -37,7 +37,6 @@ func (r *Run) Create(c *gin.Context) {
 		})
 		return
 	}
-	form.UserID = int64(userID)
 
 	rs := runs.NewRun(form)
 	if err := rs.Do(); err != nil {

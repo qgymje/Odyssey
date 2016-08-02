@@ -12,23 +12,16 @@ type SMSCode struct {
 	CreatedAt time.Time `db:"created_at"`
 }
 
+// SMSCodeTableInfo 表示column name
 type SMSCodeTableInfo struct {
-	TableName string
-	ID        string
-	Phone     string
-	UsedAt    string
-	CreatedAt string
+	TableName, ID, Phone, UsedAt, CreatedAt string
 }
 
 // SMSCodeTable table info of tablename and column names
 var SMSCodeTable SMSCodeTableInfo
 
 func init() {
-	SMSCodeTable.TableName = "sms_codes"
-	SMSCodeTable.ID = "id"
-	SMSCodeTable.Phone = "phone"
-	SMSCodeTable.UsedAt = "used_at"
-	SMSCodeTable.CreatedAt = "created_at"
+	SMSCodeTable = SMSCodeTableInfo{TableName: "sms_codes", ID: "id", Phone: "phone", UsedAt: "used_at", CreatedAt: "created_at"}
 }
 
 // Create 生成一条db纪录

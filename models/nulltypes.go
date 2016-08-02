@@ -73,6 +73,14 @@ func (nf NullFloat64) MarshalJSON() ([]byte, error) {
 	}
 }
 
+func NewNullTime(t time.Time) NullTime {
+	if t.IsZero() {
+		return NullTime{Time: t, Valid: false}
+	} else {
+		return NullTime{Time: t, Valid: true}
+	}
+}
+
 type NullTime struct {
 	Time  time.Time
 	Valid bool // Valid is true if Time is not NULL
