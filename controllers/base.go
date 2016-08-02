@@ -34,6 +34,7 @@ func (b *Base) Authorization(c *gin.Context) {
 func (b *Base) Meta(c *gin.Context) map[string]interface{} {
 	return map[string]interface{}{
 		"timestamp": time.Now(),
+		"url":       "http://" + c.Request.Host + c.Request.URL.String(),
 	}
 }
 

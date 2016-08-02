@@ -1,29 +1,26 @@
 package models
 
-import (
-	"database/sql"
-	"time"
-)
+import "time"
 
 // User model 表示一个用户
 type User struct {
-	ID        int64
-	Phone     string
-	Email     sql.NullString // 通过email向register发送用户统计数据
-	Nickname  sql.NullString
-	Password  string
-	Salt      string
-	Avatar    sql.NullString
-	Sex       NullUint8
-	Height    NullUint8
-	Weight    NullUint8
-	Birthday  NullTime
-	Latitude  sql.NullFloat64
-	Longitude sql.NullFloat64
-	Token     sql.NullString
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
-	DeletedAt NullTime  `db:"deleted_at"`
+	ID        int64       `json:"user_id"`
+	Phone     string      `json:"phone"`
+	Email     NullString  `json:"email"` // 通过email向register发送用户统计数据
+	Nickname  NullString  `json:"nickname"`
+	Password  string      `json:"-"`
+	Salt      string      `json:"-"`
+	Avatar    NullString  `json:"avatar"`
+	Sex       NullUint8   `json:"sex"`
+	Height    NullUint8   `json:"height"`
+	Weight    NullUint8   `json:"weight"`
+	Birthday  NullTime    `json:"birthday"`
+	Latitude  NullFloat64 `json:"latitude"`
+	Longitude NullFloat64 `json:"longitude"`
+	Token     NullString  `json:"-"`
+	CreatedAt time.Time   `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time   `db:"updated_at" json:"-"`
+	DeletedAt NullTime    `db:"deleted_at" json:"-"`
 }
 
 // Fetch 从db里获取数据, 通常用于已经有了id
@@ -73,7 +70,7 @@ func (u *User) UpdateToken(token string) (err error) {
 	if _, err = result.RowsAffected(); err != nil {
 		return
 	}
-	u.Token = sql.NullString{String: token}
+	u.Token = MakeNullString(token)
 	return
 }
 

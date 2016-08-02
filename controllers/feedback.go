@@ -37,5 +37,14 @@ func (f *Feedback) Create(c *gin.Context) {
 
 // 读取反馈数据,需要一个专门的auth_key
 func (f *Feedback) Index(c *gin.Context) {
+	fbs, err := feedbacks.Find()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+			"meta":  f.Meta(c),
+		})
+		return
+	}
 
+	c.JSON(http.StatusOK, fbs)
 }

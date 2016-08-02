@@ -5,7 +5,7 @@ import "time"
 type GameValidationState int
 
 const (
-	GameValidationStateUnValid GameValidationState = iota
+	GameValidationStateInValid GameValidationState = iota
 	GameValidationStateValidating
 	GameValidationStateFailed
 	GameValidationStateSucceeded

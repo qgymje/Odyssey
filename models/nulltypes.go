@@ -53,6 +53,26 @@ type NullInt64 struct {
 	sql.NullInt64
 }
 
+func (ni NullInt64) MarshalJSON() ([]byte, error) {
+	if ni.Valid {
+		return json.Marshal(ni.Int64)
+	} else {
+		return json.Marshal(nil)
+	}
+}
+
+type NullFloat64 struct {
+	sql.NullFloat64
+}
+
+func (nf NullFloat64) MarshalJSON() ([]byte, error) {
+	if nf.Valid {
+		return json.Marshal(nf.Float64)
+	} else {
+		return json.Marshal(nil)
+	}
+}
+
 type NullTime struct {
 	Time  time.Time
 	Valid bool // Valid is true if Time is not NULL
