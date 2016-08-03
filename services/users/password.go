@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	ErrPasswordTooLong  = errors.New("密码不能长于16位")
+	// should remove for security issuse
 	ErrPasswordTooShort = errors.New("密码不能小于6位")
 )
 
@@ -84,10 +84,6 @@ func (p *Password) Encryped() string {
 }
 
 func (p *Password) Valid() error {
-	if p.Len() > PasswordMax {
-		return ErrPasswordTooLong
-	}
-
 	if p.Len() < PasswordMin {
 		return ErrPasswordTooShort
 	}

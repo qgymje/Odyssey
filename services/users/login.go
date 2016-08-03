@@ -87,15 +87,22 @@ func (s *Login) updateToken() (err error) {
 type UserInfo struct {
 	ID        int64     `json:"id"`
 	Phone     string    `json:"phone"`
+	Nickname  string    `json:"nickname"`
 	Token     string    `json:"token"`
 	Avatar    string    `json:"avatar"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+// DefaultAvatar 生成根据nickname第一个字母的图片, 以及随机的背景颜色
+func (u *UserInfo) DefaultAvatar() {
+
 }
 
 func (s *Login) UserInfo() *UserInfo {
 	u := &UserInfo{
 		ID:        s.userModel.ID,
 		Phone:     s.userModel.Phone,
+		Nickname:  s.userModel.Nickname.String,
 		Avatar:    s.userModel.Avatar.String,
 		Token:     s.userModel.Token.String,
 		CreatedAt: s.userModel.CreatedAt,

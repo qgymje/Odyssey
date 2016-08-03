@@ -3,7 +3,7 @@ package feedbacks
 import (
 	"Odyssey/forms"
 	"Odyssey/models"
-	"Odyssey/services/notices"
+	"Odyssey/services/notifications"
 	"Odyssey/utils"
 
 	"github.com/pkg/errors"
@@ -23,7 +23,7 @@ func NewFeedbackReply(form *forms.FeedbackReplyForm) *FeedbackReply {
 	}
 }
 
-// Reply 回复用户反馈
+// Do 回复用户反馈
 func (r *FeedbackReply) Do() (err error) {
 	defer func() {
 		if err != nil {
@@ -39,13 +39,14 @@ func (r *FeedbackReply) Do() (err error) {
 }
 
 func (r *FeedbackReply) addNotice() (err error) {
-	return notices.AddNotice(r)
+	return notifications.AddNotice(r)
 }
 
 //=========================================
 // start implement Notice interface
 //=========================================
-func (r *FeedbackReply) Type() models.NoticeType {
+// Type 表明通知的类型
+func (r *FeedbackReply) Type() models.EventType {
 	return models.NoticeTypeFeedbackReply
 }
 

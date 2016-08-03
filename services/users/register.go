@@ -77,6 +77,10 @@ func (s *Register) useSMSCode() (err error) {
 
 // save 将数据保存到db
 func (s *Register) saveUser() (err error) {
+	if err = s.password.Valid(); err != nil {
+		return
+	}
+
 	s.userModel.Phone = s.phone
 	s.userModel.Salt = s.password.GenSalt()
 	s.userModel.Password = s.password.GenPwd()

@@ -4,8 +4,8 @@ import "time"
 
 // Notice model 表示一个通知
 // 比如通知用户比赛
-type Notice struct {
-	Id          uint64 `json:"notice_id"`
+type Notification struct {
+	ID          int64  `json:"notification_id"`
 	EventSource string `json:"event_source"` // 代表来源于哪个表的数据
 	EventId     uint64 `json:"event_id"`
 	Message     string
@@ -13,8 +13,8 @@ type Notice struct {
 	CreatedAt   time.Time
 }
 
-type NoticeType int
+type EventType int
 
 const (
-	NoticeTypeFeedbackReply NoticeType = iota + 1
+	NoticeTypeFeedbackReply EventType = iota + 1
 )
