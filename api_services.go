@@ -49,22 +49,22 @@ func main() {
 		feedback := new(controllers.Feedback)
 		v1.GET("/feedback", feedback.Index)
 		v1.POST("/feedback", feedback.Create)
-		v1.POST("/feedback/:feedback_id/reply", feedback.Reply)
+		v1.POST("/feedback/reply/:feedback_id", feedback.Reply)
 
 		run := new(controllers.Run)
-		v1.POST("/run/user/:user_id", run.Create)
-		v1.GET("/run/user/:user_id", run.Index)
-		v1.GET("/run/:run_id/user/:user_id", run.Show)
+		v1.POST("/run", run.Create)                    // 上传一条跑步纪录
+		v1.GET("/run/user/:user_id", run.Index)        // 某用户跑步纪录列表
+		v1.GET("/user/run/:user_id/:run_id", run.Show) // 某一用户的某一跑步纪录
 
 		runLike := new(controllers.RunLike)
-		v1.POST("/run/:run_id/like", runLike.Like)
-		v1.POST("/run/:run_id/unlike", runLike.Unlike)
+		v1.POST("/run/like/:run_id", runLike.Like)
+		v1.POST("/run/unlike/:run_id", runLike.Unlike)
 
 		runComment := new(controllers.RunComment)
-		v1.GET("/run/:run_id/comment", runComment.Index)
-		v1.GET("/run/:run_id/comment/:comment_id", runComment.Show)
-		v1.POST("/run/:run_id/comment", runComment.Comment)
-		v1.POST("/run/:run_id/comment/:comment_id", runComment.Reply)
+		v1.GET("/run/comments/:run_id", runComment.Index)
+		v1.GET("/comment/:comment_id", runComment.Show)
+		v1.POST("/comment", runComment.Comment)
+		v1.POST("/comment/reply/:comment_id", runComment.Reply)
 
 		game := new(controllers.Game)
 		v1.GET("/game", game.Index)
@@ -74,13 +74,13 @@ func main() {
 		v1.DELETE("/game", game.Destroy)
 
 		register := new(controllers.Register)
-		v1.POST("/register/:game_id", register.Create)
-		v1.POST("/register/:register_id/pay", register.Pay)
-		v1.POST("/register/:register_id/cancel", register.PayCancel)
-		v1.POST("/register/:register_id/refund", register.PayRefund)
+		v1.POST("/register/game/:game_id", register.Create)
+		v1.POST("/register/pay/:register_id", register.Pay)
+		v1.POST("/register/cancel/:register_id", register.PayCancel)
+		v1.POST("/register/refund/:register_id", register.PayRefund)
 
-		v1.GET("/user/:user_id", user.Profile)
-		v1.GET("/user/users/around", user.Around) // 用户周围的人
+		v1.GET("/user/profile/:user_id", user.Profile)
+		v1.GET("/user/around", user.Around) // 用户周围的人
 		v1.GET("/user/games", user.Games)
 		v1.GET("/user/friends", user.Friends)
 		v1.GET("/user/groups", user.Groups)

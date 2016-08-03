@@ -88,6 +88,7 @@ type UserInfo struct {
 	ID        int64     `json:"id"`
 	Phone     string    `json:"phone"`
 	Token     string    `json:"token"`
+	Avatar    string    `json:"avatar"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -95,6 +96,7 @@ func (s *Login) UserInfo() *UserInfo {
 	u := &UserInfo{
 		ID:        s.userModel.ID,
 		Phone:     s.userModel.Phone,
+		Avatar:    s.userModel.Avatar.String,
 		Token:     s.userModel.Token.String,
 		CreatedAt: s.userModel.CreatedAt,
 	}
