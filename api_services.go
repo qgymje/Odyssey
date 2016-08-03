@@ -45,6 +45,8 @@ func main() {
 		v1.POST("/register", user.Register)
 		v1.POST("/login", user.Login)
 		v1.DELETE("/logout", user.Logout)
+		v1.POST("/foundpassword", user.FoundPassword) //找回密码
+		v1.POST("/resetpassword", user.ResetPassword) // 修改密码
 
 		feedback := new(controllers.Feedback)
 		v1.GET("/feedback", feedback.Index)
@@ -74,7 +76,7 @@ func main() {
 		v1.DELETE("/game", game.Destroy)
 
 		register := new(controllers.Register)
-		v1.POST("/register/game/:game_id", register.Create)
+		v1.POST("/game/register/:game_id", register.Create)
 		v1.POST("/register/pay/:register_id", register.Pay)
 		v1.POST("/register/cancel/:register_id", register.PayCancel)
 		v1.POST("/register/refund/:register_id", register.PayRefund)
@@ -90,8 +92,8 @@ func main() {
 		v1.GET("/group/:group_id", group.Show)
 		v1.POST("/group", group.Create)
 		v1.PUT("/group/:group_id", group.Update)
-		v1.POST("/group/:group_id/join", group.Join)
-		v1.DELETE("/group/:group_id/quit", group.Quit)
+		v1.POST("/group/join/:group_id", group.Join)
+		v1.DELETE("/group/quit/:group_id", group.Quit)
 
 	}
 

@@ -108,6 +108,14 @@ func (u *User) Logout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": 200})
 }
 
+func (u *User) FoundPassword(c *gin.Context) {
+
+}
+
+func (u *User) ResetPassword(c *gin.Context) {
+
+}
+
 func (u *User) Profile(c *gin.Context) {
 
 }
