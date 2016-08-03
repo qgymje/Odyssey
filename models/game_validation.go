@@ -19,10 +19,12 @@ func (g GameValidationState) String() string {
 	return gameValidationStateDesc[g]
 }
 
-// GameValidation model 表示一个比赛的完全进度
+// GameValidation model 表示一个比赛的审核进度
 type GameValidation struct {
-	Id        uint64
-	Game      *Game
+	ID        int64
+	GameID    int64
 	Status    GameValidationState
 	CreatedAt time.Time
+
+	Game *Game
 }
