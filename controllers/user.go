@@ -107,3 +107,23 @@ func (u *User) Logout(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"status": 200})
 }
+
+func (u *User) Profile(c *gin.Context) {
+
+}
+
+func (u *User) Around(c *gin.Context) {
+
+}
+
+func (u *User) Games(c *gin.Context) {
+
+}
+
+func (u *User) Friends(c *gin.Context) {
+
+}
+
+func (u *User) Groups(c *gin.Context) {
+
+}

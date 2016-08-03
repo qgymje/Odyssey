@@ -32,6 +32,7 @@ func (s *errmsg) setError(key, msg string) {
 	s.msg[key] = append(s.msg[key], msg)
 }
 
+// maybe can implement the Error() string method
 func (s *errmsg) ErrorMsg() map[string][]string {
 	return s.msg
 }
