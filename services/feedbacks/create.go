@@ -15,7 +15,7 @@ type Feedback struct {
 func NewFeedback(form *forms.FeedbackForm) *Feedback {
 	fb := new(Feedback)
 	fb.fbModel = &models.Feedback{
-		UserID:  models.NewNullInt64(form.UserID),
+		UserID:  models.ToNullInt64(form.UserID),
 		Content: form.Content,
 		IsRead:  false,
 	}

@@ -71,7 +71,7 @@ func (u *User) UpdateToken(token string) (err error) {
 	if _, err = result.RowsAffected(); err != nil {
 		return
 	}
-	u.Token = NewNullString(token)
+	u.Token = ToNullString(token)
 	return
 }
 

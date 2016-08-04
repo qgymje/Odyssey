@@ -19,7 +19,10 @@ type RunComment struct {
 // Create 创建一个评论/回复
 func (rc *RunComment) Create() (err error) {
 	rc.CreatedAt = time.Now()
-	result, err := GetDB().NamedExec(`insert into run_comments(run_id, user_id, parent_comment_id, content) value(:run_id, :user_id, :parent_comment_id, :content, :created_at)`, rc)
+	result, err := GetDB().NamedExec(`
+insert into run_comments(run_id, user_id, parent_comment_id, content)
+values(:run_id, :user_id, :parent_comment_id, :content, :created_at)
+`, rc)
 	if err != nil {
 		return
 	}
@@ -33,7 +36,14 @@ func (rc *RunComment) Create() (err error) {
 }
 
 func FindComments(runID int64, order string, limit, offset int) (comments []*RunComment, err error) {
-	rows, err := GetDB().Queryx(`select c.id as comment_id, c.run_id, c.user_id, c.parent_comment_id, c.content, c.created_at, u.id, u.nickname, u.avatar, u2.id, u2.nickname, u2.avatar from run_comments as c inner join users as u on c.user_id = u.id left join run_comments as c2 on u.parent_comment_id = c2.id left join users as u2 on c2.user_id = u2.id where c.run_id = ? order by c.created_at desc limit ?, ?`, runID, offset, limit)
+	rows, err := GetDB().Queryx(`
+select c.id as comment_id, c.run_id, c.user_id, c.parent_comment_id, c.content, c.created_at,
+u.id, u.nickname, u.avatar, u2.id, u2.nickname, u2.avatar from run_comments as c
+inner join users as u on c.user_id = u.id
+left join run_comments as c2 on u.parent_comment_id = c2.id
+left join users as u2 on c2.user_id = u2.id
+where c.run_id = ? order by c.created_at desc limit ?, ?
+`, runID, offset, limit)
 	if err != nil {
 		return
 	}

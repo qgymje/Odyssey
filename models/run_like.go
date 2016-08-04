@@ -15,7 +15,7 @@ type RunLike struct {
 
 func (l *RunLike) Create() (err error) {
 	l.CreatedAt = time.Now()
-	result, err := GetDB().NamedExec(`insert into run_likes(run_id, user_id, is_canceled, created_at) value(:run_id, :user_id, :is_canceled, :created_at)`, l)
+	result, err := GetDB().NamedExec(`insert into run_likes(run_id, user_id, is_canceled, created_at) values(:run_id, :user_id, :is_canceled, :created_at)`, l)
 	if err != nil {
 		return
 	}

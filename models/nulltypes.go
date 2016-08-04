@@ -7,12 +7,8 @@ import (
 	"time"
 )
 
-func NewNullString(s string) NullString {
-	if s == "" {
-		return NullString{sql.NullString{String: s, Valid: false}}
-	} else {
-		return NullString{sql.NullString{String: s, Valid: true}}
-	}
+func ToNullString(s string) NullString {
+	return NullString{sql.NullString{String: s, Valid: s != ""}}
 }
 
 type NullString struct {
@@ -41,12 +37,8 @@ func (v NullString) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func NewNullInt64(i int64) NullInt64 {
-	if i == 0 {
-		return NullInt64{sql.NullInt64{Int64: i, Valid: false}}
-	} else {
-		return NullInt64{sql.NullInt64{Int64: i, Valid: true}}
-	}
+func ToNullInt64(i int64) NullInt64 {
+	return NullInt64{sql.NullInt64{Int64: i, Valid: i == 0}}
 }
 
 type NullInt64 struct {
@@ -74,11 +66,7 @@ func (nf NullFloat64) MarshalJSON() ([]byte, error) {
 }
 
 func NewNullTime(t time.Time) NullTime {
-	if t.IsZero() {
-		return NullTime{Time: t, Valid: false}
-	} else {
-		return NullTime{Time: t, Valid: true}
-	}
+	return NullTime{Time: t, Valid: !t.IsZero()}
 }
 
 type NullTime struct {
