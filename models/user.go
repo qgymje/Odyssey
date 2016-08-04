@@ -9,7 +9,7 @@ type User struct {
 	Email              NullString  `json:"email"` // 通过email向register发送用户统计数据
 	Nickname           NullString  `json:"nickname"`
 	Password           string      `json:"-"`
-	PasswordResetToken NullString  `json:"-"` // 用于忘记密码时候生成的token用
+	PasswordResetToken NullString  `db:"password_reset_token" json:"-"` // 用于忘记密码时候生成的token用
 	Salt               string      `json:"-"`
 	Avatar             NullString  `json:"avatar"`
 	Sex                NullUint8   `json:"sex"`

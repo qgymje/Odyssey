@@ -61,8 +61,8 @@ func main() {
 		v1.GET("/user/run/:user_id/:run_id", run.Show) // 某一用户的某一跑步纪录
 
 		runLike := new(controllers.RunLike)
-		v1.POST("/run/like/:run_id", runLike.Like)
-		v1.POST("/run/unlike/:run_id", runLike.Unlike)
+		v1.POST("/run/like", runLike.Like)
+		v1.POST("/run/unlike", runLike.Unlike)
 
 		runComment := new(controllers.RunComment)
 		v1.GET("/run/comments/:run_id", runComment.Index)

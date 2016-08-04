@@ -87,12 +87,11 @@ DROP TABLE IF EXISTS `run_likes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `run_likes` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `run_id` bigint(20) NOT NULL,
   `user_id` bigint(20) NOT NULL,
   `is_canceled` tinyint(1) DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  UNIQUE KEY `run_user_id` (`run_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -200,4 +199,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-04  8:17:01
+-- Dump completed on 2016-08-04 15:29:51
