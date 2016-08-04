@@ -1,6 +1,12 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"Odyssey/forms"
+	"Odyssey/services/runs/comments"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 type RunComment struct {
 	Base
@@ -15,10 +21,28 @@ func (rc *RunComment) Index(c *gin.Context) {
 func (rc *RunComment) Show(c *gin.Context) {
 }
 
-// Comment 回复一个run
+// Comment 评论/回复一个run
 func (rc *RunComment) Comment(c *gin.Context) {
-}
+	rc.Authorization(c)
+	form, err := forms.NewRunCommentForm(c, rc.CurrentUser.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": form.Msg.ErrorMsg(),
+			"meta":  rc.Meta(c),
+		})
+		return
+	}
 
-// Reply 回复一个comment
-func (rc *RunComment) Reply(c *gin.Context) {
+	comment := comments.NewRunComment(form)
+	if err = comment.Do(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+			"meta":  rc.Meta(c),
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":         200,
+		"run_comment_id": comment.CommentID(),
+	})
 }

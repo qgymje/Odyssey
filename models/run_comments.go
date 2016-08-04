@@ -12,15 +12,15 @@ type RunComment struct {
 	Content   string    `json:"conente"`
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
 
-	CommentUser *User // 评论人的信息
-	ReplyUser   *User // 如果是回复, 则有回复人信息, 如果是评论, 则为nil
+	CommentUser *User `db:"-"` // 评论人的信息
+	ReplyUser   *User `db:"-"` // 如果是回复, 则有回复人信息, 如果是评论, 则为nil
 }
 
 // Create 创建一个评论/回复
 func (rc *RunComment) Create() (err error) {
 	rc.CreatedAt = time.Now()
 	result, err := GetDB().NamedExec(`
-insert into run_comments(run_id, user_id, parent_comment_id, content)
+insert into run_comments(run_id, user_id, parent_comment_id, content, created_at)
 values(:run_id, :user_id, :parent_comment_id, :content, :created_at)
 `, rc)
 	if err != nil {

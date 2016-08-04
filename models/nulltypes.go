@@ -38,7 +38,7 @@ func (v NullString) UnmarshalJSON(data []byte) error {
 }
 
 func ToNullInt64(i int64) NullInt64 {
-	return NullInt64{sql.NullInt64{Int64: i, Valid: i == 0}}
+	return NullInt64{sql.NullInt64{Int64: i, Valid: i != 0}}
 }
 
 type NullInt64 struct {

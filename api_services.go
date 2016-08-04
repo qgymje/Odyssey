@@ -68,7 +68,6 @@ func main() {
 		v1.GET("/run/comments/:run_id", runComment.Index)
 		v1.GET("/comment/:comment_id", runComment.Show)
 		v1.POST("/comment", runComment.Comment)
-		v1.POST("/comment/reply/:comment_id", runComment.Reply)
 
 		game := new(controllers.Game)
 		v1.GET("/game", game.Index)
