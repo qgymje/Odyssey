@@ -60,6 +60,7 @@ func FindFeedbacks(order string, limit int, offset int) ([]*Feedback, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var f Feedback
 		f.User = &User{}

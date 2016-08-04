@@ -33,6 +33,7 @@ func FindRunLikes(runID int64, order string, limit, offset int) (likes []*RunLik
 	if err != nil {
 		return
 	}
+	defer rows.Close()
 	for rows.Next() {
 		l := RunLike{
 			User: &User{},

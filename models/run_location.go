@@ -64,6 +64,7 @@ func FindRunLocations(runIDs []int64) (runLocations []*RunLocation, err error) {
 		log.Println(err)
 		return
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var l RunLocation
 		err = rows.StructScan(&l)

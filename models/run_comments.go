@@ -47,6 +47,7 @@ where c.run_id = ? order by c.created_at desc limit ?, ?
 	if err != nil {
 		return
 	}
+	defer rows.Close()
 	for rows.Next() {
 		c := RunComment{
 			CommentUser: &User{},

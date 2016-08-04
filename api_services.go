@@ -28,7 +28,9 @@ func init() {
 	utils.InitConfig("./configs/")
 	utils.InitLogger()
 	utils.InitRander()
-	models.InitModels()
+	if err := models.InitModels(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
@@ -98,5 +100,7 @@ func main() {
 	}
 
 	port := utils.GetConf().GetString("app.http_port")
-	r.Run(":" + port)
+	if err := r.Run(":" + port); err != nil {
+		log.Fatal(err)
+	}
 }
