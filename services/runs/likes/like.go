@@ -16,15 +16,14 @@ func NewRunLike(runID, userID int64) *RunLike {
 }
 
 func (l *RunLike) Like() (err error) {
-	if err = l.likeModel.Create(); err != nil {
+	if err = l.likeModel.Like(); err != nil {
 		return
 	}
 	return
 }
 
 func (l *RunLike) Unlike() (err error) {
-	l.likeModel.IsCanceled = true
-	if err = l.likeModel.Create(); err != nil {
+	if err = l.likeModel.Unlike(); err != nil {
 		return
 	}
 	return

@@ -12,6 +12,16 @@ type RunLike struct {
 	User *User `json:"user"`
 }
 
+func (l *RunLike) Like() error {
+	l.IsCanceled = false
+	return l.Create()
+}
+
+func (l *RunLike) Unlike() error {
+	l.IsCanceled = true
+	return l.Create()
+}
+
 func (l *RunLike) Create() (err error) {
 	l.CreatedAt = time.Now()
 	result, err := GetDB().NamedExec(`

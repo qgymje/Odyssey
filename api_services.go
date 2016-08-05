@@ -7,13 +7,16 @@ import (
 	"Odyssey/utils"
 	"flag"
 	"log"
+	"os"
+	"runtime/pprof"
 
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	env    = flag.String("env", "dev", "设置运行环境, 有dev, test, prod三种配置环境")
-	syncdb = flag.Bool("syncdb", false, "set syncdb")
+	env        = flag.String("env", "dev", "设置运行环境, 有dev, test, prod三种配置环境")
+	syncdb     = flag.Bool("syncdb", false, "set syncdb")
+	cpuprofile = flag.String("cpuprofile", "", "cpu profile")
 )
 
 func initEnv() {
@@ -34,6 +37,15 @@ func init() {
 }
 
 func main() {
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
@@ -49,6 +61,10 @@ func main() {
 		v1.DELETE("/logout", user.Logout)
 		v1.POST("/foundpassword", user.FoundPassword) //找回密码
 		v1.POST("/resetpassword", user.ResetPassword) // 修改密码
+
+		v1.POST("/user/follow", user.Follow)
+		v1.POST("/user/unfollow", user.Unfollow)
+		v1.Get("/user/folloers", user.Followers)
 
 		feedback := new(controllers.Feedback)
 		v1.GET("/feedback", feedback.Index)
