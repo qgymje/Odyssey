@@ -115,19 +115,6 @@ func (u *User) FoundPassword(c *gin.Context) {
 func (u *User) ResetPassword(c *gin.Context) {
 
 }
-
-func (u *User) Follow(c *gin.Context) {
-
-}
-
-func (u *User) Unfollow(c *gin.Context) {
-
-}
-
-func (u *User) Followers(c *gin.Context) {
-
-}
-
 func (u *User) Profile(c *gin.Context) {
 
 }

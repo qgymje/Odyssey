@@ -64,7 +64,7 @@ func main() {
 
 		v1.POST("/user/follow", user.Follow)
 		v1.POST("/user/unfollow", user.Unfollow)
-		v1.Get("/user/folloers", user.Followers)
+		v1.GET("/user/followers", user.Followers)
 
 		feedback := new(controllers.Feedback)
 		v1.GET("/feedback", feedback.Index)
