@@ -42,15 +42,16 @@ func (r *FeedbackReply) addNotice() (err error) {
 	return notifications.AddNotice(r)
 }
 
+// Type 实现nofitications接口
 //=========================================
 // start implement Notice interface
 //=========================================
 // Type 表明通知的类型
-func (r *FeedbackReply) Type() models.EventType {
+func (r FeedbackReply) Type() models.EventType {
 	return models.NoticeTypeFeedbackReply
 }
 
-func (r *FeedbackReply) Messages() map[int64]string {
+func (r FeedbackReply) Messages() map[int64]string {
 	m := map[int64]string{
 		r.feedbackModel.UserID.Int64: r.content,
 	}

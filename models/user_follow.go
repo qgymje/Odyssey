@@ -23,7 +23,7 @@ func (f *Follow) UnFollow() (err error) {
 func (f *Follow) Create() (err error) {
 	f.CreatedAt = time.Now()
 	result, err := GetDB().NamedExec(`
-replace into run_follows(from_user_id, to_user_id, is_canceled, created_at) values(:from_user_id, :to_user_id, :is_canceled, :created_at)
+replace into user_follows(from_user_id, to_user_id, is_canceled, created_at) values(:from_user_id, :to_user_id, :is_canceled, :created_at)
 `, f)
 	if err != nil {
 		return

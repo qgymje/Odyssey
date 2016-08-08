@@ -22,9 +22,9 @@ func (p PayState) String() string {
 
 // Payment 纪录一次支付操作
 type Payment struct {
-	Id       uint64 `json:"payment_id"`
-	Register *Register
-	Status   PayState
+	Id     uint64 `json:"payment_id"`
+	Order  *Order
+	Status PayState
 	// 支付异常时候的额外信息
 	Mark      string
 	CreatedAt time.Time

@@ -9,7 +9,7 @@ type UserFollow struct {
 	modelFollow *models.Follow
 }
 
-func NewUserFollow(form forms.UserFollowForm) *UserFollow {
+func NewUserFollow(form *forms.UserFollowForm) *UserFollow {
 	uf := &UserFollow{
 		modelFollow: &models.Follow{
 			FromUserID: form.FromUserID,
@@ -34,10 +34,10 @@ func (f *UserFollow) UnFollow() (err error) {
 }
 
 func (f *UserFollow) Followers() (err error) {
-
+	return
 }
 
 // CommonFollow 查找共同关注的人
 func (f *UserFollow) CommonFollow() (err error) {
-
+	return
 }

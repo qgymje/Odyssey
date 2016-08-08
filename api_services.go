@@ -62,14 +62,15 @@ func main() {
 		v1.POST("/foundpassword", user.FoundPassword) //找回密码
 		v1.POST("/resetpassword", user.ResetPassword) // 修改密码
 
-		v1.POST("/user/follow", user.Follow)
-		v1.POST("/user/unfollow", user.Unfollow)
-		v1.GET("/user/followers", user.Followers)
+		follow := new(controllers.UserFollow)
+		v1.POST("/user/follow", follow.Follow)
+		v1.PUT("/user/unfollow", follow.Unfollow)
+		v1.GET("/user/followers", follow.Followers)
 
 		feedback := new(controllers.Feedback)
 		v1.GET("/feedback", feedback.Index)
 		v1.POST("/feedback", feedback.Create)
-		v1.POST("/feedback/reply/:feedback_id", feedback.Reply)
+		v1.PUT("/feedback/reply/:feedback_id", feedback.Reply)
 
 		run := new(controllers.Run)
 		v1.POST("/run", run.Create)                    // 上传一条跑步纪录
@@ -78,7 +79,7 @@ func main() {
 
 		runLike := new(controllers.RunLike)
 		v1.POST("/run/like", runLike.Like)
-		v1.POST("/run/unlike", runLike.Unlike)
+		v1.PUT("/run/unlike", runLike.Unlike)
 
 		runComment := new(controllers.RunComment)
 		v1.GET("/run/comments/:run_id", runComment.Index)
