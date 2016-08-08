@@ -10,19 +10,23 @@ model层
 service层
 ----
 
-所有的业务写到此, service层可组合成新的业务, 所有的controller层只能调业务层, 不能调用model层的任何方法(除了初始化db, InitModels()在server启动时可以被调用外), services层可调用model层的方法.
+所有的业务写到此, service层可组合成新的业务, 所有的controller层只能调业务层, 不能跨层调用, services层可调用model层的方法.
 
-form层
-----
-form层用于解析http.Request里绑定的数据, 然后传给service层作为DataConfig层调用
-1. 核心是下层不能知道上层的任何东西, 所以目前service层使用form层的对象是错误的, service层不能知道form层对象
-2. 之所以有form层是因为让service层更加通用, service层不必关心请求来自于http还是cli,或者mq, 只关心数据, 这样让service层可以工作更多
+service层不必关心请求来自于http还是cli,或者worker, 只关心数据, 这样让service层可以工作更多
+
+解除service层对binging层的依赖
+
+下层不能知道上层的任何东西, 所以目前service层使用controller层的对象是错误的, service层不能知道上层的任何对象, 如果services层需要一个对象, 则定义一个接口, 让上层去实现此接口, 从而解除对上层的依赖
 
 
 controller层
 ----
 
-controller层借用form层用于绑定数据, 以及做业务层前的检测, 通过middlerware层用于简单业务逻辑共享. 禁止调用model层的方法
+controller层借用binging层用于绑定数据, 以及做业务层前的检测, 通过middlerware层用于简单业务逻辑共享. 禁止调用model层的方法
+
+binding层用于解析http.Request里绑定的数据, 然后传给service层作为DataConfig层调用
+
+middlewares 用于通用的HTTP操作, 比如CSRF控制 CORS请求, Gzip response等
 
 
 worker层
