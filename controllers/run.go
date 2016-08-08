@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"Odyssey/forms"
 	"Odyssey/models"
 	"Odyssey/services/runs"
 	"errors"
@@ -29,7 +28,7 @@ func (r *Run) Create(c *gin.Context) {
 		return
 	}
 
-	form, err := forms.NewRunForm(c, int64(userID))
+	form, err := NewRunForm(c, int64(userID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": form.ErrorMsg(),

@@ -1,7 +1,6 @@
 package users
 
 import (
-	"Odyssey/forms"
 	"Odyssey/models"
 	"Odyssey/utils"
 	"encoding/json"
@@ -37,13 +36,19 @@ type SMS struct {
 	smscodeModel *models.SMSCode
 }
 
+// SMSConfig 用于此服务的配置数据
+// 并且移除对上层form层的依赖
+type SMSConfig struct {
+	Phone string
+}
+
 // NewSMS 用于生成一个验证码对象, 用于生成验证码
-func NewSMS(form *forms.SMSCodeForm) *SMS {
+func NewSMS(config *SMSConfig) *SMS {
 	// make sure the mq service is started
 	once.Do(initSMS)
 
 	s := new(SMS)
-	s.phone = form.Phone
+	s.phone = config.Phone
 	s.smscodeModel = &models.SMSCode{}
 	return s
 }

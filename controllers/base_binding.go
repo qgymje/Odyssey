@@ -1,17 +1,17 @@
-package forms
+package controllers
 
 import (
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 )
 
-type Base struct {
+type BaseBinding struct {
 	Valid *validation.Validation
 	Msg   *errmsg
 }
 
-func newBase() *Base {
-	return &Base{
+func newBaseBinding() *BaseBinding {
+	return &BaseBinding{
 		Valid: &validation.Validation{},
 		Msg:   newErrmsg(),
 	}
@@ -42,6 +42,6 @@ func (s *errmsg) setError(key, msg string) {
 }
 
 // maybe can implement the Error() string method
-func (s *errmsg) ErrorMsg() map[string][]string {
+func (s *errmsg) Error() map[string][]string {
 	return s.msg
 }

@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	"Odyssey/forms"
 	"Odyssey/services/feedbacks"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,16 +14,16 @@ type Feedback struct {
 func (f *Feedback) Create(c *gin.Context) {
 	f.Authorization(c)
 
-	form, err := forms.NewFeedbackForm(c, f.CurrentUser.ID)
+	binding, err := NewFeedbackBinding(c, f.CurrentUser.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": form.Msg.ErrorMsg(),
+			"error": binding.Msg.Error(),
 			"meta":  f.Meta(c),
 		})
 		return
 	}
 
-	fb := feedbacks.NewFeedback(form)
+	fb := feedbacks.NewFeedback(binding.Config())
 	if err := fb.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -57,26 +55,18 @@ func (f *Feedback) Show(c *gin.Context) {
 }
 
 func (f *Feedback) Reply(c *gin.Context) {
-	idStr := c.Param("feedback_id")
-	if idStr == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "feedback_id 为空",
-			"meta":  f.Meta(c),
-		})
-		return
-	}
-	feedbackID, _ := strconv.Atoi(idStr)
+	f.Authorization(c)
 
-	form, err := forms.NewFeedbackReplyForm(c, int64(feedbackID))
+	bs, err := NewFeedbackReplyBinding(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": form.Msg.ErrorMsg(),
+			"error": bs.Msg.Error(),
 			"meta":  f.Meta(c),
 		})
 		return
 	}
 
-	fr := feedbacks.NewFeedbackReply(form)
+	fr := feedbacks.NewFeedbackReply(bs.Config())
 	if err := fr.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

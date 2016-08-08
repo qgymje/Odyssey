@@ -2,7 +2,7 @@ package main
 
 import (
 	"Odyssey/controllers"
-	"Odyssey/middlewares"
+	"Odyssey/controllers/middlewares"
 	"Odyssey/models"
 	"Odyssey/utils"
 	"flag"
@@ -70,7 +70,7 @@ func main() {
 		feedback := new(controllers.Feedback)
 		v1.GET("/feedback", feedback.Index)
 		v1.POST("/feedback", feedback.Create)
-		v1.PUT("/feedback/reply/:feedback_id", feedback.Reply)
+		v1.PUT("/feedback/reply", feedback.Reply)
 
 		run := new(controllers.Run)
 		v1.POST("/run", run.Create)                    // 上传一条跑步纪录

@@ -1,7 +1,6 @@
 package users
 
 import (
-	"Odyssey/forms"
 	"Odyssey/models"
 	"Odyssey/utils"
 	"errors"
@@ -20,20 +19,25 @@ type Login struct {
 	userModel *models.User
 }
 
-func NewLogin(data *forms.LoginForm) *Login {
-	form := new(Login)
-	form.phone = data.Phone
-	form.password = NewPassword(data.Password)
-	form.userModel = &models.User{}
-	return form
+type LoginConfig struct {
+	Phone    string
+	Password string
+}
+
+func NewLogin(data *LoginConfig) *Login {
+	config := new(Login)
+	config.phone = data.Phone
+	config.password = NewPassword(data.Password)
+	config.userModel = &models.User{}
+	return config
 }
 
 func NewLoginByRawData(phone, password string) *Login {
-	form := new(Login)
-	form.phone = phone
-	form.password = NewPassword(password)
-	form.userModel = &models.User{}
-	return form
+	config := new(Login)
+	config.phone = phone
+	config.password = NewPassword(password)
+	config.userModel = &models.User{}
+	return config
 }
 
 func (s *Login) Do() (err error) {

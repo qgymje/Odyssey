@@ -1,4 +1,4 @@
-package forms
+package controllers
 
 import (
 	"fmt"
@@ -7,16 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type SMSCodeForm struct {
-	Phone string `form:"phone" binding:"required"`
+type LoginForm struct {
+	Phone    string `form:"phone" binding:"required"`
+	Password string `form:"password" binding:"required"`
 
 	valid *validation.Validation
+
 	*errmsg
 }
 
-func NewSMSCodeForm(c *gin.Context) (*SMSCodeForm, error) {
-	form := &SMSCodeForm{}
-
+func NewLoginForm(c *gin.Context) (*LoginForm, error) {
+	form := &LoginForm{}
 	form.valid = &validation.Validation{}
 	form.errmsg = newErrmsg()
 
@@ -28,11 +29,10 @@ func NewSMSCodeForm(c *gin.Context) (*SMSCodeForm, error) {
 	if err := form.Valid(); err != nil {
 		return form, err
 	}
-
 	return form, nil
 }
 
-func (s *SMSCodeForm) Valid() error {
+func (s *LoginForm) Valid() error {
 	if err := s.validPhone(); err != nil {
 		s.setError("phone", err.Error())
 		return err
@@ -40,7 +40,7 @@ func (s *SMSCodeForm) Valid() error {
 	return nil
 }
 
-func (s *SMSCodeForm) validPhone() error {
+func (s *LoginForm) validPhone() error {
 	if v := s.valid.Mobile(s.Phone, "phone"); v.Ok {
 		return nil
 	}

@@ -1,7 +1,6 @@
 package feedbacks
 
 import (
-	"Odyssey/forms"
 	"Odyssey/models"
 	"Odyssey/services/notifications"
 	"Odyssey/utils"
@@ -14,12 +13,17 @@ type FeedbackReply struct {
 	content       string
 }
 
-func NewFeedbackReply(form *forms.FeedbackReplyForm) *FeedbackReply {
+type FeedbackReplyConfig struct {
+	FeedbackID int64
+	Reply      string
+}
+
+func NewFeedbackReply(config *FeedbackReplyConfig) *FeedbackReply {
 	return &FeedbackReply{
 		feedbackModel: &models.Feedback{
-			ID: form.FeedbackID,
+			ID: config.FeedbackID,
 		},
-		content: form.Reply,
+		content: config.Reply,
 	}
 }
 

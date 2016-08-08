@@ -1,7 +1,6 @@
 package feedbacks
 
 import (
-	"Odyssey/forms"
 	"Odyssey/models"
 	"Odyssey/utils"
 
@@ -12,11 +11,16 @@ type Feedback struct {
 	fbModel *models.Feedback
 }
 
-func NewFeedback(form *forms.FeedbackForm) *Feedback {
+type FeedbackConfig struct {
+	UserID  int64
+	Content string
+}
+
+func NewFeedback(config *FeedbackConfig) *Feedback {
 	fb := new(Feedback)
 	fb.fbModel = &models.Feedback{
-		UserID:  models.ToNullInt64(form.UserID),
-		Content: form.Content,
+		UserID:  models.ToNullInt64(config.UserID),
+		Content: config.Content,
 		IsRead:  false,
 	}
 	return fb

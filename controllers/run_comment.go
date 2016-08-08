@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"Odyssey/forms"
 	"Odyssey/services/runs/comments"
 	"net/http"
 
@@ -24,7 +23,7 @@ func (rc *RunComment) Show(c *gin.Context) {
 // Comment 评论/回复一个run
 func (rc *RunComment) Comment(c *gin.Context) {
 	rc.Authorization(c)
-	form, err := forms.NewRunCommentForm(c, rc.CurrentUser.ID)
+	form, err := NewRunCommentForm(c, rc.CurrentUser.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": form.Msg.ErrorMsg(),

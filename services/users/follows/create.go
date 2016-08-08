@@ -1,19 +1,21 @@
 package follows
 
-import (
-	"Odyssey/forms"
-	"Odyssey/models"
-)
+import "Odyssey/models"
 
 type UserFollow struct {
 	modelFollow *models.Follow
 }
 
-func NewUserFollow(form *forms.UserFollowForm) *UserFollow {
+type UserFollowConfig struct {
+	FromUserID int64
+	ToUserID   int64
+}
+
+func NewUserFollow(config *UserFollowConfig) *UserFollow {
 	uf := &UserFollow{
 		modelFollow: &models.Follow{
-			FromUserID: form.FromUserID,
-			ToUserID:   form.ToUserID,
+			FromUserID: config.FromUserID,
+			ToUserID:   config.ToUserID,
 		},
 	}
 	return uf

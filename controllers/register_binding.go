@@ -1,4 +1,4 @@
-package forms
+package controllers
 
 import (
 	"fmt"

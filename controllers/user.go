@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"Odyssey/forms"
 	"Odyssey/services/users"
 	"net/http"
 
@@ -14,7 +13,7 @@ type User struct {
 
 // SMSCode 获取验证码
 func (u *User) SMSCode(c *gin.Context) {
-	form, err := forms.NewSMSCodeForm(c)
+	form, err := NewSMSCodeForm(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": form.ErrorMsg(),
@@ -40,7 +39,7 @@ func (u *User) SMSCode(c *gin.Context) {
 
 // SignUp 注册
 func (u *User) Register(c *gin.Context) {
-	form, err := forms.NewRegisterForm(c)
+	form, err := NewRegisterForm(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -63,7 +62,7 @@ func (u *User) Register(c *gin.Context) {
 
 // Login 登录 action
 func (u *User) Login(c *gin.Context) {
-	form, err := forms.NewLoginForm(c)
+	form, err := NewLoginForm(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

@@ -1,7 +1,6 @@
 package runs
 
 import (
-	"Odyssey/forms"
 	"Odyssey/models"
 	"Odyssey/utils"
 	"encoding/json"
@@ -13,21 +12,30 @@ import (
 // Run 表示Services里的Run业务集合
 type Run struct {
 	runModel     *models.Run
-	rawLocations string // formatted in json
+	rawLocations string // configatted in json
+}
+
+type RunConfig struct {
+	UserID       int64
+	Distance     float64
+	Duration     int
+	IsPublic     bool
+	Comment      string
+	RunLocations string
 }
 
 // NewRun 创建一个Run业务单元
-func NewRun(form *forms.RunForm) *Run {
+func NewRun(config *RunConfig) *Run {
 	r := new(Run)
 	r.runModel = &models.Run{
-		UserID:       form.UserID,
-		Distance:     form.Distance,
-		Duration:     form.Duration,
-		IsPublic:     form.IsPublic,
-		Comment:      models.ToNullString(form.Comment),
+		UserID:       config.UserID,
+		Distance:     config.Distance,
+		Duration:     config.Duration,
+		IsPublic:     config.IsPublic,
+		Comment:      models.ToNullString(config.Comment),
 		RunLocations: []*models.RunLocation{},
 	}
-	r.rawLocations = form.RunLocations
+	r.rawLocations = config.RunLocations
 	return r
 }
 

@@ -1,7 +1,6 @@
 package comments
 
 import (
-	"Odyssey/forms"
 	"Odyssey/models"
 	"Odyssey/utils"
 
@@ -12,13 +11,20 @@ type RunComment struct {
 	commentModel *models.RunComment
 }
 
-func NewRunComment(form *forms.RunCommentForm) *RunComment {
+type RunCommentConfig struct {
+	RunID           int64
+	Content         string
+	ParentCommentID int64
+	UserID          int64
+}
+
+func NewRunComment(config *RunCommentConfig) *RunComment {
 	rc := &RunComment{
 		commentModel: &models.RunComment{
-			RunID:           form.RunID,
-			UserID:          form.UserID,
-			ParentCommentID: models.ToNullInt64(form.ParentCommentID),
-			Content:         form.Content,
+			RunID:           config.RunID,
+			UserID:          config.UserID,
+			ParentCommentID: models.ToNullInt64(config.ParentCommentID),
+			Content:         config.Content,
 		},
 	}
 	return rc

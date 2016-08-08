@@ -1,7 +1,6 @@
 package users
 
 import (
-	"Odyssey/forms"
 	"Odyssey/models"
 	"Odyssey/utils"
 	"errors"
@@ -20,8 +19,13 @@ type Register struct {
 	smsValidator *SMSValidator
 }
 
+type RegisterConfig struct {
+	*LoginConfig
+	Code string
+}
+
 // NewRegister 生成一个注册用户对象
-func NewRegister(data *forms.RegisterForm) *Register {
+func NewRegister(data *RegisterConfig) *Register {
 	s := new(Register)
 	s.Login = NewLoginByRawData(data.Phone, data.Password)
 	s.smsValidator = NewSMSValidator(data.Phone, data.Code)

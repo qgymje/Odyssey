@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"Odyssey/forms"
 	"Odyssey/services/users/follows"
 	"net/http"
 
@@ -11,13 +10,13 @@ import (
 type UserFollow struct {
 	Base
 
-	form *forms.UserFollowForm
+	form *UserFollowForm
 }
 
 func (f *UserFollow) before(c *gin.Context) error {
 	f.Authorization(c)
 
-	form, err := forms.NewUserFollowForm(c, f.CurrentUser.ID)
+	form, err := NewUserFollowForm(c, f.CurrentUser.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
