@@ -12,8 +12,27 @@ service层
 
 所有的业务写到此, service层可组合成新的业务, 所有的controller层只能调业务层, 不能调用model层的任何方法(除了初始化db, InitModels()在server启动时可以被调用外), services层可调用model层的方法.
 
+form层
+----
+form层用于解析http.Request里绑定的数据, 然后传给service层作为DataConfig层调用
+1. 核心是下层不能知道上层的任何东西, 所以目前service层使用form层的对象是错误的, service层不能知道form层对象
+2. 之所以有form层是因为让service层更加通用, service层不必关心请求来自于http还是cli,或者mq, 只关心数据, 这样让service层可以工作更多
+
 
 controller层
 ----
 
 controller层借用form层用于绑定数据, 以及做业务层前的检测, 通过middlerware层用于简单业务逻辑共享. 禁止调用model层的方法
+
+
+worker层
+----
+
+worker层主要用于一些后台处理的job, 比如作为RabbitMQ的worker, 或者发送sms的worker, 或者发送推送的服务等, 可以开启多个workers
+worker层只能调用service层, 不能直接调用model层
+
+
+console层
+----
+
+console层主要用于一些命令行工作, 比如dump sql schema, generate docs等
