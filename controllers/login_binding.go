@@ -1,48 +1,51 @@
 package controllers
 
 import (
+	"Odyssey/services/users"
 	"fmt"
 
-	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 )
 
-type LoginForm struct {
+type LoginBinding struct {
 	Phone    string `form:"phone" binding:"required"`
 	Password string `form:"password" binding:"required"`
 
-	valid *validation.Validation
-
-	*errmsg
+	config *users.LoginConfig
+	*BaseBinding
 }
 
-func NewLoginForm(c *gin.Context) (*LoginForm, error) {
-	form := &LoginForm{}
-	form.valid = &validation.Validation{}
-	form.errmsg = newErrmsg()
-
-	if err := c.Bind(form); err != nil {
-		form.formatBindError(err)
-		return form, err
+func NewLoginBinding(c *gin.Context) (*LoginBinding, error) {
+	bs := &LoginBinding{
+		BaseBinding: newBaseBinding(),
 	}
 
-	if err := form.Valid(); err != nil {
-		return form, err
+	if err := c.Bind(bs); err != nil {
+		bs.Msg.formatBindError(err)
+		return bs, err
 	}
-	return form, nil
+
+	if err := bs.Valid(); err != nil {
+		return bs, err
+	}
+	return bs, nil
 }
 
-func (s *LoginForm) Valid() error {
+func (s *LoginBinding) Valid() error {
 	if err := s.validPhone(); err != nil {
-		s.setError("phone", err.Error())
+		s.Msg.setError("phone", err.Error())
 		return err
 	}
 	return nil
 }
 
-func (s *LoginForm) validPhone() error {
-	if v := s.valid.Mobile(s.Phone, "phone"); v.Ok {
+func (s *LoginBinding) validPhone() error {
+	if v := s.Validation.Mobile(s.Phone, "phone"); v.Ok {
 		return nil
 	}
 	return fmt.Errorf("手机号码错误: %s", s.Phone)
+}
+
+func (s *LoginBinding) Config() *users.LoginConfig {
+	return s.config
 }

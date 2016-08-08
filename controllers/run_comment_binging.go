@@ -1,41 +1,42 @@
 package controllers
 
 import (
+	"Odyssey/services/runs/comments"
 	"errors"
-	"log"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-type RunCommentForm struct {
+type RunCommentBinding struct {
 	RunID           int64  `form:"run_id" binding:"required"`
 	Content         string `form:"content" binding:"required"`
 	ParentCommentID int64  `form:"parent_comment_id"`
 	UserID          int64
 
-	*Base
+	config *comments.RunCommentConfig
+
+	*BaseBinding
 }
 
-func NewRunCommentForm(c *gin.Context, userID int64) (*RunCommentForm, error) {
-	form := &RunCommentForm{
-		Base:   newBase(),
-		UserID: userID,
+func NewRunCommentBinding(c *gin.Context, userID int64) (*RunCommentBinding, error) {
+	bs := &RunCommentBinding{
+		BaseBinding: newBaseBinding(),
+		UserID:      userID,
 	}
 
-	if err := c.Bind(form); err != nil {
-		log.Printf("%v\n", c.Errors.Errors())
-		form.Msg.formatBindError2(c.Errors)
-		return form, err
+	if err := c.Bind(bs); err != nil {
+		bs.Msg.formatBindError2(c.Errors)
+		return bs, err
 	}
 
-	if err := form.Valid(); err != nil {
-		return form, err
+	if err := bs.Valid(); err != nil {
+		return bs, err
 	}
-	return form, nil
+	return bs, nil
 }
 
-func (c *RunCommentForm) Valid() (err error) {
+func (c *RunCommentBinding) Valid() (err error) {
 	if c.RunID <= 0 {
 		return errors.New("run_id 错误")
 	}
@@ -44,4 +45,12 @@ func (c *RunCommentForm) Valid() (err error) {
 		return errors.New("content不能为空白")
 	}
 	return
+}
+
+func (c *RunCommentBinding) Config() *comments.RunCommentConfig {
+	c.config.RunID = c.RunID
+	c.config.Content = c.Content
+	c.config.ParentCommentID = c.ParentCommentID
+	c.config.UserID = c.UserID
+	return c.config
 }

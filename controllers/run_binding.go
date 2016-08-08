@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"github.com/astaxie/beego/validation"
+	"Odyssey/services/runs"
+
 	"github.com/gin-gonic/gin"
 )
 
-type RunForm struct {
+type RunBinding struct {
 	UserID       int64   `form:"user_id" binding:"required"`
 	Distance     float64 `form:"distance" binding:"required"`
 	Duration     int     `form:"duration" binding:"required"`
@@ -13,20 +14,18 @@ type RunForm struct {
 	Comment      string  `form:"comment" binding:"required"`
 	RunLocations string  `form:"locations" binding:"required"`
 
-	valid *validation.Validation
+	*BaseBinding
 
-	*errmsg
+	config *runs.RunConfig
 }
 
-func NewRunForm(c *gin.Context, userID int64) (*RunForm, error) {
-	form := &RunForm{
-		UserID: userID,
-		valid:  &validation.Validation{},
-		errmsg: newErrmsg(),
+func NewRunBinding(c *gin.Context) (*RunBinding, error) {
+	form := &RunBinding{
+		BaseBinding: newBaseBinding(),
 	}
 
 	if err := c.Bind(form); err != nil {
-		form.formatBindError(err)
+		form.Msg.formatBindError(err)
 		return form, err
 	}
 
@@ -36,6 +35,16 @@ func NewRunForm(c *gin.Context, userID int64) (*RunForm, error) {
 	return form, nil
 }
 
-func (rf *RunForm) Valid() error {
+func (rf *RunBinding) Valid() error {
 	return nil
+}
+
+func (rf *RunBinding) Config() *runs.RunConfig {
+	rf.config.UserID = rf.UserID
+	rf.config.Distance = rf.Distance
+	rf.config.Duration = rf.Duration
+	rf.config.IsPublic = rf.IsPublic
+	rf.config.Comment = rf.Comment
+	rf.config.RunLocations = rf.RunLocations
+	return rf.config
 }

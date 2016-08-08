@@ -3,9 +3,7 @@ package controllers
 import (
 	"Odyssey/models"
 	"Odyssey/services/runs"
-	"errors"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,9 +16,8 @@ type Run struct {
 func (r *Run) Create(c *gin.Context) {
 	r.Authorization(c)
 
-	var userID int
-	var err error
-	if userID, err = r.parseUserID(c); err != nil {
+	bs, err := NewRunBinding(c)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 			"meta":  r.Meta(c),
@@ -28,16 +25,7 @@ func (r *Run) Create(c *gin.Context) {
 		return
 	}
 
-	form, err := NewRunForm(c, int64(userID))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": form.ErrorMsg(),
-			"meta":  r.Meta(c),
-		})
-		return
-	}
-
-	rs := runs.NewRun(form)
+	rs := runs.NewRun(bs.Config())
 	if err := rs.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -79,6 +67,7 @@ func (r *Run) Show(c *gin.Context) {
 	var userID int
 	var runID int
 	var err error
+
 	if userID, err = r.parseUserID(c); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -105,26 +94,4 @@ func (r *Run) Show(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, run)
-}
-
-func (r *Run) parseUserID(c *gin.Context) (id int, err error) {
-	var idStr string
-	idStr = c.PostForm("user_id")
-	if idStr == "" {
-		idStr = c.Param("user_id") //string
-	}
-	id, err = strconv.Atoi(idStr)
-	if err != nil {
-		return 0, errors.New("用户id解析错误")
-	}
-	return
-}
-
-func (r *Run) parseRunID(c *gin.Context) (id int, err error) {
-	idStr := c.Param("run_id") //string
-	id, err = strconv.Atoi(idStr)
-	if err != nil {
-		return 0, errors.New("Run id解析错误")
-	}
-	return
 }

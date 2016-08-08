@@ -13,16 +13,16 @@ type User struct {
 
 // SMSCode 获取验证码
 func (u *User) SMSCode(c *gin.Context) {
-	form, err := NewSMSCodeForm(c)
+	form, err := NewSMSCodeBinding(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": form.ErrorMsg(),
+			"error": err.Error(),
 			"meta":  u.Meta(c),
 		})
 		return
 	}
 
-	sms := users.NewSMS(form)
+	sms := users.NewSMS(form.Config())
 	if err := sms.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -39,7 +39,7 @@ func (u *User) SMSCode(c *gin.Context) {
 
 // SignUp 注册
 func (u *User) Register(c *gin.Context) {
-	form, err := NewRegisterForm(c)
+	form, err := NewRegisterBinding(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -48,7 +48,7 @@ func (u *User) Register(c *gin.Context) {
 		return
 	}
 
-	reg := users.NewRegister(form)
+	reg := users.NewRegister(form.Config())
 	if err := reg.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -62,7 +62,7 @@ func (u *User) Register(c *gin.Context) {
 
 // Login 登录 action
 func (u *User) Login(c *gin.Context) {
-	form, err := NewLoginForm(c)
+	form, err := NewLoginBinding(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -71,7 +71,7 @@ func (u *User) Login(c *gin.Context) {
 		return
 	}
 
-	li := users.NewLogin(form)
+	li := users.NewLogin(form.Config())
 	if err := li.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

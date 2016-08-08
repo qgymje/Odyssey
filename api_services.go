@@ -93,11 +93,11 @@ func main() {
 		v1.PUT("/game/edit", game.Update)
 		v1.DELETE("/game", game.Destroy)
 
-		register := new(controllers.Register)
-		v1.POST("/game/register/:game_id", register.Create)
-		v1.POST("/register/pay/:register_id", register.Pay)
-		v1.POST("/register/cancel/:register_id", register.PayCancel)
-		v1.POST("/register/refund/:register_id", register.PayRefund)
+		order := new(controllers.Order)
+		v1.POST("/game/order/:game_id", order.Create)
+		v1.POST("/order/pay/:register_id", order.Pay)
+		v1.POST("/order/cancel/:register_id", order.PayCancel)
+		v1.POST("/order/refund/:register_id", order.PayRefund)
 
 		v1.GET("/user/profile/:user_id", user.Profile)
 		v1.GET("/user/around", user.Around) // 用户周围的人

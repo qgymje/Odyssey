@@ -6,14 +6,14 @@ import (
 )
 
 type BaseBinding struct {
-	Valid *validation.Validation
-	Msg   *errmsg
+	Validation *validation.Validation
+	Msg        *errmsg
 }
 
 func newBaseBinding() *BaseBinding {
 	return &BaseBinding{
-		Valid: &validation.Validation{},
-		Msg:   newErrmsg(),
+		Validation: &validation.Validation{},
+		Msg:        newErrmsg(),
 	}
 }
 

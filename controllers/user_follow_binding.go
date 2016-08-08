@@ -1,22 +1,24 @@
 package controllers
 
 import (
+	"Odyssey/services/users/follows"
 	"errors"
 
 	"github.com/gin-gonic/gin"
 )
 
-type UserFollowForm struct {
+type UserFollowBinding struct {
 	FromUserID int64
 	ToUserID   int64 `form:"to_user_id" bind:"required"`
 
-	*Base
+	config *follows.UserFollowConfig
+	*BaseBinding
 }
 
-func NewUserFollowForm(c *gin.Context, userID int64) (*UserFollowForm, error) {
-	form := &UserFollowForm{
-		FromUserID: userID,
-		Base:       newBase(),
+func NewUserFollowForm(c *gin.Context, userID int64) (*UserFollowBinding, error) {
+	form := &UserFollowBinding{
+		FromUserID:  userID,
+		BaseBinding: newBaseBinding(),
 	}
 
 	if err := c.Bind(form); err != nil {
@@ -30,9 +32,13 @@ func NewUserFollowForm(c *gin.Context, userID int64) (*UserFollowForm, error) {
 	return form, nil
 }
 
-func (f *UserFollowForm) Valid() (err error) {
+func (f *UserFollowBinding) Valid() (err error) {
 	if f.ToUserID <= 0 {
 		return errors.New("to_usre_id 错误")
 	}
 	return
+}
+
+func (f *UserFollowBinding) Config() *follows.UserFollowConfig {
+	return f.config
 }

@@ -1,27 +1,26 @@
 package controllers
 
 import (
+	"Odyssey/services/users"
 	"fmt"
 
-	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 )
 
-type SMSCodeForm struct {
+type SMSCodeBinding struct {
 	Phone string `form:"phone" binding:"required"`
 
-	valid *validation.Validation
-	*errmsg
+	config *users.SMSConfig
+	*BaseBinding
 }
 
-func NewSMSCodeForm(c *gin.Context) (*SMSCodeForm, error) {
-	form := &SMSCodeForm{}
-
-	form.valid = &validation.Validation{}
-	form.errmsg = newErrmsg()
+func NewSMSCodeBinding(c *gin.Context) (*SMSCodeBinding, error) {
+	form := &SMSCodeBinding{
+		BaseBinding: newBaseBinding(),
+	}
 
 	if err := c.Bind(form); err != nil {
-		form.formatBindError(err)
+		form.Msg.formatBindError(err)
 		return form, err
 	}
 
@@ -32,17 +31,21 @@ func NewSMSCodeForm(c *gin.Context) (*SMSCodeForm, error) {
 	return form, nil
 }
 
-func (s *SMSCodeForm) Valid() error {
+func (s *SMSCodeBinding) Valid() error {
 	if err := s.validPhone(); err != nil {
-		s.setError("phone", err.Error())
+		s.Msg.setError("phone", err.Error())
 		return err
 	}
 	return nil
 }
 
-func (s *SMSCodeForm) validPhone() error {
-	if v := s.valid.Mobile(s.Phone, "phone"); v.Ok {
+func (s *SMSCodeBinding) validPhone() error {
+	if v := s.Validation.Mobile(s.Phone, "phone"); v.Ok {
 		return nil
 	}
 	return fmt.Errorf("手机号码错误: %s", s.Phone)
+}
+
+func (s *SMSCodeBinding) Config() *users.SMSConfig {
+	return s.config
 }

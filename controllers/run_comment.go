@@ -23,16 +23,17 @@ func (rc *RunComment) Show(c *gin.Context) {
 // Comment 评论/回复一个run
 func (rc *RunComment) Comment(c *gin.Context) {
 	rc.Authorization(c)
-	form, err := NewRunCommentForm(c, rc.CurrentUser.ID)
+
+	bs, err := NewRunCommentBinding(c, rc.CurrentUser.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": form.Msg.ErrorMsg(),
+			"error": err.Error(),
 			"meta":  rc.Meta(c),
 		})
 		return
 	}
 
-	comment := comments.NewRunComment(form)
+	comment := comments.NewRunComment(bs.Config())
 	if err = comment.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

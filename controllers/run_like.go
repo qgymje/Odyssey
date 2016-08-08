@@ -3,7 +3,6 @@ package controllers
 import (
 	"Odyssey/services/runs/likes"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +14,7 @@ type RunLike struct {
 func (l *RunLike) Like(c *gin.Context) {
 	l.Authorization(c)
 
-	runID, err := strconv.Atoi(c.PostForm("run_id"))
+	runID, err := l.parseRunID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "run_id 错误",
@@ -39,7 +38,7 @@ func (l *RunLike) Like(c *gin.Context) {
 func (l *RunLike) Unlike(c *gin.Context) {
 	l.Authorization(c)
 
-	runID, err := strconv.Atoi(c.PostForm("run_id"))
+	runID, err := l.parseRunID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "run_id 错误",

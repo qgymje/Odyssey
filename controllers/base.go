@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"Odyssey/services/users"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -56,6 +57,28 @@ func (b *Base) GetPageSize(c *gin.Context) (num int) {
 	num, err := strconv.Atoi(c.Param("page_num"))
 	if err != nil {
 		num = defaultPageSize
+	}
+	return
+}
+
+func (r *Base) parseUserID(c *gin.Context) (id int, err error) {
+	var idStr string
+	idStr = c.PostForm("user_id")
+	if idStr == "" {
+		idStr = c.Param("user_id") //string
+	}
+	id, err = strconv.Atoi(idStr)
+	if err != nil {
+		return 0, errors.New("用户id解析错误")
+	}
+	return
+}
+
+func (r *Base) parseRunID(c *gin.Context) (id int, err error) {
+	idStr := c.Param("run_id") //string
+	id, err = strconv.Atoi(idStr)
+	if err != nil {
+		return 0, errors.New("Run id解析错误")
 	}
 	return
 }

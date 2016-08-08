@@ -10,7 +10,7 @@ import (
 type UserFollow struct {
 	Base
 
-	form *UserFollowForm
+	form *UserFollowBinding
 }
 
 func (f *UserFollow) before(c *gin.Context) error {
@@ -31,7 +31,7 @@ func (f *UserFollow) before(c *gin.Context) error {
 func (f *UserFollow) Follow(c *gin.Context) {
 	f.before(c)
 
-	follow := follows.NewUserFollow(f.form)
+	follow := follows.NewUserFollow(f.form.Config())
 	if err := follow.Follow(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -45,7 +45,7 @@ func (f *UserFollow) Follow(c *gin.Context) {
 func (f *UserFollow) Unfollow(c *gin.Context) {
 	f.before(c)
 
-	follow := follows.NewUserFollow(f.form)
+	follow := follows.NewUserFollow(f.form.Config())
 	if err := follow.UnFollow(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
