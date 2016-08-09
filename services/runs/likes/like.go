@@ -6,11 +6,15 @@ type RunLike struct {
 	likeModel *models.RunLike
 }
 
-func NewRunLike(runID, userID int64) *RunLike {
+type RunLikeConfig struct {
+	RunID, UserID int64
+}
+
+func NewRunLike(config *RunLikeConfig) *RunLike {
 	return &RunLike{
 		likeModel: &models.RunLike{
-			RunID:  runID,
-			UserID: userID,
+			RunID:  config.RunID,
+			UserID: config.UserID,
 		},
 	}
 }

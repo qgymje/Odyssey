@@ -9,21 +9,29 @@ import (
 
 type RunLike struct {
 	Base
+
+	form *RunLikeBinding
+}
+
+func (l *RunLike) before(c *gin.Context) error {
+	l.Authorization(c)
+
+	form, err := NewRunLikeBinding(c, l.CurrentUser.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+			"meta":  l.Meta(c),
+		})
+		return err
+	}
+	l.form = form
+	return nil
 }
 
 func (l *RunLike) Like(c *gin.Context) {
-	l.Authorization(c)
+	l.before(c)
 
-	runID, err := l.parseRunID(c)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "run_id 错误",
-			"meta":  l.Meta(c),
-		})
-		return
-	}
-
-	like := likes.NewRunLike(int64(runID), l.CurrentUser.ID)
+	like := likes.NewRunLike(l.form.Config())
 	if err := like.Like(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -36,18 +44,9 @@ func (l *RunLike) Like(c *gin.Context) {
 }
 
 func (l *RunLike) Unlike(c *gin.Context) {
-	l.Authorization(c)
+	l.before(c)
 
-	runID, err := l.parseRunID(c)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "run_id 错误",
-			"meta":  l.Meta(c),
-		})
-		return
-	}
-
-	like := likes.NewRunLike(int64(runID), l.CurrentUser.ID)
+	like := likes.NewRunLike(l.form.Config())
 	if err := like.Unlike(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
