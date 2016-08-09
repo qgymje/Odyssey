@@ -16,7 +16,7 @@ type UserFollow struct {
 func (f *UserFollow) before(c *gin.Context) error {
 	f.Authorization(c)
 
-	form, err := NewUserFollowForm(c, f.CurrentUser.ID)
+	form, err := NewUserFollowBinding(c, f.CurrentUser.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

@@ -3,6 +3,7 @@ package controllers
 import (
 	"Odyssey/services/users"
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,10 +16,13 @@ type RegisterBinding struct {
 }
 
 func NewRegisterBinding(c *gin.Context) (*RegisterBinding, error) {
-	form := &RegisterBinding{}
+	form := &RegisterBinding{
+		config: &users.RegisterConfig{},
+	}
 	var err error
 
 	form.LoginBinding, err = NewLoginBinding(c)
+	log.Println(form.Config())
 	if err != nil {
 		form.Msg.formatBindError(err)
 		return form, err
@@ -58,5 +62,9 @@ func (s *RegisterBinding) validCode() error {
 }
 
 func (s *RegisterBinding) Config() *users.RegisterConfig {
+	s.config.Phone = s.LoginBinding.Phone
+	s.config.Password = s.LoginBinding.Password
+	s.config.Code = s.Code
+	log.Println(s.config)
 	return s.config
 }

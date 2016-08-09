@@ -22,6 +22,7 @@ type RunBinding struct {
 func NewRunBinding(c *gin.Context) (*RunBinding, error) {
 	form := &RunBinding{
 		BaseBinding: newBaseBinding(),
+		config:      &runs.RunConfig{},
 	}
 
 	if err := c.Bind(form); err != nil {

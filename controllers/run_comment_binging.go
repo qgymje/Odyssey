@@ -23,6 +23,7 @@ func NewRunCommentBinding(c *gin.Context, userID int64) (*RunCommentBinding, err
 	bs := &RunCommentBinding{
 		BaseBinding: newBaseBinding(),
 		UserID:      userID,
+		config:      &comments.RunCommentConfig{},
 	}
 
 	if err := c.Bind(bs); err != nil {

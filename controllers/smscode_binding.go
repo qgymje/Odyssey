@@ -17,6 +17,7 @@ type SMSCodeBinding struct {
 func NewSMSCodeBinding(c *gin.Context) (*SMSCodeBinding, error) {
 	form := &SMSCodeBinding{
 		BaseBinding: newBaseBinding(),
+		config:      &users.SMSConfig{},
 	}
 
 	if err := c.Bind(form); err != nil {
@@ -47,5 +48,6 @@ func (s *SMSCodeBinding) validPhone() error {
 }
 
 func (s *SMSCodeBinding) Config() *users.SMSConfig {
+	s.config.Phone = s.Phone
 	return s.config
 }

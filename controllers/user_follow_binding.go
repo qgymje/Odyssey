@@ -15,10 +15,11 @@ type UserFollowBinding struct {
 	*BaseBinding
 }
 
-func NewUserFollowForm(c *gin.Context, userID int64) (*UserFollowBinding, error) {
+func NewUserFollowBinding(c *gin.Context, userID int64) (*UserFollowBinding, error) {
 	form := &UserFollowBinding{
 		FromUserID:  userID,
 		BaseBinding: newBaseBinding(),
+		config:      &follows.UserFollowConfig{},
 	}
 
 	if err := c.Bind(form); err != nil {
@@ -40,5 +41,7 @@ func (f *UserFollowBinding) Valid() (err error) {
 }
 
 func (f *UserFollowBinding) Config() *follows.UserFollowConfig {
+	f.config.FromUserID = f.FromUserID
+	f.config.ToUserID = f.ToUserID
 	return f.config
 }

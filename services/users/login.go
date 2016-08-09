@@ -19,25 +19,26 @@ type Login struct {
 	userModel *models.User
 }
 
+// LoginConfig 定义登录需要的数据
 type LoginConfig struct {
 	Phone    string
 	Password string
 }
 
-func NewLogin(data *LoginConfig) *Login {
-	config := new(Login)
-	config.phone = data.Phone
-	config.password = NewPassword(data.Password)
-	config.userModel = &models.User{}
-	return config
+func NewLogin(config *LoginConfig) *Login {
+	l := new(Login)
+	l.phone = config.Phone
+	l.password = NewPassword(config.Password)
+	l.userModel = &models.User{}
+	return l
 }
 
 func NewLoginByRawData(phone, password string) *Login {
-	config := new(Login)
-	config.phone = phone
-	config.password = NewPassword(password)
-	config.userModel = &models.User{}
-	return config
+	l := new(Login)
+	l.phone = phone
+	l.password = NewPassword(password)
+	l.userModel = &models.User{}
+	return l
 }
 
 func (s *Login) Do() (err error) {

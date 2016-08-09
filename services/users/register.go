@@ -25,10 +25,10 @@ type RegisterConfig struct {
 }
 
 // NewRegister 生成一个注册用户对象
-func NewRegister(data *RegisterConfig) *Register {
+func NewRegister(config *RegisterConfig) *Register {
 	s := new(Register)
-	s.Login = NewLoginByRawData(data.Phone, data.Password)
-	s.smsValidator = NewSMSValidator(data.Phone, data.Code)
+	s.Login = NewLoginByRawData(config.Phone, config.Password)
+	s.smsValidator = NewSMSValidator(config.Phone, config.Code)
 
 	return s
 }

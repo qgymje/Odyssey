@@ -18,6 +18,7 @@ type LoginBinding struct {
 func NewLoginBinding(c *gin.Context) (*LoginBinding, error) {
 	bs := &LoginBinding{
 		BaseBinding: newBaseBinding(),
+		config:      &users.LoginConfig{},
 	}
 
 	if err := c.Bind(bs); err != nil {
@@ -47,5 +48,7 @@ func (s *LoginBinding) validPhone() error {
 }
 
 func (s *LoginBinding) Config() *users.LoginConfig {
+	s.config.Phone = s.Phone
+	s.config.Password = s.Password
 	return s.config
 }

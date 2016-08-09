@@ -65,7 +65,7 @@ func (nf NullFloat64) MarshalJSON() ([]byte, error) {
 	}
 }
 
-func NewNullTime(t time.Time) NullTime {
+func ToNullTime(t time.Time) NullTime {
 	return NullTime{Time: t, Valid: !t.IsZero()}
 }
 

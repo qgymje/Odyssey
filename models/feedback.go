@@ -41,7 +41,7 @@ func (f *Feedback) Create() (err error) {
 }
 
 func (f *Feedback) Reply(reply string) (err error) {
-	f.ReplyedAt = NewNullTime(time.Now())
+	f.ReplyedAt = ToNullTime(time.Now())
 	result, err := GetDB().Exec(`update feedbacks set reply_content = ?, replyed_at = ? where id = ?`, reply, f.ReplyedAt, f.ID)
 	if err != nil {
 		return
