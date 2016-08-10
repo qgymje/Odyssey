@@ -35,6 +35,22 @@ CREATE TABLE `feedbacks` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `game_validations`
+--
+
+DROP TABLE IF EXISTS `game_validations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `game_validations` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `game_id` bigint(20) NOT NULL,
+  `status` tinyint(4) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `games`
 --
 
@@ -42,8 +58,23 @@ DROP TABLE IF EXISTS `games`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `games` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`)
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(128) NOT NULL DEFAULT '',
+  `slogan` varchar(64) DEFAULT NULL,
+  `oraginazer_id` bigint(20) NOT NULL,
+  `maximum_participant` int(11) NOT NULL,
+  `minumum_participant` int(11) DEFAULT NULL,
+  `cost` int(11) NOT NULL,
+  `register_time` timestamp NULL DEFAULT NULL COMMENT '报名开始时间',
+  `start_time` timestamp NULL DEFAULT NULL COMMENT '比赛开始时间',
+  `duration` int(11) NOT NULL,
+  `route_id` bigint(20) NOT NULL,
+  `distance` decimal(6,2) NOT NULL,
+  `validation_status` tinyint(4) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `route_id` (`route_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -57,6 +88,63 @@ DROP TABLE IF EXISTS `notifications`;
 CREATE TABLE `notifications` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `type` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `route_annotations`
+--
+
+DROP TABLE IF EXISTS `route_annotations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `route_annotations` (
+  `route_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(36) NOT NULL DEFAULT '',
+  `subtitle` varchar(72) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `latitude` decimal(10,8) NOT NULL,
+  `longitude` decimal(11,8) NOT NULL,
+  `mark` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`route_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `route_locations`
+--
+
+DROP TABLE IF EXISTS `route_locations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `route_locations` (
+  `route_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `latitude` decimal(10,8) NOT NULL,
+  `longitude` decimal(11,8) NOT NULL,
+  PRIMARY KEY (`route_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `routes`
+--
+
+DROP TABLE IF EXISTS `routes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `routes` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `game_id` bigint(20) NOT NULL,
+  `gathering_latitude` decimal(10,8) DEFAULT NULL COMMENT '集合点纬度',
+  `gathering_longitude` decimal(11,8) DEFAULT NULL,
+  `start_latitude` decimal(10,8) NOT NULL COMMENT '起跑点纬度',
+  `start_longitude` decimal(11,8) NOT NULL,
+  `finish_latitude` decimal(10,8) NOT NULL COMMENT '终点纬度',
+  `finish_longitude` decimal(11,8) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -158,6 +246,22 @@ CREATE TABLE `sms_codes` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `user_follows`
+--
+
+DROP TABLE IF EXISTS `user_follows`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_follows` (
+  `from_user_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `to_user_id` bigint(20) unsigned NOT NULL,
+  `is_canceled` tinyint(1) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `from_to_id` (`from_user_id`,`to_user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `users`
 --
 
@@ -199,4 +303,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-04 15:29:51
+-- Dump completed on 2016-08-10 12:28:05
