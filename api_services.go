@@ -5,10 +5,15 @@ import (
 	"Odyssey/controllers/middlewares"
 	"Odyssey/models"
 	"Odyssey/utils"
+	"database/sql"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"runtime/pprof"
+	"time"
+
+	mgo "gopkg.in/mgo.v2"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,14 +31,50 @@ func initEnv() {
 	utils.SetEnv(*env)
 }
 
+func initDatabase() {
+	const driverName = "mysql"
+
+	c := utils.GetConf().GetStringMapString("database")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset-utf8&parseTime=True&loc=Local", c["username"], c["password"], c["host"], c["port"], c["dbname"])
+
+	db, err := sql.Open(driverName, dsn)
+	if err != nil {
+		panic("connect db failed.")
+	}
+	defer db.Close()
+
+	db.SetMaxIdleConns(5)
+	db.SetMaxOpenConns(10)
+
+	models.InitModels(db, driverName)
+}
+
+func initMongodb() {
+	m := utils.GetConf().GetStringMapString("mongodb")
+	dialInfo := &mgo.DialInfo{
+		Addrs:    []string{m["host"]},
+		Timeout:  60 * time.Second,
+		Database: m["dbname"],
+		Username: m["username"],
+		Password: m["password"],
+	}
+	mongoSession, err := mgo.DialWithInfo(dialInfo)
+	if err != nil {
+		panic("connect mongodb failed")
+	}
+	defer mongoSession.Clone()
+
+	mongoSession.SetMode(mgo.Monotonic, true)
+	models.InitMongodb(mongoSession)
+}
+
 func init() {
 	initEnv()
 	utils.InitConfig("./configs/")
 	utils.InitLogger()
 	utils.InitRander()
-	if err := models.InitModels(); err != nil {
-		log.Fatal(err)
-	}
+	initDatabase()
+	initMongodb()
 }
 
 func main() {
