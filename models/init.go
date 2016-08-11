@@ -3,6 +3,9 @@ package models
 import (
 	"Odyssey/utils"
 	"fmt"
+	"time"
+
+	mgo "gopkg.in/mgo.v2"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -31,4 +34,22 @@ func InitModels() (err error) {
 // GetDB 获取*sqlx.DB对象
 func GetDB() *sqlx.DB {
 	return db
+}
+
+var mongoSession *mgo.Session
+
+func dialMongo() (err error) {
+	m := utils.GetConf().GetStringMapString("mongodb")
+	dialInfo := &mgo.DialInfo{
+		Addrs:    []string{m["host"]},
+		Timeout:  60 * time.Second,
+		Database: m["dbname"],
+		Username: m["username"],
+		Password: m["password"],
+	}
+	mongoSession, err = mgo.DialWithInfo(dialInfo)
+	if err != nil {
+		panic("mongodb connections failed")
+	}
+	mongoSession.SetMode(mgo.Monotonic, true)
 }

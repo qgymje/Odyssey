@@ -12,7 +12,14 @@ database:
     poolsize: 20
     maxIdleConns: 5 
     maxOpenConns: 10
-    
+
+mongodb:
+    hosts: 127.0.0.1
+    dbname: odyssey
+    username:
+    password:
+  
+
 log:
     filename: /logs/odyssey.log
     enable_func_call_depth: true
