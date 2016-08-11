@@ -30,8 +30,23 @@ func initEnv() {
 	log.Println("当前运行环境为: ", *env)
 	utils.SetEnv(*env)
 }
+func init() {
+	initEnv()
+	utils.InitConfig("./configs/")
+	utils.InitLogger()
+	utils.InitRander()
+}
 
-func initDatabase() {
+func main() {
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
 	const driverName = "mysql"
 
 	c := utils.GetConf().GetStringMapString("database")
@@ -47,9 +62,7 @@ func initDatabase() {
 	db.SetMaxOpenConns(10)
 
 	models.InitModels(db, driverName)
-}
 
-func initMongodb() {
 	m := utils.GetConf().GetStringMapString("mongodb")
 	dialInfo := &mgo.DialInfo{
 		Addrs:    []string{m["host"]},
@@ -66,26 +79,6 @@ func initMongodb() {
 
 	mongoSession.SetMode(mgo.Monotonic, true)
 	models.InitMongodb(mongoSession)
-}
-
-func init() {
-	initEnv()
-	utils.InitConfig("./configs/")
-	utils.InitLogger()
-	utils.InitRander()
-	initDatabase()
-	initMongodb()
-}
-
-func main() {
-	if *cpuprofile != "" {
-		f, err := os.Create(*cpuprofile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		pprof.StartCPUProfile(f)
-		defer pprof.StopCPUProfile()
-	}
 
 	r := gin.New()
 	r.Use(gin.Logger())
