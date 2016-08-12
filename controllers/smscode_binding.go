@@ -10,14 +10,14 @@ import (
 type SMSCodeBinding struct {
 	Phone string `form:"phone" binding:"required"`
 
-	config *users.SMSConfig
+	config *users.SMSCodeConfig
 	*BaseBinding
 }
 
 func NewSMSCodeBinding(c *gin.Context) (*SMSCodeBinding, error) {
 	form := &SMSCodeBinding{
 		BaseBinding: newBaseBinding(),
-		config:      &users.SMSConfig{},
+		config:      &users.SMSCodeConfig{},
 	}
 
 	if err := c.Bind(form); err != nil {
@@ -47,7 +47,7 @@ func (s *SMSCodeBinding) validPhone() error {
 	return fmt.Errorf("手机号码错误: %s", s.Phone)
 }
 
-func (s *SMSCodeBinding) Config() *users.SMSConfig {
+func (s *SMSCodeBinding) Config() *users.SMSCodeConfig {
 	s.config.Phone = s.Phone
 	return s.config
 }

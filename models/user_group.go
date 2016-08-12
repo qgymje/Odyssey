@@ -4,7 +4,7 @@ import "time"
 
 // UserGroup model 表示一个跑团
 type UserGroup struct {
-	Id      uint64 `json:"user_group_id"`
+	ID      uint64 `json:"user_group_id"`
 	Creator *User  `json:"creator"`
 	Name    string `json:"name"`
 	Logo    string `json:"logo"`

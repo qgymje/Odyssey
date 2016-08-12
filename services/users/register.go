@@ -16,7 +16,7 @@ var (
 // Register 注册对象
 type Register struct {
 	*Login
-	smsValidator *SMSValidator
+	smsCodeValidator *SMSCodeValidator
 }
 
 type RegisterConfig struct {
@@ -28,7 +28,7 @@ type RegisterConfig struct {
 func NewRegister(config *RegisterConfig) *Register {
 	s := new(Register)
 	s.Login = NewLoginByRawData(config.Phone, config.Password)
-	s.smsValidator = NewSMSValidator(config.Phone, config.Code)
+	s.smsCodeValidator = NewSMSCodeValidator(config.Phone, config.Code)
 
 	return s
 }
@@ -72,11 +72,11 @@ func (s *Register) findPhone() (err error) {
 }
 
 func (s *Register) validSMSCode() (err error) {
-	return s.smsValidator.Valid()
+	return s.smsCodeValidator.Valid()
 }
 
 func (s *Register) useSMSCode() (err error) {
-	return s.smsValidator.useCode()
+	return s.smsCodeValidator.useCode()
 }
 
 // save 将数据保存到db

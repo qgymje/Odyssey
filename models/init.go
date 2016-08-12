@@ -3,8 +3,6 @@ package models
 import (
 	"database/sql"
 
-	mgo "gopkg.in/mgo.v2"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
@@ -21,14 +19,4 @@ func InitModels(rawDB *sql.DB, driverName string) (err error) {
 // GetDB 获取*sqlx.DB对象
 func GetDB() *sqlx.DB {
 	return db
-}
-
-var mongoSession *mgo.Session
-
-func InitMongodb(sess *mgo.Session) {
-	mongoSession = sess
-}
-
-func GetMongo() *mgo.Session {
-	return mongoSession
 }

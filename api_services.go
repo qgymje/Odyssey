@@ -11,9 +11,6 @@ import (
 	"log"
 	"os"
 	"runtime/pprof"
-	"time"
-
-	mgo "gopkg.in/mgo.v2"
 
 	"github.com/gin-gonic/gin"
 )
@@ -62,23 +59,6 @@ func main() {
 	db.SetMaxOpenConns(10)
 
 	models.InitModels(db, driverName)
-
-	m := utils.GetConf().GetStringMapString("mongodb")
-	dialInfo := &mgo.DialInfo{
-		Addrs:    []string{m["host"]},
-		Timeout:  60 * time.Second,
-		Database: m["dbname"],
-		Username: m["username"],
-		Password: m["password"],
-	}
-	mongoSession, err := mgo.DialWithInfo(dialInfo)
-	if err != nil {
-		panic("connect mongodb failed")
-	}
-	defer mongoSession.Clone()
-
-	mongoSession.SetMode(mgo.Monotonic, true)
-	models.InitMongodb(mongoSession)
 
 	r := gin.New()
 	r.Use(gin.Logger())

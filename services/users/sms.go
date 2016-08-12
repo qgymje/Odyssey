@@ -25,46 +25,46 @@ var once sync.Once
 var connection *amqp.Connection
 var channel *amqp.Channel
 
-func initSMS() {
+func initSMSCode() {
 	connection, channel = utils.GetAMQP()
 }
 
-// SMS 用于验证码操作服务
-type SMS struct {
+// SMSCode 用于验证码操作服务
+type SMSCode struct {
 	phone        string
 	code         string
 	smscodeModel *models.SMSCode
 }
 
-// SMSConfig 用于此服务的配置数据
+// SMSCodeConfig 用于此服务的配置数据
 // 并且移除对上层form层的依赖
-type SMSConfig struct {
+type SMSCodeConfig struct {
 	Phone string
 }
 
-// NewSMS 用于生成一个验证码对象, 用于生成验证码
-func NewSMS(config *SMSConfig) *SMS {
+// NewSMSCode 用于生成一个验证码对象, 用于生成验证码
+func NewSMSCode(config *SMSCodeConfig) *SMSCode {
 	// make sure the mq service is started
-	once.Do(initSMS)
+	once.Do(initSMSCode)
 
-	s := new(SMS)
+	s := new(SMSCode)
 	s.phone = config.Phone
 	s.smscodeModel = &models.SMSCode{}
 	return s
 }
 
-func newSMSByRawData(phone string, code string) *SMS {
-	s := new(SMS)
+func newSMSCodeByRawData(phone string, code string) *SMSCode {
+	s := new(SMSCode)
 	s.phone = phone
 	s.code = code
 	return s
 }
 
 // Do 主要业务逻辑操作
-func (s *SMS) Do() (err error) {
+func (s *SMSCode) Do() (err error) {
 	defer func() {
 		if err != nil {
-			err = errorTrace.Wrap(err, "services.users.SMS.Do error")
+			err = errorTrace.Wrap(err, "services.users.SMSCode.Do error")
 			utils.GetLog().Error("%+v", err)
 		}
 	}()
@@ -91,12 +91,12 @@ func (s *SMS) Do() (err error) {
 	return
 }
 
-func (s *SMS) findSMSCode() (err error) {
+func (s *SMSCode) findSMSCode() (err error) {
 	s.smscodeModel, err = models.FindSMSCodeByPhone(s.phone)
 	return
 }
 
-func (s *SMS) generate() string {
+func (s *SMSCode) generate() string {
 	code := utils.RandomInt(100000, 1000000)
 	s.code = fmt.Sprintf("%d", code)
 	utils.GetLog().Debug("phone = %s ,sms code = %s", s.phone, s.code)
@@ -104,11 +104,11 @@ func (s *SMS) generate() string {
 }
 
 // GetCode 无论如何, 拿验证码
-func (s *SMS) GetCode() string {
+func (s *SMSCode) GetCode() string {
 	return s.code
 }
 
-func (s *SMS) save() (err error) {
+func (s *SMSCode) save() (err error) {
 	s.smscodeModel = &models.SMSCode{
 		Phone:     s.phone,
 		Code:      s.code,
@@ -119,7 +119,7 @@ func (s *SMS) save() (err error) {
 	return
 }
 
-func (s *SMS) useCode() (err error) {
+func (s *SMSCode) useCode() (err error) {
 	err = s.smscodeModel.UseCode()
 	return
 }
@@ -143,7 +143,7 @@ func (sc smsContent) toJSON(phone string, content string) (body []byte, err erro
 }
 
 // Send 将数据发送到rabbitmq里, 然后由rabbitmq的worker来发送短信到用户手机
-func (s *SMS) send() (err error) {
+func (s *SMSCode) send() (err error) {
 	var (
 		exchange     = "smssender"
 		routingKey   = "smssender"
@@ -212,23 +212,23 @@ func confirm() {
 	}()
 }
 
-// SMSValidator 用于验证sms cdoe
-type SMSValidator struct {
-	*SMS
+// SMSCodeValidator 用于验证sms cdoe
+type SMSCodeValidator struct {
+	*SMSCode
 }
 
-// NewSMSValidator 用于用户提交验证码时, 判断验证码是否有效
-func NewSMSValidator(phone string, code string) *SMSValidator {
-	smsValidator := new(SMSValidator)
-	smsValidator.SMS = newSMSByRawData(phone, code)
+// NewSMSCodeValidator 用于用户提交验证码时, 判断验证码是否有效
+func NewSMSCodeValidator(phone string, code string) *SMSCodeValidator {
+	smsValidator := new(SMSCodeValidator)
+	smsValidator.SMSCode = newSMSCodeByRawData(phone, code)
 	return smsValidator
 }
 
 // Vaild 做验证
-func (s *SMSValidator) Valid() (err error) {
+func (s *SMSCodeValidator) Valid() (err error) {
 	defer func() {
 		if err != nil {
-			utils.GetLog().Error("services.users.SMSValidator.Valid error: ", err)
+			utils.GetLog().Error("services.users.SMSCodeValidator.Valid error: ", err)
 		}
 	}()
 

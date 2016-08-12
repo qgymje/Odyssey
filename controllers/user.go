@@ -22,7 +22,7 @@ func (u *User) SMSCode(c *gin.Context) {
 		return
 	}
 
-	sms := users.NewSMS(bs.Config())
+	sms := users.NewSMSCode(bs.Config())
 	if err := sms.Do(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
