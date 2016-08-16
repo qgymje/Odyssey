@@ -12,6 +12,7 @@ import (
 	"os"
 	"runtime/pprof"
 
+	"github.com/diegogub/aranGO"
 	"github.com/gin-gonic/gin"
 )
 
@@ -60,14 +61,24 @@ func main() {
 
 	models.InitModels(db, driverName)
 
+	session, err := aranGO.Connect("http://localhost:8529", "root", "123456", true)
+	if err != nil {
+		log.Fatal(err)
+	}
+	session.CreateDB("odyssey", nil)
+	err = models.InitArango(session)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	r := gin.New()
+
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(middlewares.FakedLogin())
 
 	v1 := r.Group("/api/v1")
 	{
-
 		user := new(controllers.User)
 		v1.POST("/smscode", user.SMSCode)
 		v1.POST("/register", user.Register)

@@ -9,7 +9,7 @@ triggers:
     DEBUG: "1"
   cmd: go run api_services.go
   shell: true
-  delay: 1000ms
+  delay: 100ms
   signal: KILL
 watch_paths:
 - .

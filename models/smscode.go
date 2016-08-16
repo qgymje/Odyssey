@@ -1,32 +1,47 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"time"
+
+	"github.com/diegogub/aranGO"
+)
 
 // SMSCode model 表示一次生成短信验证码纪录
 type SMSCode struct {
+	aranGO.Document
 	ID        int64
 	Phone     string
 	Code      string
-	UsedAt    NullTime  `db:"used_at"`
-	CreatedAt time.Time `db:"created_at"`
+	UsedAt    time.Time `required:"-"`
+	CreatedAt time.Time
 }
+
+/*
+func (s *SMSCode) GetKey() string {
+	return s.Key
+}
+
+func (s *SMSCode) GetCollection() string {
+	return "smscodes"
+}
+
+func (s *SMSCode) GetError() (string, bool) {
+	return s.Message, s.Error
+}
+*/
 
 // Create 生成一条db纪录
 func (s *SMSCode) Create() (err error) {
 	s.CreatedAt = time.Now()
-	result := GetDB().MustExec(`insert into sms_codes(phone, code, created_at) values(?,?,?)`, s.Phone, s.Code, s.CreatedAt)
-	if _, err = result.RowsAffected(); err != nil {
-		return
-
-	}
-	s.ID, err = result.LastInsertId()
-
+	fmt.Println(s)
+	fmt.Println(GetSession().DB("odyssey").Col(DOC_SMSCodes))
 	return
 }
 
 // IsUsed 判断一个code是否已经被使用过了
 func (s *SMSCode) IsUsed() bool {
-	return !s.UsedAt.Time.IsZero()
+	return !s.UsedAt.IsZero()
 }
 
 // UseCode 当注册成功之后将used_at更新
@@ -36,7 +51,7 @@ func (s *SMSCode) UseCode() (err error) {
 		return
 
 	}
-	s.UsedAt = NullTime{Time: time.Now()}
+	s.UsedAt = time.Now()
 	return
 }
 
