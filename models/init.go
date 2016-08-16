@@ -27,8 +27,7 @@ var session *aranGO.Session
 func InitArango(s *aranGO.Session) error {
 	session = s
 
-	//return initCollection(s)
-	return nil
+	return initCollection(s)
 }
 
 func GetSession() *aranGO.Session {

@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/diegogub/aranGO"
@@ -34,8 +33,7 @@ func (s *SMSCode) GetError() (string, bool) {
 // Create 生成一条db纪录
 func (s *SMSCode) Create() (err error) {
 	s.CreatedAt = time.Now()
-	fmt.Println(s)
-	fmt.Println(GetSession().DB("odyssey").Col(DOC_SMSCodes))
+	err = GetSession().DB(DB_NAME).Col(DOC_SMSCodes).Save(&s)
 	return
 }
 

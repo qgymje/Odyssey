@@ -2,7 +2,7 @@ pack: clean
 	godep save
 
 clean:
-	go clean
+	@echo "removing pkgs.." && go clean
 
 server:
 	fswatch

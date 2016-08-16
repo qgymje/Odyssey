@@ -7,7 +7,7 @@ triggers:
   - '**/*.py'
   env:
     DEBUG: "1"
-  cmd: go run api_services.go
+  cmd: make clean && go run api_services.go
   shell: true
   delay: 100ms
   signal: KILL
