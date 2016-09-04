@@ -12,25 +12,26 @@ import (
 	"os"
 	"runtime/pprof"
 
-	"github.com/diegogub/aranGO"
 	"github.com/gin-gonic/gin"
+	"github.com/qgymje/aranGO"
 )
 
 var (
-	env        = flag.String("env", "dev", "设置运行环境, 有dev, test, prod三种配置环境")
+	env        = flag.String("env", "dev", "set env: dev, test, prod")
 	syncdb     = flag.Bool("syncdb", false, "set syncdb")
+	configPath = flag.String("conf", "./configs/", "config path")
 	cpuprofile = flag.String("cpuprofile", "", "cpu profile")
 )
 
 func initEnv() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	flag.Parse()
-	log.Println("当前运行环境为: ", *env)
+	log.Println("current env is: ", *env)
 	utils.SetEnv(*env)
 }
 func init() {
 	initEnv()
-	utils.InitConfig("./configs/")
+	utils.InitConfig(*configPath)
 	utils.InitLogger()
 	utils.InitRander()
 }
@@ -110,19 +111,6 @@ func main() {
 		v1.GET("/run/comments/:run_id", runComment.Index)
 		v1.GET("/comment/:comment_id", runComment.Show)
 		v1.POST("/comment", runComment.Comment)
-
-		game := new(controllers.Game)
-		v1.GET("/game", game.Index)
-		v1.GET("/game/:game_id", game.Show)
-		v1.POST("/game", game.Create)
-		v1.PUT("/game/edit", game.Update)
-		v1.DELETE("/game", game.Destroy)
-
-		order := new(controllers.Order)
-		v1.POST("/game/order/:game_id", order.Create)
-		v1.POST("/order/pay/:register_id", order.Pay)
-		v1.POST("/order/cancel/:register_id", order.PayCancel)
-		v1.POST("/order/refund/:register_id", order.PayRefund)
 
 		v1.GET("/user/profile/:user_id", user.Profile)
 		v1.GET("/user/around", user.Around) // 用户周围的人

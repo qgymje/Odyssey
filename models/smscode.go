@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/diegogub/aranGO"
@@ -9,11 +10,10 @@ import (
 // SMSCode model 表示一次生成短信验证码纪录
 type SMSCode struct {
 	aranGO.Document
-	ID        int64
-	Phone     string
-	Code      string
-	UsedAt    time.Time `required:"-"`
-	CreatedAt time.Time
+	Phone     string    `json:"phone"`
+	Code      string    `json:"code"`
+	UsedAt    time.Time `json:"used_at" required:"-"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 /*
@@ -44,12 +44,8 @@ func (s *SMSCode) IsUsed() bool {
 
 // UseCode 当注册成功之后将used_at更新
 func (s *SMSCode) UseCode() (err error) {
-	result := GetDB().MustExec(`update sms_codes set used_at = ? where id = ?`, s.UsedAt, s.ID)
-	if _, err = result.RowsAffected(); err != nil {
-		return
-
-	}
 	s.UsedAt = time.Now()
+	err = GetSession().DB(DB_NAME).Col(DOC_SMSCodes).Replace(s.Key, s)
 	return
 }
 
@@ -62,6 +58,14 @@ func (s *SMSCode) IsGeneratedInDuration(duration time.Duration) bool {
 func FindSMSCodeByPhone(phone string) (*SMSCode, error) {
 	var sms SMSCode
 	var err error
-	err = GetDB().Get(&sms, `select * from sms_codes where phone=? order by id desc limit 1`, phone)
-	return &sms, err
+	query := aranGO.NewQuery(`for s in smscodes filter s.phone== "` + phone + `" sort s.created_at desc limit 1   return s`)
+	course, err := GetSession().DB(DB_NAME).Execute(query)
+	if err != nil {
+		return nil, err
+	}
+	if course.FetchOne(&sms) {
+		return &sms, nil
+	} else {
+		return nil, errors.New("no row found")
+	}
 }
