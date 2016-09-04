@@ -1,5 +1,24 @@
 ### DEV GUIDE
 
+此服务经过长期考虑以及实践, 将其转变成一个基于gRPC+NSQ+Docker的微服务架构的系统, 主要分为以下主要服务:
+accountCenter:
+    1. 提供用户注册, 登录等操作
+relationCenter:
+    1. 用户关注
+groupCenter:
+    1. 跑团管理
+runDataCenter:
+    1. 跑步数据
+runAnalysis:
+    1. 分析跑步数据
+commentCenter:
+    1. 用于评论处理
+geoCenter:
+    1. 地理位置分析服务
+
+其它:
+    推送服务, 短信发送服务, 日志服务等
+
 model层
 ----
 
