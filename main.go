@@ -1,16 +1,18 @@
 package main
 
 import (
-	"Odyssey/controllers"
-	"Odyssey/controllers/middlewares"
-	"Odyssey/models"
-	"Odyssey/utils"
 	"database/sql"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"runtime/pprof"
+
+	"github.com/qgymje/Odyssey/controllers/middlewares"
+	"github.com/qgymje/Odyssey/models"
+	"github.com/qgymje/Odyssey/utils"
+
+	"github.com/qgymje/Odyssey/controllers"
 
 	"github.com/gin-gonic/gin"
 	"github.com/qgymje/aranGO"

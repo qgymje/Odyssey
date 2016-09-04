@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"Odyssey/services/feedbacks"
+	"github.com/qgymje/Odyssey/services/feedbacks"
 
 	"github.com/gin-gonic/gin"
 )

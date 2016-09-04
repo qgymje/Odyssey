@@ -1,8 +1,9 @@
 package controllers
 
 import (
-	"Odyssey/services/users/follows"
 	"net/http"
+
+	"github.com/qgymje/Odyssey/services/users/follows"
 
 	"github.com/gin-gonic/gin"
 )

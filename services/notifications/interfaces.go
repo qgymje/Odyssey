@@ -1,6 +1,6 @@
 package notifications
 
-import "Odyssey/models"
+import "github.com/qgymje/Odyssey/models"
 
 // Notice 接口定义添加notice事件接口, 面向用户类
 type Notice interface {

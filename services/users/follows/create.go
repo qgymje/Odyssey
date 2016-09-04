@@ -1,6 +1,6 @@
 package follows
 
-import "Odyssey/models"
+import "github.com/qgymje/Odyssey/models"
 
 type UserFollow struct {
 	modelFollow *models.Follow

@@ -1,9 +1,10 @@
 package users
 
 import (
-	"Odyssey/models"
-	"Odyssey/utils"
 	"errors"
+
+	"github.com/qgymje/Odyssey/models"
+	"github.com/qgymje/Odyssey/utils"
 )
 
 var (

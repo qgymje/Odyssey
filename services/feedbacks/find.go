@@ -1,8 +1,8 @@
 package feedbacks
 
 import (
-	"Odyssey/models"
-	"Odyssey/utils"
+	"github.com/qgymje/Odyssey/models"
+	"github.com/qgymje/Odyssey/utils"
 
 	"github.com/pkg/errors"
 )

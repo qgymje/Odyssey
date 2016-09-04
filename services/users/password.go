@@ -1,10 +1,11 @@
 package users
 
 import (
-	"Odyssey/utils"
 	"crypto/md5"
 	"errors"
 	"fmt"
+
+	"github.com/qgymje/Odyssey/utils"
 )
 
 var (

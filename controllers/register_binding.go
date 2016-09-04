@@ -1,9 +1,10 @@
 package controllers
 
 import (
-	"Odyssey/services/users"
 	"fmt"
 	"log"
+
+	"github.com/qgymje/Odyssey/services/users"
 
 	"github.com/gin-gonic/gin"
 )

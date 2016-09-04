@@ -1,9 +1,9 @@
 package feedbacks
 
 import (
-	"Odyssey/models"
-	"Odyssey/services/notifications"
-	"Odyssey/utils"
+	"github.com/qgymje/Odyssey/models"
+	"github.com/qgymje/Odyssey/services/notifications"
+	"github.com/qgymje/Odyssey/utils"
 
 	"github.com/pkg/errors"
 )

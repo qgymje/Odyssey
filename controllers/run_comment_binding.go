@@ -1,9 +1,10 @@
 package controllers
 
 import (
-	"Odyssey/services/runs/comments"
 	"errors"
 	"strings"
+
+	"github.com/qgymje/Odyssey/services/runs/comments"
 
 	"github.com/gin-gonic/gin"
 )

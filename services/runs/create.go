@@ -1,10 +1,11 @@
 package runs
 
 import (
-	"Odyssey/models"
-	"Odyssey/utils"
 	"encoding/json"
 	"time"
+
+	"github.com/qgymje/Odyssey/models"
+	"github.com/qgymje/Odyssey/utils"
 
 	"github.com/pkg/errors"
 )

@@ -1,9 +1,10 @@
 package runs
 
 import (
-	"Odyssey/models"
 	"encoding/json"
 	"testing"
+
+	"github.com/qgymje/Odyssey/models"
 )
 
 func TestLocaitons(t *testing.T) {

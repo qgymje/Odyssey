@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"Odyssey/services/users"
 	"errors"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/qgymje/Odyssey/services/users"
 
 	"github.com/gin-gonic/gin"
 )

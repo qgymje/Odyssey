@@ -1,8 +1,9 @@
 package controllers
 
 import (
-	"Odyssey/services/runs/likes"
 	"net/http"
+
+	"github.com/qgymje/Odyssey/services/runs/likes"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"Odyssey/services/runs"
+	"github.com/qgymje/Odyssey/services/runs"
 
 	"github.com/gin-gonic/gin"
 )

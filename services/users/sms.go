@@ -1,14 +1,15 @@
 package users
 
 import (
-	"Odyssey/models"
-	"Odyssey/utils"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"sync"
 	"time"
+
+	"github.com/qgymje/Odyssey/models"
+	"github.com/qgymje/Odyssey/utils"
 
 	errorTrace "github.com/pkg/errors"
 

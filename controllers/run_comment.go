@@ -1,8 +1,9 @@
 package controllers
 
 import (
-	"Odyssey/services/runs/comments"
 	"net/http"
+
+	"github.com/qgymje/Odyssey/services/runs/comments"
 
 	"github.com/gin-gonic/gin"
 )

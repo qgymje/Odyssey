@@ -1,9 +1,10 @@
 package controllers
 
 import (
-	"Odyssey/models"
-	"Odyssey/services/runs"
 	"net/http"
+
+	"github.com/qgymje/Odyssey/models"
+	"github.com/qgymje/Odyssey/services/runs"
 
 	"github.com/gin-gonic/gin"
 )

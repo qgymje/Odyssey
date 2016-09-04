@@ -1,8 +1,9 @@
 package controllers
 
 import (
-	"Odyssey/services/users"
 	"net/http"
+
+	"github.com/qgymje/Odyssey/services/users"
 
 	"github.com/gin-gonic/gin"
 )
