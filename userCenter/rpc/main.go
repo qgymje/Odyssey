@@ -1,9 +1,7 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"runtime/pprof"
@@ -15,7 +13,6 @@ import (
 	"github.com/qgymje/Odyssey/controllers"
 
 	"github.com/gin-gonic/gin"
-	"github.com/qgymje/aranGO"
 )
 
 var (
@@ -36,6 +33,9 @@ func init() {
 	utils.InitConfig(*configPath)
 	utils.InitLogger()
 	utils.InitRander()
+
+	db := utils.InitDB()
+	models.InitModels(db, driverName)
 }
 
 func main() {
@@ -46,32 +46,6 @@ func main() {
 		}
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
-	}
-
-	const driverName = "mysql"
-
-	c := utils.GetConf().GetStringMapString("database")
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset-utf8&parseTime=True&loc=Local", c["username"], c["password"], c["host"], c["port"], c["dbname"])
-
-	db, err := sql.Open(driverName, dsn)
-	if err != nil {
-		panic("connect db failed.")
-	}
-	defer db.Close()
-
-	db.SetMaxIdleConns(5)
-	db.SetMaxOpenConns(10)
-
-	models.InitModels(db, driverName)
-
-	session, err := aranGO.Connect("http://localhost:8529", "root", "123456", true)
-	if err != nil {
-		log.Fatal(err)
-	}
-	session.CreateDB("odyssey", nil)
-	err = models.InitArango(session)
-	if err != nil {
-		log.Fatal(err)
 	}
 
 	r := gin.New()
