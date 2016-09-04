@@ -1,0 +1,95 @@
+package main
+
+import (
+	"flag"
+	"log"
+
+	"github.com/qgymje/Odyssey/smsCenter/rpc/models"
+	"github.com/qgymje/Odyssey/utils"
+
+	"github.com/streadway/amqp"
+)
+
+var (
+	env = flag.String("env", "dev", "设置运行环境, 有dev, test, prod三种配置环境")
+)
+
+func initEnv() {
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	flag.Parse()
+	log.Println("当前运行环境为: ", *env)
+	utils.SetEnv(*env)
+}
+
+func init() {
+	initEnv()
+	utils.InitConfig("../../configs/")
+	utils.InitLogger()
+	utils.InitRander()
+	models.InitModels()
+}
+
+var connection *amqp.Connection
+var channel *amqp.Channel
+
+func main() {
+	connection, channel = utils.GetAMQP()
+
+	var (
+		exchange   = "smssender"
+		queue      = exchange
+		bindingKey = queue
+	)
+	//func (me *Channel) QueueDeclare(name string, durable, autoDelete, exclusive, noWait bool, args Table) (Queue, error)
+	q, err := channel.QueueDeclare(
+		queue, // queue name
+		false,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//func (me *Channel) QueueBind(name, key, exchange string, noWait bool, args Table) error
+	if err = channel.QueueBind(
+		q.Name,
+		bindingKey, // here is the binding key
+		exchange,   // exchange name
+		false,
+		nil,
+	); err != nil {
+		log.Fatal(err)
+	}
+
+	//func (me *Channel) Consume(queue, consumer string, autoAck, exclusive, noLocal, noWait bool, args Table) (<-chan Delivery, error)
+	msgs, err := channel.Consume(
+		q.Name,
+		"",    // consumer
+		false, // auto-ack
+		false, // exclusive
+		false, // no-local
+		false,
+		nil,
+	)
+	if err != nil {
+		log.Fatal(err)
+
+	}
+	go func() {
+		for d := range msgs {
+			handleMessage(d.Body)
+			d.Ack(false)
+		}
+	}()
+
+	done := make(chan bool)
+	log.Printf("[*] Waiting for messages. To exit press CTRL+C ")
+	<-done
+}
+
+func handleMessage(msg []byte) {
+	log.Printf("[x]received msg: %s", msg)
+}
