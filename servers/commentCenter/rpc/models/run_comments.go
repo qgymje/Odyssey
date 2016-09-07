@@ -1,19 +1,23 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/qgymje/Odyssey/commons/utils"
+)
 
 // RunComment model 表示对一次跑步纪录的评论
 type RunComment struct {
-	ID              int64     `json:"run_comment_id"`
-	RunID           int64     `db:"run_id" json:"run_id"`
-	UserID          int64     `db:"user_id" json:"user_id"`
-	ParentCommentID NullInt64 `db:"parent_comment_id" json:"parent_comment_id"` // 如果为空, 则表示对跑步纪录的评论, 不为空, 则为对用户的评论的评论
+	ID              int64           `json:"run_comment_id"`
+	RunID           int64           `db:"run_id" json:"run_id"`
+	UserID          int64           `db:"user_id" json:"user_id"`
+	ParentCommentID utils.NullInt64 `db:"parent_comment_id" json:"parent_comment_id"` // 如果为空, 则表示对跑步纪录的评论, 不为空, 则为对用户的评论的评论
 
 	Content   string    `json:"conente"`
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
 
-	CommentUser *User `db:"-"` // 评论人的信息
-	ReplyUser   *User `db:"-"` // 如果是回复, 则有回复人信息, 如果是评论, 则为nil
+	//CommentUser *User `db:"-"` // 评论人的信息
+	//ReplyUser   *User `db:"-"` // 如果是回复, 则有回复人信息, 如果是评论, 则为nil
 }
 
 // Create 创建一个评论/回复

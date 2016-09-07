@@ -1,0 +1,6 @@
+app:
+    rpc_port: 3001
+log:
+    filename: ./logs/account_center.log
+    enable_func_call_depth: true
+

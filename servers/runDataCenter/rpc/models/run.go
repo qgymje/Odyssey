@@ -3,22 +3,24 @@ package models
 import (
 	"log"
 	"time"
+
+	"github.com/qgymje/Odyssey/commons/utils"
 )
 
 // Run model 表示一个用户的一次跑步的纪录
 type Run struct {
-	ID        int64      `json:"run_id"`
-	UserID    int64      `db:"user_id" json:"user_id"`
-	Distance  float64    `json:"distance"`
-	Duration  int        `json:"duration"`
-	IsPublic  bool       `db:"is_public" json:"is_public"`
-	Comment   NullString `json:"comment"`
-	CreatedAt time.Time  `db:"created_at" json:"created_at"`
-	UpdatedAt time.Time  `db:"updated_at" json:"updated_at"`
-	DeletedAt NullTime   `db:"deleted_at" json:"-"`
+	ID        int64            `json:"run_id"`
+	UserID    int64            `db:"user_id" json:"user_id"`
+	Distance  float64          `json:"distance"`
+	Duration  int              `json:"duration"`
+	IsPublic  bool             `db:"is_public" json:"is_public"`
+	Comment   utils.NullString `json:"comment"`
+	CreatedAt time.Time        `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time        `db:"updated_at" json:"updated_at"`
+	DeletedAt utils.NullTime   `db:"deleted_at" json:"-"`
 
 	RunLocations []*RunLocation `db:"-" json:"locations"`
-	User         *User          `db:"-" json:"-"`
+	//User         *User          `db:"-" json:"-"`
 }
 
 // Create 创建一条跑步纪录, 需要RunLocation数据

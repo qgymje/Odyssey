@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func InitDB() *sql.DB {
+func InitMysql() *sql.DB {
 	const driverName = "mysql"
 
 	c := GetConf().GetStringMapString("database")

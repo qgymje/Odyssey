@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sms;
+
+service SMS {
+    rpc Send( SendInfo ) returns ( Status ) {}
+}
+
+message SendInfo {
+    string phone = 1;
+    enum Type {
+        DEFAUTL = 0;
+        REGISTERCODE = 1;
+        RECOVERPASSWORD = 2;
+    }
+    Type type = 2;
+    string content = 3;
+}
+
+message Status {
+    bool status = 1;
+}

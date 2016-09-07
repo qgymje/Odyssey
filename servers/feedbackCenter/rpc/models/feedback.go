@@ -1,16 +1,20 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/qgymje/Odyssey/commons/utils"
+)
 
 // Feedback model 表示用户发来的反馈
 type Feedback struct {
-	ID           int64      `json:"feedback_id"`
-	UserID       NullInt64  `db:"user_id" json:"user_id"` // 如果为null则为匿名用户
-	Content      string     `json:"content"`
-	IsRead       bool       `db:"is_read" json:"is_read"`
-	ReplyContent NullString `json:"reply_content" json:"reply_content"`
-	CreatedAt    time.Time  `db:"created_at" json:"created_at"`
-	ReplyedAt    NullTime   `db:"replyed_at" json:"replyed_at"`
+	ID           int64            `json:"feedback_id"`
+	UserID       utils.NullInt64  `db:"user_id" json:"user_id"` // 如果为null则为匿名用户
+	Content      string           `json:"content"`
+	IsRead       bool             `db:"is_read" json:"is_read"`
+	ReplyContent utils.NullString `json:"reply_content" json:"reply_content"`
+	CreatedAt    time.Time        `db:"created_at" json:"created_at"`
+	ReplyedAt    utils.NullTime   `db:"replyed_at" json:"replyed_at"`
 }
 
 type FeedbackTableInfo struct {

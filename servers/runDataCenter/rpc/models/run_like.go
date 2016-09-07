@@ -9,7 +9,7 @@ type RunLike struct {
 	IsCanceled bool      `db:"is_canceled" json:"-"`
 	CreatedAt  time.Time `db:"created_at" json:"created_at"`
 
-	User *User `json:"user"`
+	//User *User `json:"user"`
 }
 
 func (l *RunLike) Like() error {

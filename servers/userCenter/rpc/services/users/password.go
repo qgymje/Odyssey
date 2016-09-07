@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/qgymje/Odyssey/utils"
+	"github.com/qgymje/Odyssey/commons/utils"
 )
 
 var (

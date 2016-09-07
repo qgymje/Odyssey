@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/qgymje/Odyssey/models"
-	"github.com/qgymje/Odyssey/utils"
+	"github.com/qgymje/Odyssey/commons/utils"
+	"github.com/qgymje/Odyssey/servers/userCenter/rpc/models"
 
 	"github.com/dgrijalva/jwt-go"
 )

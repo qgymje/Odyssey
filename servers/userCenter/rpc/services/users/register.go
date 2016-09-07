@@ -3,8 +3,8 @@ package users
 import (
 	"errors"
 
-	"github.com/qgymje/Odyssey/models"
-	"github.com/qgymje/Odyssey/utils"
+	"github.com/qgymje/Odyssey/commons/utils"
+	"github.com/qgymje/Odyssey/servers/userCenter/rpc/models"
 )
 
 var (

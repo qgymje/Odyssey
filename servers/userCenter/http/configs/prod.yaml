@@ -1,0 +1,43 @@
+app:
+    base_url: http://localhost
+    http_port: 8081
+
+database:
+    host: localhost
+    port: 3306
+    username: odyssey
+    password: odyssey
+    dbname: odyssey
+    sslmode: disable
+    poolsize: 20
+    maxIdleConns: 5 
+    maxOpenConns: 10
+
+mongodb:
+    hosts: 127.0.0.1
+    dbname: odyssey
+    username:
+    password:
+  
+
+log:
+    filename: /logs/odyssey.log
+    enable_func_call_depth: true
+
+auth:
+    secret_key: GO5U9fS8D7WkDay8
+    expires: 2592000
+
+
+feedback:
+    auth_key: mSedxOqPLTzqQoD704XIDpAHJ6jbJmrBVC8CtthVX5pXgKNAM8jO6vbzlzMnk6tJ
+
+rabbitmq:
+    url: amqp://odyssey:odyssey@localhost:5672/odyssey    
+    log: 
+        filename: /logs/sendsms.log
+        enable_func_call_depth: true
+
+   
+redis:
+    h

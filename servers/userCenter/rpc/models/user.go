@@ -1,27 +1,28 @@
 package models
 
 import "time"
+import "github.com/qgymje/Odyssey/commons/utils"
 
 // User model 表示一个用户
 type User struct {
-	ID                 int64       `json:"user_id"`
-	Phone              string      `json:"phone"`
-	Email              NullString  `json:"email"` // 通过email向register发送用户统计数据
-	Nickname           NullString  `json:"nickname"`
-	Password           string      `json:"-"`
-	PasswordResetToken NullString  `db:"password_reset_token" json:"-"` // 用于忘记密码时候生成的token用
-	Salt               string      `json:"-"`
-	Avatar             NullString  `json:"avatar"`
-	Sex                NullUint8   `json:"sex"`
-	Height             NullUint8   `json:"height"`
-	Weight             NullUint8   `json:"weight"`
-	Birthday           NullTime    `json:"birthday"`
-	Latitude           NullFloat64 `json:"latitude"`
-	Longitude          NullFloat64 `json:"longitude"`
-	Token              NullString  `json:"-"`
-	CreatedAt          time.Time   `db:"created_at" json:"created_at"`
-	UpdatedAt          time.Time   `db:"updated_at" json:"-"`
-	DeletedAt          NullTime    `db:"deleted_at" json:"-"`
+	ID                 int64             `json:"user_id"`
+	Phone              string            `json:"phone"`
+	Email              utils.NullString  `json:"email"` // 通过email向register发送用户统计数据
+	Nickname           utils.NullString  `json:"nickname"`
+	Password           string            `json:"-"`
+	PasswordResetToken utils.NullString  `db:"password_reset_token" json:"-"` // 用于忘记密码时候生成的token用
+	Salt               string            `json:"-"`
+	Avatar             utils.NullString  `json:"avatar"`
+	Sex                utils.NullUint8   `json:"sex"`
+	Height             utils.NullUint8   `json:"height"`
+	Weight             utils.NullUint8   `json:"weight"`
+	Birthday           utils.NullTime    `json:"birthday"`
+	Latitude           utils.NullFloat64 `json:"latitude"`
+	Longitude          utils.NullFloat64 `json:"longitude"`
+	Token              utils.NullString  `json:"-"`
+	CreatedAt          time.Time         `db:"created_at" json:"created_at"`
+	UpdatedAt          time.Time         `db:"updated_at" json:"-"`
+	DeletedAt          utils.NullTime    `db:"deleted_at" json:"-"`
 }
 
 // Fetch 从db里获取数据, 通常用于已经有了id
@@ -71,7 +72,7 @@ func (u *User) UpdateToken(token string) (err error) {
 	if _, err = result.RowsAffected(); err != nil {
 		return
 	}
-	u.Token = ToNullString(token)
+	u.Token = utils.ToNullString(token)
 	return
 }
 
